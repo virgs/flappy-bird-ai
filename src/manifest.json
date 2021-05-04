@@ -1,6 +1,6 @@
 {
-  "name": "Snake Hole",
-  "short_name": "Snake Hole",
+  "name": "Flappy bird",
+  "short_name": "Flappy bird",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [{
