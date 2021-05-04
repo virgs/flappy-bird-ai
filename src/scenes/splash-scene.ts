@@ -45,10 +45,12 @@ export class SplashScene extends Phaser.Scene {
         ];
 
         imagesToLoad.forEach(image => this.load.image(image, `./assets/images/${image}`));
-        this.load.spritesheet('bird', './assets/images/bird.png', {
+        let birdKey = 'bird';
+        this.load.spritesheet(birdKey, './assets/images/bird.png', {
             frameWidth: 522 / 3,
             frameHeight: 124
         });
+
     }
 
     private loadFonts() {

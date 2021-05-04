@@ -1,55 +1,66 @@
 import {Pipe} from '../actors/pipe';
 import {Platform} from '../actors/platform';
-import {GameActor} from '../actors/game-actor';
 import {EventManager} from '../event-manager/event-manager';
+import {Events} from '../event-manager/events';
+import {scale} from '../scale';
+import {Bird} from '../actors/bird';
+import {dimensionHeight} from '../game';
+import Point = Phaser.Geom.Point;
 
 export class MainScene extends Phaser.Scene {
 
-    // private snake: Snake;
-    // private platform: Platform;
-    // private pipes: Pipe[] = [];
-    private readonly averageGapIntervalBetweenPipes: number = 1.65 * 1000;
+    private readonly averageGapIntervalBetweenPipes: number = 2.5 * 1000;
+    private readonly randomFactorGapIntervalBetweenPipes: number = 1 * 1000;
+    private readonly birdXPosition: number = 75 * scale;
+    private readonly velocityInPixelsPerSecond: number = 0.15;
 
     private gameRunning: boolean;
-    private gameActors: GameActor[] = [];
-    private velocityInPixelsPerSecond: number = 0.125;
-    private secondsSinceLastPipe: number = 0;
+    private secondsToCreateNextPipe: number = this.averageGapIntervalBetweenPipes;
+    private pipesCreated: number = 0;
 
     constructor() {
         super({
             key: 'MainScene'
         });
+
     }
 
     public async create(): Promise<void> {
         this.gameRunning = true;
-        this.gameActors.push(new Platform({scene: this}));
-        this.gameActors.push(new Pipe({scene: this}));
+        new Platform({scene: this});
+        new Bird({scene: this, initialPosition: new Point(this.birdXPosition, dimensionHeight / 2)});
+        new Pipe({
+            scene: this,
+            identifier: ++this.pipesCreated,
+            closestPipeToTheBird: true,
+            birdXPosition: this.birdXPosition
+        });
     }
 
     public update(time: number, delta: number): void {
         if (this.gameRunning) {
-            this.gameActors.forEach(gameActor => gameActor.update({delta, pixelsPerSecond: this.velocityInPixelsPerSecond}));
-            this.gameActors = this.gameActors.filter(gameActor => !gameActor.shouldDestroy());
+            EventManager.emit(Events.UPDATE, {delta, pixelsPerSecond: this.velocityInPixelsPerSecond});
             this.checkPipeCreation(delta);
         }
     }
 
     private checkPipeCreation(delta: number) {
-        this.secondsSinceLastPipe += delta;
-        if (this.secondsSinceLastPipe > this.averageGapIntervalBetweenPipes) {
-            if (Math.random() > 0.9) {
-                this.secondsSinceLastPipe = 0;
-                this.gameActors.push(new Pipe({scene: this}));
-            } else {
-                this.secondsSinceLastPipe -= delta;
-            }
+        this.secondsToCreateNextPipe -= delta;
+        if (this.secondsToCreateNextPipe <= 0) {
+            this.secondsToCreateNextPipe = Math.random() * this.randomFactorGapIntervalBetweenPipes + this.averageGapIntervalBetweenPipes;
+            new Pipe({
+                scene: this,
+                identifier: ++this.pipesCreated,
+                closestPipeToTheBird: false,
+                birdXPosition: this.birdXPosition
+            });
+
         }
     }
 
     private destroy() {
+        EventManager.emit(Events.DESTROY);
         EventManager.destroy();
-        this.gameActors.forEach(gameActor => gameActor.destroy());
     }
 
 }
