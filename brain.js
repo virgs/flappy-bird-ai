@@ -46,4 +46,4 @@ net.train([
 ]);
 
 const output = net.run([1, 0, 0]);
-console.log(Math.round(output))
+// console.log(Math.round(output))

@@ -1,6 +1,7 @@
 import {scale} from '../scale';
+import {GameActor, UpdateParams} from './game-actor';
 
-export class Platform {
+export class Platform implements GameActor {
     private readonly backgroundTextureKeys = ['background-night.png', 'background-day.png'];
 
     private backgroundSprites: Phaser.GameObjects.Sprite[] = [];
@@ -13,15 +14,23 @@ export class Platform {
         firstSprite.setScale(scale);
         this.backgroundSprites.push(firstSprite);
 
-        const secondSprite = options.scene.add.sprite(144 * scale, 0, chosenTextureKey);
+        const secondSprite = options.scene.add.sprite(firstSprite.width * scale, 0, chosenTextureKey);
         secondSprite.displayOriginX = 0;
         secondSprite.displayOriginY = 0;
         secondSprite.setScale(scale);
         this.backgroundSprites.push(secondSprite);
     }
 
+    // tslint:disable-next-line:no-empty
+    public update(options: UpdateParams): void {
+    }
+
     public destroy() {
         this.backgroundSprites.forEach(sprite => sprite.destroy());
+    }
+
+    public shouldDestroy(): boolean {
+        return false;
     }
 
 }

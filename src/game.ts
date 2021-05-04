@@ -5,7 +5,7 @@ import {scale} from './scale';
 import {MainScene} from './scenes/main-scene';
 import {SplashScene} from './scenes/splash-scene';
 
-const [dimensionWidth, dimensionHeight] = [288, 256];
+export const [dimensionWidth, dimensionHeight] = [288, 256];
 const config: GameConfig = {
     width: dimensionWidth * scale,
     height: dimensionHeight * scale,
