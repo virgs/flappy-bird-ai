@@ -3,7 +3,7 @@ import {dimensionHeight} from '../game';
 import {Events} from '../event-manager/events';
 import {NeuralNetwork} from 'brain.js/src/index';
 import {EventManager} from '../event-manager/event-manager';
-import {flapCoolDownMs, gravity, maxVerticalSpeed} from '../constants';
+import {flapCoolDownMs, gravity, maxBirdAngle, maxVerticalSpeed} from '../constants';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 import RectangleToRectangle = Phaser.Geom.Intersects.RectangleToRectangle;
 
@@ -19,17 +19,32 @@ export class Bird {
     private readonly birdSprite: Phaser.GameObjects.Sprite;
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
     private readonly birdTextureKey = 'bird';
+    private readonly id: number;
 
     private commands: Commands[] = [];
     private alive: boolean = true;
     private verticalSpeed: number = 0;
     private inputTimeCounterMs: number = 0;
+    private closestPipe: any;
 
     private keys: Phaser.Input.Keyboard.Key[] = [];
 
-    private neuralNetwork = new NeuralNetwork({});
+    private readonly chromosome: any;
+    private readonly neuralNetwork;
 
-    public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }) {
+    public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number, chromosome: any }) {
+        this.id = options.id;
+        this.neuralNetwork = new NeuralNetwork({
+            binaryThresh: 0.75,
+            hiddenLayers: [4],
+            activation: 'relu'
+        });
+        // this.neuralNetwork.train([
+        //     {
+        //         input: [0, 0],
+        //         output: [0]
+        //     }]);
+        this.chromosome = options.chromosome;
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
@@ -56,31 +71,29 @@ export class Bird {
         return [birdSprite, hitBoxSprite];
     }
 
-    private registerEvents(scene) {
-        EventManager.on(Events.CLOSEST_PIPE_MOVED, options => this.handlePipeCollision(options));
+    private registerEvents(scene): void {
+        EventManager.on(Events.CLOSEST_PIPE_MOVED, options => this.closestPipe = options);
         EventManager.on(Events.UPDATE, updateOptions => this.update(updateOptions));
         this.keys = [scene.input.keyboard.addKey(KeyCodes.SPACE)];
-    }
-
-    private handlePipeCollision(options) {
-        if (this.alive) {
-            if (options.sprites
-                .some(pipeSprite => RectangleToRectangle(pipeSprite.getBounds(), this.hitBoxSprite.getBounds()))) {
-                this.killBird();
-            }
-        }
     }
 
     public update(options: { delta, pixelsPerSecond }): void {
         if (this.alive) {
             this.handleBirdInput(options.delta);
             this.handleCommands();
+            this.handlePipeCollision();
+            this.trainNetwork();
             if (this.birdIsOutOfBounds()) {
                 this.killBird();
             } else {
                 this.applyGravity(options);
-                this.birdSprite.setAngle((this.verticalSpeed / maxVerticalSpeed) * 45);
-                this.hitBoxSprite.setAngle((this.verticalSpeed / maxVerticalSpeed) * 45);
+                this.birdSprite.setAngle((this.verticalSpeed / maxVerticalSpeed) * maxBirdAngle);
+                this.hitBoxSprite.setAngle((this.verticalSpeed / maxVerticalSpeed) * maxBirdAngle);
+                if (this.verticalSpeed > 0) {
+                    this.birdSprite.anims.stop();
+                } else if (!this.birdSprite.anims.isPlaying) {
+                    this.birdSprite.anims.play(this.birdTextureKey);
+                }
             }
         } else {
             this.birdSprite.x -= options.delta * options.pixelsPerSecond;
@@ -92,14 +105,22 @@ export class Bird {
         }
     }
 
-    private killBird() {
-        this.alive = false;
-        this.birdSprite.setAlpha(0.4);
-        this.birdSprite.anims.stop();
-        EventManager.emit(Events.BIRD_DIED);
+    private handlePipeCollision(): void {
+        if (this.closestPipe != null) {
+            if (this.closestPipe.sprites
+                .some(pipeSprite => RectangleToRectangle(pipeSprite.getBounds(), this.hitBoxSprite.getBounds()))) {
+                this.killBird();
+            }
+        }
     }
 
-    private applyGravity(options: { delta; pixelsPerSecond }) {
+    private killBird(): void {
+        this.alive = false;
+        this.birdSprite.setAlpha(0.4);
+        EventManager.emit(Events.BIRD_DIED, {chromosome: this.chromosome});
+    }
+
+    private applyGravity(options: { delta; pixelsPerSecond }): void {
         const instantVerticalVelocity = gravity * options.delta;
         const verticalOffset = options.delta * (this.verticalSpeed + instantVerticalVelocity / 2);
         this.birdSprite.y = this.birdSprite.y + verticalOffset;
@@ -110,7 +131,7 @@ export class Bird {
         }
     }
 
-    private handleBirdInput(delta) {
+    private handleBirdInput(delta): void {
         if (this.keys
             .some(key => key.isDown)) {
             if (this.inputTimeCounterMs > flapCoolDownMs) {
@@ -122,12 +143,12 @@ export class Bird {
         }
     }
 
-    private birdIsOutOfBounds() {
+    private birdIsOutOfBounds(): boolean {
         const birdBounds = this.hitBoxSprite.getBounds();
         return birdBounds.top <= 0 || birdBounds.bottom > dimensionHeight * scale;
     }
 
-    private handleCommands() {
+    private handleCommands(): void {
         [...new Set(this.commands)].forEach(command => {
             switch (command) {
                 case Commands.FLAP_WING:
@@ -135,5 +156,16 @@ export class Bird {
             }
         });
         this.commands = [];
+    }
+
+    private trainNetwork(): void {
+        if (this.closestPipe != null) {
+            const verticalDistance = this.hitBoxSprite.getCenter().y - this.closestPipe.verticalOffset;
+            const horizontalDistance = this.hitBoxSprite.getCenter().x - this.closestPipe.sprites[0].x;
+            // let numbers = this.neuralNetwork.run([verticalDistance, horizontalDistance]);
+            if (this.id === 1) {
+                // console.log(numbers);
+            }
+        }
     }
 }

@@ -4,14 +4,14 @@ import {EventManager} from '../event-manager/event-manager';
 import {Events} from '../event-manager/events';
 import {Bird} from '../actors/bird';
 import {dimensionHeight} from '../game';
-import Point = Phaser.Geom.Point;
 import {averageGapIntervalBetweenPipes, birdXPosition, randomFactorGapIntervalBetweenPipes, velocityInPixelsPerSecond} from '../constants';
+import Point = Phaser.Geom.Point;
 
 export class MainScene extends Phaser.Scene {
-    private livingBirds: number = 3;
-    private gameRunning: boolean;
+    private readonly results: any[] = [];
     private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipes;
     private pipesCreated: number = 0;
+    private sceneDuration: number = 0;
 
     constructor() {
         super({
@@ -19,13 +19,15 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    public async create(): Promise<void> {
-        this.gameRunning = true;
+    public async init(data): Promise<void> {
+        console.log('main: ' + JSON.stringify(data));
+        let livingBirdsCounter = data.birds.length;
         new Platform({scene: this});
-        Array.from(Array(this.livingBirds)).forEach((_, id) => new Bird({
+        data.birds.forEach((chromosome, id) => new Bird({
             scene: this,
             initialPosition: new Point(birdXPosition, dimensionHeight / 2),
-            id: id
+            id: id,
+            chromosome: chromosome
         }));
         new Pipe({
             scene: this,
@@ -33,17 +35,21 @@ export class MainScene extends Phaser.Scene {
             closestPipeToTheBird: true,
             birdXPosition: birdXPosition
         });
-        EventManager.on(Events.BIRD_DIED, options => {
-            --this.livingBirds;
-            console.log('Living birds: ' + this.livingBirds);
+        EventManager.on(Events.BIRD_DIED, chromosome => {
+            --livingBirdsCounter;
+            const birdResult = {chromosome: chromosome, result: this.sceneDuration};
+            this.results.push(birdResult);
+            if (livingBirdsCounter === 0) {
+                this.destroy();
+                this.scene.start('SplashScene', {results: this.results});
+            }
         });
     }
 
     public update(time: number, delta: number): void {
-        if (this.gameRunning) {
-            EventManager.emit(Events.UPDATE, {delta, pixelsPerSecond: velocityInPixelsPerSecond});
-            this.checkPipeCreation(delta);
-        }
+        this.sceneDuration += delta;
+        EventManager.emit(Events.UPDATE, {delta, pixelsPerSecond: velocityInPixelsPerSecond});
+        this.checkPipeCreation(delta);
     }
 
     private checkPipeCreation(delta: number) {
@@ -56,7 +62,6 @@ export class MainScene extends Phaser.Scene {
                 closestPipeToTheBird: false,
                 birdXPosition: birdXPosition
             });
-
         }
     }
 

@@ -21,7 +21,7 @@ export class Pipe {
         this.id = options.identifier;
         this.closestPipeToTheBird = options.closestPipeToTheBird;
 
-        this.verticalOffset = (Math.random() * (dimensionHeight / 4)) - dimensionHeight / 4;
+        this.verticalOffset = (Math.random() * (dimensionHeight / 2)) - dimensionHeight / 2;
         this.createSprites(options);
         this.registerInEvents();
     }
@@ -59,7 +59,10 @@ export class Pipe {
         this.pipesSprites
             .forEach(sprite => sprite.x -= options.delta * options.pixelsPerSecond);
         if (this.closestPipeToTheBird) {
-            EventManager.emit(Events.CLOSEST_PIPE_MOVED, {sprites: this.pipesSprites, verticalOffset: this.verticalOffset});
+            EventManager.emit(Events.CLOSEST_PIPE_MOVED, {
+                sprites: this.pipesSprites,
+                verticalOffset: this.verticalOffset
+            });
             if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < this.birdXPosition)) {
                 this.closestPipeToTheBird = false;
                 EventManager.emit(Events.PIPE_BEYOND_BIRD, {destroyedPipeId: this.id});

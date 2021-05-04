@@ -1,6 +1,9 @@
-export class SplashScene extends Phaser.Scene {
+import {GeneticAlgorithm} from '../ai/genetic-algorithm';
 
-    private static readonly MIN_TIME: 250;
+export class SplashScene extends Phaser.Scene {
+    private static readonly MIN_TIME: 10;
+
+    private geneticAlgorithm: GeneticAlgorithm = new GeneticAlgorithm();
     private loadCompleted: boolean;
 
     constructor() {
@@ -14,7 +17,11 @@ export class SplashScene extends Phaser.Scene {
         this.load.image('splash', './assets/images/gui.png');
     }
 
-    public create(): void {
+    public init(data: {
+        results: any[]
+    }): void {
+        console.log('splash: ' + JSON.stringify(data));
+        const nextGeneration = data.results ? this.geneticAlgorithm.randomlyGenerate() : this.geneticAlgorithm.generateNextGeneration(data.results);
         const logo = this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2, 'splash');
         let scaleRatio = Math.min(window.innerWidth / logo.getBounds().width, window.innerHeight / logo.getBounds().height);
         logo.setScale(scaleRatio, scaleRatio);
@@ -25,11 +32,15 @@ export class SplashScene extends Phaser.Scene {
         this.load.on('complete', () => this.loadCompleted = true);
 
         this.time.addEvent({
-            delay: SplashScene.MIN_TIME, callback: () => {
+            delay: SplashScene.MIN_TIME,
+            callback: () => {
+                const mainSceneStart = () => this.scene.start('MainScene', {
+                    birds: nextGeneration
+                });
                 if (this.loadCompleted) {
-                    this.scene.start('MainScene');
+                    mainSceneStart();
                 } else {
-                    this.load.on('complete', () => this.scene.start('MainScene'));
+                    this.load.on('complete', () => mainSceneStart());
                 }
             }
         });
@@ -42,6 +53,7 @@ export class SplashScene extends Phaser.Scene {
             'background-night.png',
             'bottom-pipe.png',
             'top-pipe.png',
+            'floor.png',
         ];
 
         imagesToLoad.forEach(image => this.load.image(image, `./assets/images/${image}`));
@@ -58,4 +70,5 @@ export class SplashScene extends Phaser.Scene {
             `./assets/fonts/PressStart2P-Regular.png`,
             `./assets/fonts/PressStart2P-Regular.fnt`);
     }
+
 }
