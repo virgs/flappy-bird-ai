@@ -3,9 +3,10 @@ import {dimensionHeight} from '../game';
 import {Events} from '../event-manager/events';
 import {NeuralNetwork} from 'brain.js/src/index';
 import {EventManager} from '../event-manager/event-manager';
-import {flapCoolDownMs, gravity, maxBirdAngle, maxVerticalSpeed} from '../constants';
+import {flapCoolDownMs, flapImpulse, gravity, maxBirdAngle, maxVerticalSpeed} from '../constants';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 import RectangleToRectangle = Phaser.Geom.Intersects.RectangleToRectangle;
+import {Chromosome} from './chromosome';
 
 enum Commands {
     FLAP_WING
@@ -29,22 +30,18 @@ export class Bird {
 
     private keys: Phaser.Input.Keyboard.Key[] = [];
 
-    private readonly chromosome: any;
+    private readonly chromosome: Chromosome;
     private readonly neuralNetwork;
 
-    public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number, chromosome: any }) {
+    public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number, chromosome: Chromosome }) {
         this.id = options.id;
         this.neuralNetwork = new NeuralNetwork({
             binaryThresh: 0.75,
             hiddenLayers: [4],
             activation: 'relu'
         });
-        // this.neuralNetwork.train([
-        //     {
-        //         input: [0, 0],
-        //         output: [0]
-        //     }]);
         this.chromosome = options.chromosome;
+        this.neuralNetwork.train(this.chromosome.genes);
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
@@ -145,14 +142,15 @@ export class Bird {
 
     private birdIsOutOfBounds(): boolean {
         const birdBounds = this.hitBoxSprite.getBounds();
-        return birdBounds.top <= 0 || birdBounds.bottom > dimensionHeight * scale;
+        const floorHeightInPixels = 18;
+        return birdBounds.top <= 0 || birdBounds.bottom > (dimensionHeight - floorHeightInPixels) * scale;
     }
 
     private handleCommands(): void {
         [...new Set(this.commands)].forEach(command => {
             switch (command) {
                 case Commands.FLAP_WING:
-                    this.verticalSpeed = -maxVerticalSpeed;
+                    this.verticalSpeed = -flapImpulse;
             }
         });
         this.commands = [];

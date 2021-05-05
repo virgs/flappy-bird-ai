@@ -6,6 +6,7 @@ import {Bird} from '../actors/bird';
 import {dimensionHeight} from '../game';
 import {averageGapIntervalBetweenPipes, birdXPosition, randomFactorGapIntervalBetweenPipes, velocityInPixelsPerSecond} from '../constants';
 import Point = Phaser.Geom.Point;
+import {Chromosome} from '../actors/chromosome';
 
 export class MainScene extends Phaser.Scene {
     private readonly results: any[] = [];
@@ -19,11 +20,11 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    public async init(data): Promise<void> {
+    public async init(data: {birds: Chromosome[]}): Promise<void> {
         console.log('main: ' + JSON.stringify(data));
         let livingBirdsCounter = data.birds.length;
         new Platform({scene: this});
-        data.birds.forEach((chromosome, id) => new Bird({
+        data.birds.forEach((chromosome: Chromosome, id) => new Bird({
             scene: this,
             initialPosition: new Point(birdXPosition, dimensionHeight / 2),
             id: id,
@@ -35,13 +36,16 @@ export class MainScene extends Phaser.Scene {
             closestPipeToTheBird: true,
             birdXPosition: birdXPosition
         });
-        EventManager.on(Events.BIRD_DIED, chromosome => {
+        EventManager.on(Events.BIRD_DIED, (chromosome: Chromosome) => {
             --livingBirdsCounter;
             const birdResult = {chromosome: chromosome, result: this.sceneDuration};
             this.results.push(birdResult);
             if (livingBirdsCounter === 0) {
-                this.destroy();
-                this.scene.start('SplashScene', {results: this.results});
+                this.scene.pause();
+                setTimeout(() => {
+                    this.destroy();
+                    this.scene.start('SplashScene', {results: this.results});
+                }, 2000);
             }
         });
     }
