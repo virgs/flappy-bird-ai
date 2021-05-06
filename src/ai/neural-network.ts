@@ -25,7 +25,6 @@ export class NeuralNetwork {
     public randomlyGenerateBrain(): number[] {
         const genesAmount = this.config.inputs.length * this.config.hiddenNeurons + this.config.hiddenNeurons * this.config.outputs;
         this.config.weights = Array.from(Array(genesAmount)).map(() => Math.random());
-        console.log(this.config.weights)
         return this.config.weights;
     }
 
