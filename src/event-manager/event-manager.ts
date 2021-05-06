@@ -22,7 +22,8 @@ export class EventManager {
         return emitter.on(Events[event], fn, context);
     }
 
-    static destroy() {
+    public static destroy() {
+        delete EventManager.singleton.eventEmitter;
         EventManager.singleton = null;
     }
 }

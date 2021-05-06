@@ -1,18 +1,49 @@
+import {Chromosome} from '../actors/chromosome';
+
+export function generateRandomWeight(): number {
+    return (Math.random() * 500) - 100;
+}
+
 export class GeneticAlgorithm {
-    private readonly populationPerGeneration: number = 30;
-    private readonly selectedPopulationPerGeneration: number = 2;
-    private generationCounter: number = 0;
+    private readonly mutationRate: number = 0.05;
+    private readonly hiddenNeurons: number = 3;
+    private readonly numberOfInputs: number = 4;
+    private readonly populationPerGeneration: number = 2000;
+    private readonly selectedPopulationPerGeneration: number = 5;
 
-    public randomlyGenerate() {
-
+    public randomlyGenerate(): Chromosome[] {
+        console.log('randomly generated');
+        return Array.from(Array(this.populationPerGeneration))
+            .map(() => {
+                return {genes: Array.from(Array(this.numberOfInputs * this.hiddenNeurons)).map(() => generateRandomWeight())};
+            });
     }
 
-    //{genes: options, result: this.sceneDuration}[]
-    public generateNextGeneration(birdsDuration: any[]): any {
-        ++this.generationCounter;
+    public createNextGeneration(oldGenerationResults: { chromosome: Chromosome, duration: number }[]): Chromosome[] {
+        console.log('createNextGeneration');
+        const bestCitizens = oldGenerationResults
+            .filter((_, index) => index > oldGenerationResults.length - this.selectedPopulationPerGeneration - 1);
+        const chromosomes = Array.from(Array(this.populationPerGeneration))
+            .map(() => this.generateNewPopulationFromBestCitizens(bestCitizens));
+        return chromosomes;
+    }
 
-        // console.log(birdsDuration
-        //     .reduce((acc, item) => acc + item.sceneDuration, 0) / birdsDuration.length);
-        return Array.from(Array(this.selectedPopulationPerGeneration));
+    private generateNewPopulationFromBestCitizens(bestCitizens: { chromosome: Chromosome; duration: number }[]): Chromosome {
+        const firstParentIndex = Math.floor(Math.random() * bestCitizens.length);
+        const secondParentIndex = Math.floor(Math.random() * bestCitizens.length);
+        const firstParent = bestCitizens[firstParentIndex];
+        const secondParent = bestCitizens[secondParentIndex];
+        const genes = Array.from(Array(this.numberOfInputs * this.hiddenNeurons))
+            .map((_, index) => {
+                let geneValue = firstParent.chromosome.genes[index];
+                if (Math.random() > 0.5) {
+                    geneValue = secondParent.chromosome.genes[index];
+                }
+                if (Math.random() < this.mutationRate) {
+                    geneValue = generateRandomWeight();
+                }
+                return geneValue;
+            });
+        return {genes};
     }
 }

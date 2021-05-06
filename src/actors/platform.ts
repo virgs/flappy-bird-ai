@@ -1,15 +1,20 @@
 import {scale} from '../scale';
-import {EventManager} from '../event-manager/event-manager';
+import {dimensionHeight} from '../game';
 import {Events} from '../event-manager/events';
-import {dimensionHeight, dimensionWidth} from '../game';
+import {EventManager} from '../event-manager/event-manager';
+
+export const floorHeightInPixels = 18;
 
 export class Platform {
-    private readonly assetsWidthDifference = 120;
+    private readonly assetsWidthDifference = 121;
     private readonly backgroundTextureKeys = ['background-night.png', 'background-day.png'];
     private readonly floorTextureKey = 'floor.png';
 
     private readonly backgroundSprites: Phaser.GameObjects.Sprite[] = [];
     private readonly floorSprites: Phaser.GameObjects.Sprite[] = [];
+
+    private alpha: number = 0;
+    private alphaIsIncreasing: boolean = true;
 
     constructor(options: { scene: Phaser.Scene }) {
         this.createBackgroundSprites(options);
@@ -28,21 +33,39 @@ export class Platform {
             this.floorSprites
                 .forEach(sprite => sprite.x += this.assetsWidthDifference);
         }
+        let increasingFactor = options.delta * 0.0001;
+        if (!this.alphaIsIncreasing) {
+            increasingFactor *= -1;
+        }
+        this.alpha += increasingFactor;
+        if (this.alpha < 0) {
+            this.alpha = 0;
+            this.alphaIsIncreasing = true;
+        } else if (this.alpha > 1) {
+            this.alpha = 1;
+            this.alphaIsIncreasing = false;
+        }
+        this.backgroundSprites
+            .filter((_, index) => index >= this.backgroundSprites.length / 2)
+            .forEach(sprite => {
+                sprite.setAlpha(this.alpha);
+            });
     }
 
     private createBackgroundSprites(options: { scene: Phaser.Scene }) {
-        const chosenTextureKey = this.backgroundTextureKeys[Math.floor(Math.random() * 2)];
-        const firstSprite = options.scene.add.sprite(0, 0, chosenTextureKey);
-        firstSprite.displayOriginX = 0;
-        firstSprite.displayOriginY = 0;
-        firstSprite.setScale(scale);
-        this.backgroundSprites.push(firstSprite);
+        this.backgroundTextureKeys.forEach(textureKey => {
+            const firstSprite = options.scene.add.sprite(0, 0, textureKey);
+            firstSprite.displayOriginX = 0;
+            firstSprite.displayOriginY = 0;
+            firstSprite.setScale(scale);
+            this.backgroundSprites.push(firstSprite);
 
-        const secondSprite = options.scene.add.sprite(firstSprite.width * scale, 0, chosenTextureKey);
-        secondSprite.displayOriginX = 0;
-        secondSprite.displayOriginY = 0;
-        secondSprite.setScale(scale);
-        this.backgroundSprites.push(secondSprite);
+            const secondSprite = options.scene.add.sprite(firstSprite.width * scale, 0, textureKey);
+            secondSprite.displayOriginX = 0;
+            secondSprite.displayOriginY = 0;
+            secondSprite.setScale(scale);
+            this.backgroundSprites.push(secondSprite);
+        });
     }
 
     private createFloorSprites(options: { scene: Phaser.Scene }) {

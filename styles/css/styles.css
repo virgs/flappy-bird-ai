@@ -22,9 +22,15 @@ body div.container div#game {
     transform: translate(0, -50%);
 }
 
-body #chart-container  {
+body #generations-evolution-chart-container {
     position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translate(0, -50%);
+    right: 30px;
+    top: 0;
+    width: auto;
+    height: auto;
 }
+
+/*@font-face {*/
+/*    font-family: 'FlappyBirdy';*/
+/*    src: url("../FlappyBirdy.ttf");*/
+/*}*/

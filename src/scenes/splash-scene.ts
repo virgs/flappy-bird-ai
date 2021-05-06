@@ -1,16 +1,18 @@
 import {GeneticAlgorithm} from '../ai/genetic-algorithm';
+import {Chromosome} from '../actors/chromosome';
+import {GenerationsEvolutionChart} from '../charts/generations-evolution-chart';
 
 export class SplashScene extends Phaser.Scene {
-    private static readonly MIN_TIME: 10;
+    private static readonly MIN_TIME: 200;
 
     private geneticAlgorithm: GeneticAlgorithm = new GeneticAlgorithm();
+    private generationsEvolutionChart: GenerationsEvolutionChart = new GenerationsEvolutionChart();
     private loadCompleted: boolean;
 
     constructor() {
         super({
             key: 'SplashScene'
         });
-        this.loadCompleted = false;
     }
 
     public preload(): void {
@@ -18,33 +20,47 @@ export class SplashScene extends Phaser.Scene {
     }
 
     public init(data: {
-        results: any[]
+        results: { chromosome: Chromosome, duration: number }[]
     }): void {
-        console.log('splash: ' + JSON.stringify(data));
-        const nextGeneration = data.results ? this.geneticAlgorithm.randomlyGenerate() : this.geneticAlgorithm.generateNextGeneration(data.results);
-        const logo = this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2, 'splash');
-        let scaleRatio = Math.min(window.innerWidth / logo.getBounds().width, window.innerHeight / logo.getBounds().height);
-        logo.setScale(scaleRatio, scaleRatio);
+        this.loadCompleted = false;
+        this.splashScreen();
 
-        this.loadImages();
-        this.loadFonts();
-        this.load.start();
-        this.load.on('complete', () => this.loadCompleted = true);
+        const nextGeneration = this.getNextGeneration(data);
 
         this.time.addEvent({
             delay: SplashScene.MIN_TIME,
-            callback: () => {
-                const mainSceneStart = () => this.scene.start('MainScene', {
-                    birds: nextGeneration
-                });
-                if (this.loadCompleted) {
-                    mainSceneStart();
-                } else {
-                    this.load.on('complete', () => mainSceneStart());
-                }
-            }
+            callback: () => this.startMainScene(nextGeneration)
         });
 
+    }
+
+    private splashScreen(): void {
+        const logo = this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2, 'splash');
+        const scaleRatio = Math.min(window.innerWidth / logo.getBounds().width, window.innerHeight / logo.getBounds().height);
+        logo.setScale(scaleRatio, scaleRatio);
+        this.loadImages();
+        this.load.start();
+        this.load.on('complete', () => this.loadCompleted = true);
+    }
+
+    private startMainScene(nextGeneration: Chromosome[]) {
+        const mainSceneStart = () => this.scene.start('MainScene', {
+            birds: nextGeneration
+        });
+        if (this.loadCompleted) {
+            mainSceneStart();
+        } else {
+            this.load.on('complete', () => mainSceneStart());
+        }
+    }
+
+    private getNextGeneration(data: { results: { chromosome: Chromosome; duration: number }[] }) {
+        if (!data.results) {
+            return this.geneticAlgorithm.randomlyGenerate();
+        } else {
+            this.generationsEvolutionChart.addGenerationResult(data.results);
+            return this.geneticAlgorithm.createNextGeneration(data.results);
+        }
     }
 
     private loadImages() {
@@ -63,12 +79,6 @@ export class SplashScene extends Phaser.Scene {
             frameHeight: 124
         });
 
-    }
-
-    private loadFonts() {
-        this.load.bitmapFont('scoreFont',
-            `./assets/fonts/PressStart2P-Regular.png`,
-            `./assets/fonts/PressStart2P-Regular.fnt`);
     }
 
 }

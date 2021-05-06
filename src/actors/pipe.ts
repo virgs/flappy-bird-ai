@@ -5,7 +5,7 @@ import {EventManager} from '../event-manager/event-manager';
 import Point = Phaser.Geom.Point;
 
 export class Pipe {
-    private readonly gapInPixels = 60;
+    private readonly gapInPixels = 80;
     private readonly topPipeTextureKey = 'top-pipe.png';
     private readonly bottomPipeTextureKey = 'bottom-pipe.png';
     private readonly id: number;
