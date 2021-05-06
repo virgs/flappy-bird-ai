@@ -49,6 +49,7 @@ export class MainScene extends Phaser.Scene {
         EventManager.emit(Events.UPDATE, {delta: delta, pixelsPerSecond: horizontalVelocityInPixelsPerSecond});
         this.checkPipeCreation(delta);
         document.querySelector('#time-display').textContent = (this.sceneDuration / 1000).toFixed(1);
+        document.querySelector('#living-birds').textContent = this.livingBirdsCounter.toString();
     }
 
     private checkPipeCreation(delta: number) {

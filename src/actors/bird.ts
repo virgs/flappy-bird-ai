@@ -1,12 +1,13 @@
 import {scale} from '../scale';
-import {dimensionHeight} from '../game';
+import {dimensionHeight, dimensionWidth} from '../game';
 import {Chromosome} from './chromosome';
+import {floorHeightInPixels} from './platform';
 import {Events} from '../event-manager/events';
 import {EventManager} from '../event-manager/event-manager';
-import {flapCoolDownMs, flapImpulse, gravity, horizontalVelocityInPixelsPerSecond, maxBirdAngle, maxBirdVerticalSpeed} from '../constants';
-import {floorHeightInPixels} from './platform';
+import {DEBUG_MODE, flapCoolDownMs, flapImpulse, gravity, maxBirdAngle, maxBirdVerticalSpeed} from '../constants';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 import RectangleToRectangle = Phaser.Geom.Intersects.RectangleToRectangle;
+import {NeuralNetwork} from '../ai/neural-network';
 
 enum Commands {
     FLAP_WING
@@ -15,7 +16,7 @@ enum Commands {
 export class Bird {
 
     private readonly assetsProportion = 0.125;
-    private readonly hitBoxScale = 0.8;
+    private readonly hitBoxScale = 0.7;
 
     private readonly birdSprite: Phaser.GameObjects.Sprite;
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
@@ -31,10 +32,35 @@ export class Bird {
     private keys: Phaser.Input.Keyboard.Key[] = [];
 
     private readonly chromosome: Chromosome;
+    private readonly brain: NeuralNetwork;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number, chromosome: Chromosome }) {
         this.id = options.id;
         this.chromosome = options.chromosome;
+        this.brain = new NeuralNetwork({
+            inputs: [
+                {
+                    //birdVerticalPosition
+                    minValue: 0,
+                    maxValue: dimensionHeight * scale,
+                },
+                {
+                    //verticalDistanceToTheCenterOfClosestPipeGap
+                    minValue: -dimensionHeight * scale,
+                    maxValue: dimensionHeight * scale,
+                },
+                {
+                    //horizontalDistanceToClosestPipe
+                    minValue: 0,
+                    maxValue: dimensionWidth * scale,
+                }],
+            hiddenNeurons: 4,
+            outputs: 1,
+            weights: this.chromosome ? this.chromosome.genes : null
+        });
+        if (!this.chromosome) {
+            this.chromosome = {genes: this.brain.randomlyGenerateBrain()};
+        }
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
@@ -58,8 +84,12 @@ export class Bird {
 
         const hitBoxSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdTextureKey);
         hitBoxSprite.setScale(scale * this.assetsProportion * this.hitBoxScale);
-        // hitBoxSprite.setTint(0x88FF0000);
-        // hitBoxSprite.setAlpha(0);
+        if (DEBUG_MODE) {
+            hitBoxSprite.setTint(0x88FF0000);
+            hitBoxSprite.setAlpha(0.5);
+        } else {
+            hitBoxSprite.setAlpha(0);
+        }
 
         return [birdSprite, hitBoxSprite];
     }
@@ -75,9 +105,9 @@ export class Bird {
             this.handleCommands();
             this.inputTimeCounterMs += options.delta;
             if (this.inputTimeCounterMs > flapCoolDownMs) {
-                this.inputTimeCounterMs %= flapCoolDownMs;
-                this.handleBirdInput();
-                this.applyArtificialIntelligence();
+                if (this.handleBirdInput() || this.applyArtificialIntelligence()) {
+                    this.inputTimeCounterMs %= flapCoolDownMs;
+                }
             }
             if (this.birdIsOutOfBounds()) {
                 this.killBird();
@@ -131,30 +161,27 @@ export class Bird {
         }
     }
 
-    private handleBirdInput(): void {
+    private handleBirdInput(): boolean {
         if (this.keys
             .some(key => key.isDown)) {
             this.commands.push(Commands.FLAP_WING);
+            return true;
         }
+        return false;
     }
 
-    private applyArtificialIntelligence(): void {
+    private applyArtificialIntelligence(): boolean {
         if (this.closestPipe != null) {
             const birdVerticalPosition = this.hitBoxSprite.getCenter().y;
             const verticalDistanceToTheCenterOfClosestPipeGap = this.hitBoxSprite.getCenter().y - this.closestPipe.verticalOffset;
-            const horizontalDistanceToClosestPipe = this.hitBoxSprite.getCenter().x - this.closestPipe.sprites[0].x;
-            const inputs = [birdVerticalPosition,
-                verticalDistanceToTheCenterOfClosestPipeGap,
-                horizontalDistanceToClosestPipe,
-                horizontalVelocityInPixelsPerSecond];
-            const output = this.chromosome.genes
-                .reduce((acc, gene, index) => acc + gene * inputs[index % inputs.length], 0);
-            //TODO: find this value
-            // average inputs * average weights * number of inputs?
-            if (output > 600 * 1000) {
+            const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
+            const output = this.brain.doTheMagic(birdVerticalPosition, verticalDistanceToTheCenterOfClosestPipeGap, horizontalDistanceToClosestPipe);
+            if (output[0] > 0.5) {
                 this.commands.push(Commands.FLAP_WING);
+                return true;
             }
         }
+        return false;
     }
 
     private birdIsOutOfBounds(): boolean {

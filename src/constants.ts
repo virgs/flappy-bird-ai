@@ -9,3 +9,4 @@ export const averageGapIntervalBetweenPipesInPixels: number = 400;
 export const randomFactorGapIntervalBetweenPipesInPixels: number = 200;
 export const birdXPosition: number = 75 * scale;
 export const flapCoolDownMs: number = 100;
+export const DEBUG_MODE: boolean = false;

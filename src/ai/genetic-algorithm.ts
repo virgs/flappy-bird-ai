@@ -1,24 +1,14 @@
 import {Chromosome} from '../actors/chromosome';
-import {UrlQueryHandler} from '../url-query-handler';
-
-export function generateRandomWeight(): number {
-    return (Math.random() * 500) - 100;
-}
-
-const urlQueryHandler = new UrlQueryHandler();
 
 export class GeneticAlgorithm {
-    private readonly mutationRate: number = parseInt(urlQueryHandler.getParameterByName('mutationRate', 0.05));
-    private readonly populationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 2000));
-    private readonly selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 5));
-    private readonly hiddenNeurons: number = 3;
-    private readonly numberOfInputs: number = 4;
+    private readonly mutationRate: number;
+    private readonly populationPerGeneration: number;
+    private readonly selectedPopulationPerGeneration: number;
 
-    public randomlyGenerate(): Chromosome[] {
-        return Array.from(Array(this.populationPerGeneration))
-            .map(() => {
-                return {genes: Array.from(Array(this.numberOfInputs * this.hiddenNeurons)).map(() => generateRandomWeight())};
-            });
+    constructor(mutationRate: number, populationPerGeneration: number, selectedPopulationPerGeneration: number) {
+        this.mutationRate = mutationRate;
+        this.populationPerGeneration = populationPerGeneration;
+        this.selectedPopulationPerGeneration = selectedPopulationPerGeneration;
     }
 
     public createNextGeneration(oldGenerationResults: { chromosome: Chromosome, duration: number }[]): Chromosome[] {
@@ -33,14 +23,14 @@ export class GeneticAlgorithm {
         const secondParentIndex = Math.floor(Math.random() * bestCitizens.length);
         const firstParent = bestCitizens[firstParentIndex];
         const secondParent = bestCitizens[secondParentIndex];
-        const genes = Array.from(Array(this.numberOfInputs * this.hiddenNeurons))
+        const genes = firstParent.chromosome.genes
             .map((_, index) => {
                 let geneValue = firstParent.chromosome.genes[index];
                 if (Math.random() > 0.5) {
                     geneValue = secondParent.chromosome.genes[index];
                 }
                 if (Math.random() < this.mutationRate) {
-                    geneValue = generateRandomWeight();
+                    geneValue = Math.random();
                 }
                 return geneValue;
             });
