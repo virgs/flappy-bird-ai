@@ -62,7 +62,6 @@ export class GenerationsEvolutionChart {
     }
 
     public addGenerationResult(results: { chromosome: Chromosome; duration: number }[]): void {
-        console.log(results[results.length - 1]);
         const longestDuration = results[results.length - 1].duration / 1000;
         const average = results
             .reduce((acc, item) => acc + item.duration / results.length, 0) / 1000;
