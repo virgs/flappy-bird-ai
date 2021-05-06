@@ -43,6 +43,7 @@ export class MainScene extends Phaser.Scene {
         this.sceneDuration += delta;
         EventManager.emit(Events.UPDATE, {delta: delta, pixelsPerSecond: horizontalVelocityInPixelsPerSecond});
         this.checkPipeCreation(delta);
+        document.querySelector('#time-display').textContent = (this.sceneDuration / 1000).toFixed(1);
     }
 
     private checkPipeCreation(delta: number) {

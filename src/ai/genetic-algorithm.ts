@@ -1,15 +1,16 @@
 import {Chromosome} from '../actors/chromosome';
+import {UrlQueryHandler} from '../url-query-handler';
 
 export function generateRandomWeight(): number {
     return (Math.random() * 500) - 100;
 }
 
 export class GeneticAlgorithm {
-    private readonly mutationRate: number = 0.05;
+    private readonly mutationRate: number = new UrlQueryHandler().getParameterByName('mutationRate', 0.05);
     private readonly hiddenNeurons: number = 3;
     private readonly numberOfInputs: number = 4;
-    private readonly populationPerGeneration: number = 2000;
-    private readonly selectedPopulationPerGeneration: number = 5;
+    private readonly populationPerGeneration: number = new UrlQueryHandler().getParameterByName('populationPerGeneration', 2000);
+    private readonly selectedPopulationPerGeneration: number = new UrlQueryHandler().getParameterByName('selectedPopulationPerGeneration', 5);
 
     public randomlyGenerate(): Chromosome[] {
         console.log('randomly generated');

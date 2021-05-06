@@ -1,11 +1,13 @@
 @font-face {
-    font-family: "Connection";
-    src: url("../../assets/fonts/Connection.ttf") format("truetype");
+    font-family: 'FlappyBird';
+    src: url("../../assets/fonts/Flappy-Bird.ttf") format("truetype");
 }
 
 body {
     margin: 0;
     font-size: 10px;
+    min-height: 100vh;
+    height: 100vh;
 }
 
 body div.container {
@@ -22,15 +24,24 @@ body div.container div#game {
     transform: translate(0, -50%);
 }
 
-body #generations-evolution-chart-container {
+body .hud {
     position: absolute;
     right: 30px;
-    top: 0;
+    top: 30px;
     width: auto;
-    height: auto;
+    min-height: 100vh;
+    height: 100vh;
 }
 
-/*@font-face {*/
-/*    font-family: 'FlappyBirdy';*/
-/*    src: url("../FlappyBirdy.ttf");*/
-/*}*/
+#score-counter {
+    text-align: left;
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+
+    font-family: FlappyBird, monospace;
+    font-size: 10em;
+
+    color: bisque;
+    text-shadow: 0 0 3px black;
+}
