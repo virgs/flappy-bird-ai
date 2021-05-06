@@ -48,7 +48,7 @@ export class Pipe {
                 this.update(updateOptions);
             }
         });
-        EventManager.on(Events.PIPE_BEYOND_BIRD, options => {
+        EventManager.recover(Events.PIPE_BEYOND_BIRD, options => {
             if (this.id === options.destroyedPipeId + 1) {
                 this.closestPipeToTheBird = true;
             }

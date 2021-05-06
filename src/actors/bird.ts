@@ -58,7 +58,8 @@ export class Bird {
 
         const hitBoxSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdTextureKey);
         hitBoxSprite.setScale(scale * this.assetsProportion * this.hitBoxScale);
-        hitBoxSprite.setAlpha(0);
+        // hitBoxSprite.setTint(0x88FF0000);
+        // hitBoxSprite.setAlpha(0);
 
         return [birdSprite, hitBoxSprite];
     }
@@ -148,7 +149,9 @@ export class Bird {
                 horizontalVelocityInPixelsPerSecond];
             const output = this.chromosome.genes
                 .reduce((acc, gene, index) => acc + gene * inputs[index % inputs.length], 0);
-            if (output > 50 * 1000) {
+            //TODO: find this value
+            // average inputs * average weights * number of inputs?
+            if (output > 600 * 1000) {
                 this.commands.push(Commands.FLAP_WING);
             }
         }

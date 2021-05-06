@@ -6,11 +6,16 @@ import {Platform} from '../actors/platform';
 import {Events} from '../event-manager/events';
 import {Chromosome} from '../actors/chromosome';
 import {EventManager} from '../event-manager/event-manager';
-import {averageGapIntervalBetweenPipes, birdXPosition, horizontalVelocityInPixelsPerSecond, randomFactorGapIntervalBetweenPipes} from '../constants';
+import {
+    averageGapIntervalBetweenPipesInPixels,
+    birdXPosition,
+    horizontalVelocityInPixelsPerSecond,
+    randomFactorGapIntervalBetweenPipesInPixels
+} from '../constants';
 
 export class MainScene extends Phaser.Scene {
     private results: { chromosome: Chromosome, duration: number }[] = [];
-    private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipes;
+    private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
     private pipesCreated: number = 0;
     private sceneDuration: number = 0;
     private livingBirdsCounter: number = 0;
@@ -49,7 +54,8 @@ export class MainScene extends Phaser.Scene {
     private checkPipeCreation(delta: number) {
         this.secondsToCreateNextPipe -= delta;
         if (this.secondsToCreateNextPipe <= 0) {
-            this.secondsToCreateNextPipe = Math.random() * randomFactorGapIntervalBetweenPipes + averageGapIntervalBetweenPipes;
+            this.secondsToCreateNextPipe = Math.random() * randomFactorGapIntervalBetweenPipesInPixels +
+                averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
             new Pipe({
                 scene: this,
                 identifier: ++this.pipesCreated,
@@ -79,7 +85,7 @@ export class MainScene extends Phaser.Scene {
     private destroy() {
         this.results = [];
         this.livingBirdsCounter = 0;
-        this.secondsToCreateNextPipe = averageGapIntervalBetweenPipes;
+        this.secondsToCreateNextPipe = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
         this.pipesCreated = 0;
         this.sceneDuration = 0;
 
