@@ -25,9 +25,23 @@
 <div class="hud">
     <div id="generations-evolution-chart-container"></div>
     <div id="score-counter">
-        Living birds <span id="living-birds">0</span>
-        Time <span id="time-display">0.00</span>
+        <div>
+            Generation time: <span id="time-display">0.00</span>s
+        </div>
+        <div>
+            Living birds: <span id="living-birds">0</span>
+        </div>
+        <div>
+            Total time: <span id="total-time-display">0.00</span>s
+        </div>
     </div>
 </div>
+<script>
+    let totalTime = 0;
+    setInterval(() => {
+        totalTime += 0.1
+        document.querySelector('#total-time-display').textContent = totalTime.toFixed(1).toString();
+    }, 100)
+</script>
 </body>
 </html>

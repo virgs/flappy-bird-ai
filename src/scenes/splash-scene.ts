@@ -16,9 +16,9 @@ export class SplashScene extends Phaser.Scene {
             key: 'SplashScene'
         });
         const urlQueryHandler = new UrlQueryHandler();
-        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 1500));
+        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 2500));
         const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.05));
-        const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 15));
+        const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 20));
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, selectedPopulationPerGeneration);
         this.generationsEvolutionChart = new GenerationsEvolutionChart(selectedPopulationPerGeneration);
     }
@@ -80,10 +80,11 @@ export class SplashScene extends Phaser.Scene {
         ];
 
         imagesToLoad.forEach(image => this.load.image(image, `./assets/images/${image}`));
-        let birdKey = 'bird';
-        this.load.spritesheet(birdKey, './assets/images/bird.png', {
-            frameWidth: 522 / 3,
-            frameHeight: 124
+        ['bird-yellow', 'bird-red', 'bird-green', 'bird-blue'].forEach(key => {
+            this.load.spritesheet(key, `./assets/images/${key}.png`, {
+                frameWidth: 522 / 3,
+                frameHeight: 124
+            });
         });
 
     }

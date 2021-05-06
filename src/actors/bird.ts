@@ -5,9 +5,9 @@ import {floorHeightInPixels} from './platform';
 import {Events} from '../event-manager/events';
 import {EventManager} from '../event-manager/event-manager';
 import {DEBUG_MODE, flapCoolDownMs, flapImpulse, gravity, maxBirdAngle, maxBirdVerticalSpeed} from '../constants';
+import {NeuralNetwork} from '../ai/neural-network';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 import RectangleToRectangle = Phaser.Geom.Intersects.RectangleToRectangle;
-import {NeuralNetwork} from '../ai/neural-network';
 
 enum Commands {
     FLAP_WING
@@ -20,7 +20,8 @@ export class Bird {
 
     private readonly birdSprite: Phaser.GameObjects.Sprite;
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
-    private readonly birdTextureKey = 'bird';
+    private readonly birdTextureKeys: string[] = ['bird-yellow', 'bird-red', 'bird-green', 'bird-blue'];
+    private readonly birdTextureKey: string;
     private readonly id: number;
 
     private commands: Commands[] = [];
@@ -54,13 +55,14 @@ export class Bird {
                     minValue: 0,
                     maxValue: dimensionWidth * scale,
                 }],
-            hiddenNeurons: 4,
+            hiddenNeurons: 6,
             outputs: 1,
             weights: this.chromosome ? this.chromosome.genes : null
         });
         if (!this.chromosome) {
             this.chromosome = {genes: this.brain.randomlyGenerateBrain()};
         }
+        this.birdTextureKey = this.birdTextureKeys[Math.floor(Math.random() * this.birdTextureKeys.length)];
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
@@ -158,6 +160,10 @@ export class Bird {
         this.verticalSpeed = this.verticalSpeed + instantVerticalVelocity;
         if (this.verticalSpeed > maxBirdVerticalSpeed) {
             this.verticalSpeed = maxBirdVerticalSpeed;
+        }
+        if (this.birdSprite.y > (dimensionHeight - floorHeightInPixels) * scale) {
+            this.birdSprite.y = (dimensionHeight - floorHeightInPixels) * scale;
+            this.hitBoxSprite.y = (dimensionHeight - floorHeightInPixels) * scale;
         }
     }
 
