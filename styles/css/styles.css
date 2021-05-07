@@ -36,8 +36,8 @@ body .hud {
 #score-counter {
     text-align: left;
     position: absolute;
-    right: 30px;
-    bottom: 30px;
+    right: 50px;
+    bottom: 50px;
 
     font-family: FlappyBird, monospace;
     font-size: 7em;

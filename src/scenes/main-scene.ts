@@ -1,6 +1,5 @@
 import Point = Phaser.Geom.Point;
 import {Pipe} from '../actors/pipe';
-import {Bird} from '../actors/bird';
 import {dimensionHeight} from '../game';
 import {Platform} from '../actors/platform';
 import {Events} from '../event-manager/events';
@@ -12,6 +11,8 @@ import {
     horizontalVelocityInPixelsPerSecond,
     randomFactorGapIntervalBetweenPipesInPixels
 } from '../constants';
+import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
+import {PlayerBird} from '../actors/birds/player-bird';
 
 export class MainScene extends Phaser.Scene {
     private results: { chromosome: Chromosome, duration: number }[] = [];
@@ -29,19 +30,26 @@ export class MainScene extends Phaser.Scene {
     public async init(data: { birds: Chromosome[] }): Promise<void> {
         this.livingBirdsCounter = data.birds.length;
         new Platform({scene: this});
-        data.birds.forEach((chromosome: Chromosome, id) => new Bird({
-            scene: this,
-            initialPosition: new Point(birdXPosition, dimensionHeight / 2),
-            id: id,
-            chromosome: chromosome
-        }));
+        const birdsInitialPosition = new Point(birdXPosition, dimensionHeight / 4);
+        let birdsIdCounter: number = 0;
+        data.birds
+            .forEach((chromosome: Chromosome) =>
+                new GeneticallyTrainedBird({
+                    scene: this,
+                    initialPosition: birdsInitialPosition,
+                    id: birdsIdCounter++
+                }, chromosome));
+
+        ++this.livingBirdsCounter;
+        new PlayerBird({initialPosition: birdsInitialPosition, scene: this, id: birdsIdCounter++});
         new Pipe({
             scene: this,
             identifier: ++this.pipesCreated,
             closestPipeToTheBird: true,
             birdXPosition: birdXPosition
         });
-        EventManager.on(Events.BIRD_DIED, (data: { chromosome: Chromosome }) => this.onBirdDeath(data));
+        EventManager.on(Events.BIRD_DIED, () => this.onAnyBirdDeath());
+        EventManager.on(Events.GENETICALLY_TRAINED_BIRD_DIED, (data: { chromosome: Chromosome }) => this.onGeneticallyTrainedBirdDeath(data));
     }
 
     public update(time: number, delta: number): void {
@@ -66,13 +74,16 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private onBirdDeath(data: { chromosome: Chromosome }) {
-        const birdResult = {chromosome: data.chromosome, duration: this.sceneDuration};
+    private onAnyBirdDeath() {
         --this.livingBirdsCounter;
-        this.results.push(birdResult);
         if (this.livingBirdsCounter === 0) {
             this.endGeneration();
         }
+    }
+
+    private onGeneticallyTrainedBirdDeath(data: { chromosome: Chromosome }) {
+        const birdResult = {chromosome: data.chromosome, duration: this.sceneDuration};
+        this.results.push(birdResult);
     }
 
     private endGeneration() {

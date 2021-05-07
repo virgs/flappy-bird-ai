@@ -7,8 +7,8 @@ export const floorHeightInPixels = 18;
 
 export class Platform {
     private readonly assetsWidthDifference = 121;
-    private readonly backgroundTextureKeys = ['background-night.png', 'background-day.png'];
-    private readonly floorTextureKey = 'floor.png';
+    private readonly backgroundTextureKeys = ['background-night', 'background-day'];
+    private readonly floorTextureKey = 'floor';
 
     private readonly backgroundSprites: Phaser.GameObjects.Sprite[] = [];
     private readonly floorSprites: Phaser.GameObjects.Sprite[] = [];

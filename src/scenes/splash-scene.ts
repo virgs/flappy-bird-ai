@@ -16,9 +16,9 @@ export class SplashScene extends Phaser.Scene {
             key: 'SplashScene'
         });
         const urlQueryHandler = new UrlQueryHandler();
-        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 2500));
-        const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.05));
-        const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 20));
+        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 100));
+        const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.1));
+        const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 10));
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, selectedPopulationPerGeneration);
         this.generationsEvolutionChart = new GenerationsEvolutionChart(selectedPopulationPerGeneration);
     }
@@ -52,13 +52,13 @@ export class SplashScene extends Phaser.Scene {
     }
 
     private startMainScene(nextGeneration: Chromosome[]) {
-        const mainSceneStart = () => this.scene.start('MainScene', {
+        const mainSceneStartFunction = () => this.scene.start('MainScene', {
             birds: nextGeneration
         });
         if (this.loadCompleted) {
-            mainSceneStart();
+            mainSceneStartFunction();
         } else {
-            this.load.on('complete', () => mainSceneStart());
+            this.load.once('complete', () => mainSceneStartFunction());
         }
     }
 
@@ -71,21 +71,22 @@ export class SplashScene extends Phaser.Scene {
     }
 
     private loadImages() {
-        const imagesToLoad = [
-            'background-day.png',
-            'background-night.png',
-            'bottom-pipe.png',
-            'top-pipe.png',
-            'floor.png',
-        ];
+        [
+            'background-day',
+            'background-night',
+            'bottom-pipe',
+            'top-pipe',
+            'floor',
+        ]
+            .forEach(image => this.load.image(image, `./assets/images/${image}.png`));
 
-        imagesToLoad.forEach(image => this.load.image(image, `./assets/images/${image}`));
-        ['bird-yellow', 'bird-red', 'bird-green', 'bird-blue'].forEach(key => {
-            this.load.spritesheet(key, `./assets/images/${key}.png`, {
-                frameWidth: 522 / 3,
-                frameHeight: 124
+        ['bird-yellow', 'bird-red', 'bird-green', 'bird-blue']
+            .forEach(key => {
+                this.load.spritesheet(key, `./assets/images/${key}.png`, {
+                    frameWidth: 522 / 3,
+                    frameHeight: 124
+                });
             });
-        });
 
     }
 

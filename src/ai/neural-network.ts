@@ -19,7 +19,6 @@ export class NeuralNetwork {
         if (this.config.weights && this.config.weights.length !== genesAmount) {
             throw new Error(`Wrong number of genes '${this.config.weights.length}'. Correct value should be '${genesAmount}' [hiddenNeurons * (inputs + outputs)]`);
         }
-
     }
 
     public randomlyGenerateBrain(): number[] {
@@ -52,10 +51,16 @@ export class NeuralNetwork {
             acc[index % outputs] += hiddenNeuronValue;
             return acc;
         }, zeroedOutputs)
-            .map(outputValue => outputValue / hiddenNeurons);
+            .map(outputValue => Math.tanh(outputValue / hiddenNeurons));
     }
 
     private static normalizeInput(input: NeuralNetworkInput, value: number) {
+        if (value > input.maxValue) {
+            return 1;
+        }
+        if (value < input.minValue) {
+            return 0;
+        }
         return (value - input.minValue) / (input.maxValue - input.minValue);
     }
 

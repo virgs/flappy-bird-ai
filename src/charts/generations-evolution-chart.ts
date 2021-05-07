@@ -14,7 +14,7 @@ export class GenerationsEvolutionChart {
                 type: 'spline'
             },
             title: {
-                text: 'Performance By Generation'
+                text: 'Performance by Generation'
             },
             xAxis: {
                 min: 1,
@@ -60,7 +60,7 @@ export class GenerationsEvolutionChart {
                     data: this.longestData
                 },
                 {
-                    name: 'Selected group average',
+                    name: `Top ${selectedPopulationPerGeneration} average`,
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -82,14 +82,17 @@ export class GenerationsEvolutionChart {
     }
 
     public addGenerationResult(results: { chromosome: Chromosome; duration: number }[]): void {
-        const bestCitizen = results[results.length - 1];
-        console.log(bestCitizen.chromosome);
+        const sortResults = results
+            .sort((a, b) => a.duration - b.duration);
+
+        const bestCitizen = sortResults[sortResults.length - 1];
+        console.log(JSON.stringify(bestCitizen.chromosome.genes));
         const longestDuration = bestCitizen.duration / 1000;
-        const selectedGroupAverage = results
-            .filter((_, index) => index > results.length - this.selectedPopulationPerGeneration)
+        const selectedGroupAverage = sortResults
+            .filter((_, index) => index > sortResults.length - this.selectedPopulationPerGeneration)
             .reduce((acc, item) => acc + item.duration / this.selectedPopulationPerGeneration, 0) / 1000;
-        const generationAverage = results
-            .reduce((acc, item) => acc + item.duration / results.length, 0) / 1000;
+        const generationAverage = sortResults
+            .reduce((acc, item) => acc + item.duration / sortResults.length, 0) / 1000;
         this.selectedGroupAverage.push(parseFloat(selectedGroupAverage.toFixed(2)));
         this.longestData.push(parseFloat(longestDuration.toFixed(2)));
         this.averageData.push(parseFloat(generationAverage.toFixed(2)));

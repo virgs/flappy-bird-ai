@@ -6,8 +6,8 @@ import Point = Phaser.Geom.Point;
 
 export class Pipe {
     private readonly gapInPixels = 80;
-    private readonly topPipeTextureKey = 'top-pipe.png';
-    private readonly bottomPipeTextureKey = 'bottom-pipe.png';
+    private readonly topPipeTextureKey = 'top-pipe';
+    private readonly bottomPipeTextureKey = 'bottom-pipe';
     private readonly id: number;
     private readonly verticalOffset: number;
     private readonly pipesSprites: Phaser.GameObjects.Sprite[] = [];
@@ -19,15 +19,17 @@ export class Pipe {
     constructor(options: { scene: Phaser.Scene, identifier, closestPipeToTheBird, birdXPosition }) {
         this.birdXPosition = options.birdXPosition;
         this.id = options.identifier;
-        this.closestPipeToTheBird = options.closestPipeToTheBird;
 
         this.verticalOffset = (Math.random() * (dimensionHeight / 2)) - dimensionHeight / 2;
-        this.createSprites(options);
+        const position = new Point(dimensionWidth * scale, this.verticalOffset * scale);
+        this.createSprites(options, position);
         this.registerInEvents();
+        if (options.closestPipeToTheBird) {
+            this.setAsClosestToTheBird();
+        }
     }
 
-    private createSprites(options: { scene: Phaser.Scene; identifier; closestPipeToTheBird }) {
-        const position = new Point(dimensionWidth * scale, this.verticalOffset * scale);
+    private createSprites(options: { scene: Phaser.Scene; identifier; closestPipeToTheBird }, position: Phaser.Geom.Point) {
         const topPipeSprite = options.scene.add.sprite(position.x, position.y, this.topPipeTextureKey);
         topPipeSprite.displayOriginX = 0;
         topPipeSprite.displayOriginY = 0;
@@ -50,7 +52,7 @@ export class Pipe {
         });
         EventManager.recover(Events.PIPE_BEYOND_BIRD, options => {
             if (this.id === options.destroyedPipeId + 1) {
-                this.closestPipeToTheBird = true;
+                this.setAsClosestToTheBird();
             }
         });
     }
@@ -61,7 +63,7 @@ export class Pipe {
         if (this.closestPipeToTheBird) {
             EventManager.emit(Events.CLOSEST_PIPE_MOVED, {
                 sprites: this.pipesSprites,
-                verticalOffset: this.verticalOffset
+                verticalOffset: this.verticalOffset + dimensionHeight * scale / 2
             });
             if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < this.birdXPosition)) {
                 this.closestPipeToTheBird = false;
@@ -75,4 +77,11 @@ export class Pipe {
         }
     }
 
+    private setAsClosestToTheBird(): void {
+        this.pipesSprites.forEach(sprite => {
+            sprite.setTint(0xFF880000);
+            sprite.setAlpha(0.1);
+        });
+        this.closestPipeToTheBird = true;
+    }
 }
