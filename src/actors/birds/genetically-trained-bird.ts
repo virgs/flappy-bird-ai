@@ -1,19 +1,21 @@
-import {Bird, Commands} from './bird';
+import {scale} from '../../scale';
+import {Bird, BirdType, Commands} from './bird';
 import {Chromosome} from '../chromosome';
+import {Events} from '../../event-manager/events';
 import {NeuralNetwork} from '../../ai/neural-network';
 import {dimensionHeight, dimensionWidth} from '../../game';
-import {scale} from '../../scale';
 import {EventManager} from '../../event-manager/event-manager';
-import {Events} from '../../event-manager/events';
 
 export class GeneticallyTrainedBird extends Bird {
+    private BIAS = 0.3;
+
     private readonly chromosome: Chromosome;
-    private readonly brain: NeuralNetwork;
+    private readonly neuralNetwork: NeuralNetwork;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, chromosome) {
-        super(options, 'bird-yellow');
+        super(options, BirdType.GENETICALLY_TRAINED);
         this.chromosome = chromosome;
-        this.brain = new NeuralNetwork({
+        this.neuralNetwork = new NeuralNetwork({
             inputs: [
                 {
                     //verticalDistanceToTheCenterOfClosestPipeGap
@@ -30,19 +32,19 @@ export class GeneticallyTrainedBird extends Bird {
             weights: this.chromosome ? this.chromosome.genes : null
         });
         if (!this.chromosome) {
-            this.chromosome = {genes: this.brain.randomlyGenerateBrain()};
+            this.chromosome = {genes: this.neuralNetwork.randomlyGenerateBrain()};
         }
     }
 
-    protected handleBirdInput(): boolean {
-        if (this.closestPipe != null) {
-            const verticalDistanceToTheCenterOfClosestPipeGap = this.hitBoxSprite.getCenter().y - this.closestPipe.verticalOffset;
-            const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
-            const output = this.brain.doTheMagic(verticalDistanceToTheCenterOfClosestPipeGap, horizontalDistanceToClosestPipe);
-            if (output[0] > 0.3) {
-                this.commands.push(Commands.FLAP_WING);
-                return true;
-            }
+    protected handleBirdInput(data: {
+        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        horizontalDistanceToClosestPipe: number,
+        delta: number
+    }): boolean {
+        const output = this.neuralNetwork.doTheMagic(data.verticalDistanceToTheCenterOfClosestPipeGap, data.horizontalDistanceToClosestPipe);
+        if (output[0] > this.BIAS) {
+            this.commands.push(Commands.FLAP_WING);
+            return true;
         }
         return false;
     }

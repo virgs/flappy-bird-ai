@@ -2,11 +2,12 @@ import {GeneticAlgorithm} from '../ai/genetic-algorithm';
 import {Chromosome} from '../actors/chromosome';
 import {GenerationsEvolutionChart} from '../charts/generations-evolution-chart';
 import {UrlQueryHandler} from '../url-query-handler';
+import {BirdType} from '../actors/birds/bird';
 
 export class SplashScene extends Phaser.Scene {
     private static readonly MIN_SPLASH_TIME: 200;
 
-    private generationsEvolutionChart: GenerationsEvolutionChart;
+    private readonly generationsEvolutionChart: GenerationsEvolutionChart = new GenerationsEvolutionChart();
     private readonly populationPerGeneration: number;
     private geneticAlgorithm: GeneticAlgorithm;
     private loadCompleted: boolean;
@@ -20,7 +21,6 @@ export class SplashScene extends Phaser.Scene {
         const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.1));
         const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 10));
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, selectedPopulationPerGeneration);
-        this.generationsEvolutionChart = new GenerationsEvolutionChart(selectedPopulationPerGeneration);
     }
 
     public preload(): void {
@@ -28,12 +28,16 @@ export class SplashScene extends Phaser.Scene {
     }
 
     public init(data: {
-        results: { chromosome: Chromosome, duration: number }[]
+        geneticallyTrainedResults: { chromosome: Chromosome, duration: number }[],
+        results: { type: BirdType, duration: number }[]
     }): void {
         this.loadCompleted = false;
         this.splashScreen();
 
-        const nextGeneration = this.getNextGeneration(data);
+        if (data.results) {
+            this.generationsEvolutionChart.addLastRoundResult(data.results);
+        }
+        const nextGeneration = this.getNextGeneration(data.geneticallyTrainedResults);
 
         this.time.addEvent({
             delay: SplashScene.MIN_SPLASH_TIME,
@@ -62,10 +66,9 @@ export class SplashScene extends Phaser.Scene {
         }
     }
 
-    private getNextGeneration(data: { results: { chromosome: Chromosome; duration: number }[] }): Chromosome[] {
-        if (data.results) {
-            this.generationsEvolutionChart.addGenerationResult(data.results);
-            return this.geneticAlgorithm.createNextGeneration(data.results);
+    private getNextGeneration(geneticResults: { chromosome: Chromosome; duration: number }[]): Chromosome[] {
+        if (geneticResults) {
+            return this.geneticAlgorithm.createNextGeneration(geneticResults);
         }
         return Array.from(Array(this.populationPerGeneration));
     }

@@ -10,31 +10,45 @@ export enum Commands {
     FLAP_WING
 }
 
+export enum BirdType {
+    GENETICALLY_TRAINED,
+    PLAYER_CONTROLLED,
+    PLAYER_TRAINED,
+}
+
 export abstract class Bird {
+    private static readonly textureKeys: string[] = ['bird-yellow', 'bird-blue', 'bird-green', 'bird-red'];
 
     private readonly assetsProportion = 0.125;
     private readonly hitBoxScale = 0.7;
 
     private readonly birdSprite: Phaser.GameObjects.Sprite;
     private readonly birdTextureKey: string;
+    private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
     private readonly id: number;
 
     private alive: boolean = true;
     private verticalSpeed: number = 0;
     private inputTimeCounterMs: number = 0;
 
-    protected readonly hitBoxSprite: Phaser.GameObjects.Sprite;
-    protected closestPipe: any;
+    private closestPipe: any;
+    private readonly birdType: BirdType;
+
     protected commands: Commands[] = [];
 
-    protected constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, birdTextureKey: string) {
+    protected constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, birdType: BirdType) {
+        this.birdType = birdType;
         this.id = options.id;
-        this.birdTextureKey = birdTextureKey;
+        this.birdTextureKey = Bird.textureKeys[birdType];
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
 
-    protected abstract handleBirdInput(): boolean;
+    protected abstract handleBirdInput(data: {
+        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        horizontalDistanceToClosestPipe: number,
+        delta: number
+    }): boolean;
 
     private createSprite(options: { initialPosition: Phaser.Geom.Point; scene: Phaser.Scene }): Phaser.GameObjects.Sprite[] {
         const birdSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdTextureKey);
@@ -75,7 +89,14 @@ export abstract class Bird {
             this.handleCommands();
             this.inputTimeCounterMs += options.delta;
             if (this.inputTimeCounterMs > flapCoolDownMs) {
-                if (this.handleBirdInput()) {
+                const verticalDistanceToTheCenterOfClosestPipeGap = this.hitBoxSprite.getCenter().y - this.closestPipe.verticalOffset;
+                const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
+
+                if (this.handleBirdInput({
+                    verticalDistanceToTheCenterOfClosestPipeGap,
+                    horizontalDistanceToClosestPipe,
+                    delta: options.delta
+                })) {
                     this.inputTimeCounterMs = 0;
                 }
             }
@@ -119,13 +140,14 @@ export abstract class Bird {
             this.birdSprite.anims.pause();
             this.birdSprite.setAlpha(0.4);
             this.onBirdDeath();
-            EventManager.emit(Events.BIRD_DIED);
+            EventManager.emit(Events.BIRD_DIED, {type: this.birdType});
         }
     }
 
-    protected onBirdDeath() {
+    // tslint:disable-next-line:no-empty
+    protected onBirdDeath(): void {
 
-    };
+    }
 
     private applyGravity(options: { delta; pixelsPerSecond }): void {
         const instantVerticalVelocity = gravity * options.delta;

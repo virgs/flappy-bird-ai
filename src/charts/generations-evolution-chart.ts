@@ -1,14 +1,13 @@
-import {Chromosome} from '../actors/chromosome';
+import {BirdType} from '../actors/birds/bird';
 
 export class GenerationsEvolutionChart {
     private readonly chartOptions: any;
     private readonly longestData: number[] = [0];
-    private readonly averageData: number[] = [0];
-    private readonly selectedGroupAverage: number[] = [0];
-    private readonly selectedPopulationPerGeneration: number;
+    private readonly playerData: number[] = [0];
+    private readonly playerTrainedData: number[] = [0];
     private readonly chart: any = null;
 
-    public constructor(selectedPopulationPerGeneration: number) {
+    public constructor() {
         this.chartOptions = {
             chart: {
                 type: 'spline'
@@ -52,7 +51,7 @@ export class GenerationsEvolutionChart {
             },
             series: [
                 {
-                    name: 'Best citizen',
+                    name: 'Genetic',
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -60,43 +59,45 @@ export class GenerationsEvolutionChart {
                     data: this.longestData
                 },
                 {
-                    name: `Top ${selectedPopulationPerGeneration} average`,
+                    name: `Player`,
                     lineWidth: 1,
                     marker: {
                         enabled: false
                     },
-                    data: this.selectedGroupAverage
+                    data: this.playerData
                 },
                 {
-                    name: 'Average',
+                    name: 'Player trained',
                     lineWidth: 1,
                     marker: {
                         enabled: false
                     },
-                    data: this.averageData
+                    data: this.playerTrainedData
                 }]
         };
         // @ts-expect-error
         this.chart = Highcharts.chart('generations-evolution-chart-container', this.chartOptions);
-        this.selectedPopulationPerGeneration = selectedPopulationPerGeneration;
     }
 
-    public addGenerationResult(results: { chromosome: Chromosome; duration: number }[]): void {
-        const sortResults = results
+    public addLastRoundResult(results: { type: BirdType; duration: number }[]): void {
+        const geneticResult = results
+            .filter(result => result.type === BirdType.GENETICALLY_TRAINED);
+        const geneticSortedResult = geneticResult
             .sort((a, b) => a.duration - b.duration);
 
-        const bestCitizen = sortResults[sortResults.length - 1];
-        console.log(JSON.stringify(bestCitizen.chromosome.genes));
-        const longestDuration = bestCitizen.duration / 1000;
-        const selectedGroupAverage = sortResults
-            .filter((_, index) => index > sortResults.length - this.selectedPopulationPerGeneration)
-            .reduce((acc, item) => acc + item.duration / this.selectedPopulationPerGeneration, 0) / 1000;
-        const generationAverage = sortResults
-            .reduce((acc, item) => acc + item.duration / sortResults.length, 0) / 1000;
-        this.selectedGroupAverage.push(parseFloat(selectedGroupAverage.toFixed(2)));
-        this.longestData.push(parseFloat(longestDuration.toFixed(2)));
-        this.averageData.push(parseFloat(generationAverage.toFixed(2)));
-        this.chartOptions.xAxis.max = Math.ceil(this.averageData.length * 1.25);
+        const bestGeneticTrainedCitizen = geneticSortedResult[geneticSortedResult.length - 1];
+        const geneticLongestDuration = bestGeneticTrainedCitizen.duration / 1000;
+        this.longestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
+
+        const playerResult = results
+            .find(result => result.type === BirdType.PLAYER_CONTROLLED).duration / 1000;
+        this.playerData.push(parseFloat(playerResult.toFixed(2)));
+
+        const playerTrainedResult = results
+            .find(result => result.type === BirdType.PLAYER_TRAINED).duration / 1000;
+        this.playerTrainedData.push(parseFloat(playerTrainedResult.toFixed(2)));
+
+        this.chartOptions.xAxis.max = Math.ceil(this.longestData.length * 1.25);
         this.chart.update(this.chartOptions);
     }
 }

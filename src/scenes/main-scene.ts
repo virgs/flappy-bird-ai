@@ -12,10 +12,13 @@ import {
     randomFactorGapIntervalBetweenPipesInPixels
 } from '../constants';
 import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
-import {PlayerBird} from '../actors/birds/player-bird';
+import {PlayerControlledBird} from '../actors/birds/player-controlled-bird';
+import {PlayerTrainedBird} from '../actors/birds/player-trained-bird';
+import {BirdType} from '../actors/birds/bird';
 
 export class MainScene extends Phaser.Scene {
-    private results: { chromosome: Chromosome, duration: number }[] = [];
+    private geneticallyTrainedResults: { chromosome: Chromosome, duration: number }[] = [];
+    private birdsResults: { type: BirdType, duration: number }[] = [];
     private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
     private pipesCreated: number = 0;
     private sceneDuration: number = 0;
@@ -30,6 +33,18 @@ export class MainScene extends Phaser.Scene {
     public async init(data: { birds: Chromosome[] }): Promise<void> {
         this.livingBirdsCounter = data.birds.length;
         new Platform({scene: this});
+        this.createBirds(data);
+        new Pipe({
+            scene: this,
+            identifier: ++this.pipesCreated,
+            closestPipeToTheBird: true,
+            birdXPosition: birdXPosition
+        });
+        EventManager.on(Events.BIRD_DIED, (data: { type: BirdType }) => this.onAnyBirdDeath(data));
+        EventManager.on(Events.GENETICALLY_TRAINED_BIRD_DIED, (data: { chromosome: Chromosome }) => this.onGeneticallyTrainedBirdDeath(data));
+    }
+
+    private createBirds(data: { birds: Chromosome[] }) {
         const birdsInitialPosition = new Point(birdXPosition, dimensionHeight / 4);
         let birdsIdCounter: number = 0;
         data.birds
@@ -41,15 +56,17 @@ export class MainScene extends Phaser.Scene {
                 }, chromosome));
 
         ++this.livingBirdsCounter;
-        new PlayerBird({initialPosition: birdsInitialPosition, scene: this, id: birdsIdCounter++});
-        new Pipe({
+        new PlayerTrainedBird({
+            initialPosition: new Point(birdsInitialPosition.x + 10, birdsInitialPosition.y),
             scene: this,
-            identifier: ++this.pipesCreated,
-            closestPipeToTheBird: true,
-            birdXPosition: birdXPosition
+            id: birdsIdCounter++
         });
-        EventManager.on(Events.BIRD_DIED, () => this.onAnyBirdDeath());
-        EventManager.on(Events.GENETICALLY_TRAINED_BIRD_DIED, (data: { chromosome: Chromosome }) => this.onGeneticallyTrainedBirdDeath(data));
+        ++this.livingBirdsCounter;
+        new PlayerControlledBird({
+            initialPosition: new Point(birdsInitialPosition.x + 20, birdsInitialPosition.y),
+            scene: this,
+            id: birdsIdCounter++
+        });
     }
 
     public update(time: number, delta: number): void {
@@ -74,8 +91,11 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private onAnyBirdDeath() {
+    private onAnyBirdDeath(data: { type: BirdType }) {
         --this.livingBirdsCounter;
+        const birdResult = {type: data.type, duration: this.sceneDuration};
+        this.birdsResults.push(birdResult);
+
         if (this.livingBirdsCounter === 0) {
             this.endGeneration();
         }
@@ -83,19 +103,23 @@ export class MainScene extends Phaser.Scene {
 
     private onGeneticallyTrainedBirdDeath(data: { chromosome: Chromosome }) {
         const birdResult = {chromosome: data.chromosome, duration: this.sceneDuration};
-        this.results.push(birdResult);
+        this.geneticallyTrainedResults.push(birdResult);
     }
 
     private endGeneration() {
         this.scene.pause();
         setTimeout(() => {
-            this.scene.start('SplashScene', {results: this.results});
+            this.scene.start('SplashScene', {
+                geneticallyTrainedResults: this.geneticallyTrainedResults,
+                results: this.birdsResults
+            });
             this.destroy();
         }, 200);
     }
 
     private destroy() {
-        this.results = [];
+        this.birdsResults = [];
+        this.geneticallyTrainedResults = [];
         this.livingBirdsCounter = 0;
         this.secondsToCreateNextPipe = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
         this.pipesCreated = 0;

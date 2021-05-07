@@ -1,8 +1,9 @@
 import {scale} from '../scale';
+import Point = Phaser.Geom.Point;
+import {DEBUG_MODE} from '../constants';
 import {Events} from '../event-manager/events';
 import {dimensionHeight, dimensionWidth} from '../game';
 import {EventManager} from '../event-manager/event-manager';
-import Point = Phaser.Geom.Point;
 
 export class Pipe {
     private readonly gapInPixels = 80;
@@ -78,10 +79,12 @@ export class Pipe {
     }
 
     private setAsClosestToTheBird(): void {
-        this.pipesSprites.forEach(sprite => {
-            sprite.setTint(0xFF880000);
-            sprite.setAlpha(0.1);
-        });
+        if (DEBUG_MODE) {
+            this.pipesSprites.forEach(sprite => {
+                sprite.setTint(0xFF880000);
+                sprite.setAlpha(0.1);
+            });
+        }
         this.closestPipeToTheBird = true;
     }
 }
