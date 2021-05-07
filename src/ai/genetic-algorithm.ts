@@ -25,8 +25,10 @@ export class GeneticAlgorithm {
         const secondParent = bestCitizens[secondParentIndex];
         const genes = firstParent.chromosome.genes
             .map((_, index) => {
+                const maxValue = firstParent.duration + secondParent.duration;
                 let geneValue = firstParent.chromosome.genes[index];
-                if (Math.random() > 0.5) {
+                //the es one has advantages
+                if (Math.random() * maxValue > firstParent.duration) {
                     geneValue = secondParent.chromosome.genes[index];
                 }
                 if (Math.random() < this.mutationRate) {

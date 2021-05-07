@@ -18,16 +18,21 @@ export class GeneticallyTrainedBird extends Bird {
         this.neuralNetwork = new NeuralNetwork({
             inputs: [
                 {
+                    //verticalPosition
+                    minValue: 0,
+                    maxValue: dimensionHeight * scale,
+                },
+                {
                     //verticalDistanceToTheCenterOfClosestPipeGap
                     minValue: -dimensionHeight * scale,
                     maxValue: dimensionHeight * scale,
                 },
                 {
                     //horizontalDistanceToClosestPipe
-                    minValue: 0,
+                    minValue: -dimensionWidth * scale / 4,
                     maxValue: dimensionWidth * scale / 2,
                 }],
-            hiddenNeurons: 3,
+            hiddenNeurons: 4,
             outputs: 1,
             weights: this.chromosome ? this.chromosome.genes : null
         });
@@ -37,11 +42,14 @@ export class GeneticallyTrainedBird extends Bird {
     }
 
     protected handleBirdInput(data: {
+        verticalPosition: number,
         verticalDistanceToTheCenterOfClosestPipeGap: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
-        const output = this.neuralNetwork.doTheMagic(data.verticalDistanceToTheCenterOfClosestPipeGap, data.horizontalDistanceToClosestPipe);
+        const output = this.neuralNetwork.doTheMagic(data.verticalPosition,
+            data.verticalDistanceToTheCenterOfClosestPipeGap,
+            data.horizontalDistanceToClosestPipe);
         if (output[0] > this.BIAS) {
             this.commands.push(Commands.FLAP_WING);
             return true;

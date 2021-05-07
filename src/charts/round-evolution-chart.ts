@@ -1,6 +1,6 @@
 import {BirdType} from '../actors/birds/bird';
 
-export class GenerationsEvolutionChart {
+export class RoundEvolutionChart {
     private readonly chartOptions: any;
     private readonly longestData: number[] = [0];
     private readonly playerData: number[] = [0];
@@ -13,12 +13,12 @@ export class GenerationsEvolutionChart {
                 type: 'spline'
             },
             title: {
-                text: 'Performance by Generation'
+                text: 'Performance by Round'
             },
             xAxis: {
                 min: 1,
                 title: {
-                    text: 'Generation'
+                    text: 'Round'
                 }
             },
             yAxis: {
@@ -52,6 +52,7 @@ export class GenerationsEvolutionChart {
             series: [
                 {
                     name: 'Genetic',
+                    color:  '#FFC200',
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -60,6 +61,7 @@ export class GenerationsEvolutionChart {
                 },
                 {
                     name: `Player`,
+                    color:  '#00B5C2',
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -68,6 +70,7 @@ export class GenerationsEvolutionChart {
                 },
                 {
                     name: 'Player trained',
+                    color:  '#00E852',
                     lineWidth: 1,
                     marker: {
                         enabled: false

@@ -1,13 +1,13 @@
-import {GeneticAlgorithm} from '../ai/genetic-algorithm';
-import {Chromosome} from '../actors/chromosome';
-import {GenerationsEvolutionChart} from '../charts/generations-evolution-chart';
-import {UrlQueryHandler} from '../url-query-handler';
 import {BirdType} from '../actors/birds/bird';
+import {Chromosome} from '../actors/chromosome';
+import {UrlQueryHandler} from '../url-query-handler';
+import {GeneticAlgorithm} from '../ai/genetic-algorithm';
+import {RoundEvolutionChart} from '../charts/round-evolution-chart';
 
 export class SplashScene extends Phaser.Scene {
     private static readonly MIN_SPLASH_TIME: 200;
 
-    private readonly generationsEvolutionChart: GenerationsEvolutionChart = new GenerationsEvolutionChart();
+    private readonly chartEvolutionChart: RoundEvolutionChart = new RoundEvolutionChart();
     private readonly populationPerGeneration: number;
     private geneticAlgorithm: GeneticAlgorithm;
     private loadCompleted: boolean;
@@ -35,7 +35,7 @@ export class SplashScene extends Phaser.Scene {
         this.splashScreen();
 
         if (data.results) {
-            this.generationsEvolutionChart.addLastRoundResult(data.results);
+            this.chartEvolutionChart.addLastRoundResult(data.results);
         }
         const nextGeneration = this.getNextGeneration(data.geneticallyTrainedResults);
 

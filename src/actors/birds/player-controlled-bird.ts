@@ -7,6 +7,7 @@ export class PlayerControlledBird extends Bird {
     private readonly notFlappedEventTimeThresholdMs: number = 500;
     private readonly keys: Phaser.Input.Keyboard.Key[] = [];
     private notFlappedEventCounter: number = 0;
+    private hasControlledAnythingInRound: boolean = false;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }) {
         super(options, BirdType.PLAYER_CONTROLLED);
@@ -14,29 +15,36 @@ export class PlayerControlledBird extends Bird {
     }
 
     protected handleBirdInput(data: {
+        verticalPosition: number,
         verticalDistanceToTheCenterOfClosestPipeGap: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
         if (this.keys
             .some(key => key.isDown)) {
-            this.commands.push(Commands.FLAP_WING);
 
+            this.hasControlledAnythingInRound = true;
+            this.commands.push(Commands.FLAP_WING);
             EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
+                verticalPosition: data.verticalPosition,
                 verticalDistanceToTheCenterOfClosestPipeGap: data.verticalDistanceToTheCenterOfClosestPipeGap,
                 horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
-                output: true
+                output: 1
             });
             return true;
         }
         this.notFlappedEventCounter += data.delta;
         if (this.notFlappedEventCounter > this.notFlappedEventTimeThresholdMs) {
-            this.notFlappedEventCounter %= this.notFlappedEventTimeThresholdMs;
-            EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
-                verticalDistanceToTheCenterOfClosestPipeGap: data.verticalDistanceToTheCenterOfClosestPipeGap,
-                horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
-                output: false
-            });
+
+            if (this.hasControlledAnythingInRound) {
+                this.notFlappedEventCounter %= this.notFlappedEventTimeThresholdMs;
+                EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
+                    verticalPosition: data.verticalPosition,
+                    verticalDistanceToTheCenterOfClosestPipeGap: data.verticalDistanceToTheCenterOfClosestPipeGap,
+                    horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
+                    output: 0
+                });
+            }
         }
 
         return false;

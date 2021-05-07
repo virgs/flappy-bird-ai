@@ -45,6 +45,7 @@ export abstract class Bird {
     }
 
     protected abstract handleBirdInput(data: {
+        verticalPosition: number,
         verticalDistanceToTheCenterOfClosestPipeGap: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
@@ -93,6 +94,7 @@ export abstract class Bird {
                 const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
 
                 if (this.handleBirdInput({
+                    verticalPosition: this.hitBoxSprite.getCenter().y,
                     verticalDistanceToTheCenterOfClosestPipeGap,
                     horizontalDistanceToClosestPipe,
                     delta: options.delta
