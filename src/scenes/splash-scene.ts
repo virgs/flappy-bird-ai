@@ -17,10 +17,11 @@ export class SplashScene extends Phaser.Scene {
             key: 'SplashScene'
         });
         const urlQueryHandler = new UrlQueryHandler();
-        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 100));
+        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 500));
         const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.1));
-        const selectedPopulationPerGeneration: number = parseInt(urlQueryHandler.getParameterByName('selectedPopulationPerGeneration', 10));
-        this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, selectedPopulationPerGeneration);
+        const relativeSelectedPopulationPerGeneration: number = parseFloat(urlQueryHandler.getParameterByName('relativeSelectedPopulationPerGeneration', 0.1));
+        const absoluteSelectedPopulationPerGeneration: number = Math.floor(relativeSelectedPopulationPerGeneration * this.populationPerGeneration);
+        this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, absoluteSelectedPopulationPerGeneration);
     }
 
     public preload(): void {
@@ -28,8 +29,7 @@ export class SplashScene extends Phaser.Scene {
     }
 
     public init(data: {
-        geneticallyTrainedResults: { chromosome: Chromosome, duration: number }[],
-        results: { type: BirdType, duration: number }[]
+        results: { type: BirdType, duration: number, data: any }[]
     }): void {
         this.loadCompleted = false;
         this.splashScreen();
@@ -37,7 +37,9 @@ export class SplashScene extends Phaser.Scene {
         if (data.results) {
             this.chartEvolutionChart.addLastRoundResult(data.results);
         }
-        const nextGeneration = this.getNextGeneration(data.geneticallyTrainedResults);
+        const nextGeneration = this.getNextGeneration((data.results || [])
+            .filter(result => result.type === BirdType.GENETICALLY_TRAINED)
+            .map(result => ({chromosome: result.data, duration: result.duration})));
 
         this.time.addEvent({
             delay: SplashScene.MIN_SPLASH_TIME,
@@ -67,7 +69,7 @@ export class SplashScene extends Phaser.Scene {
     }
 
     private getNextGeneration(geneticResults: { chromosome: Chromosome; duration: number }[]): Chromosome[] {
-        if (geneticResults) {
+        if (geneticResults && geneticResults.length) {
             return this.geneticAlgorithm.createNextGeneration(geneticResults);
         }
         return Array.from(Array(this.populationPerGeneration));

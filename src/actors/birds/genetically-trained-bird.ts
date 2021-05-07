@@ -1,10 +1,8 @@
 import {scale} from '../../scale';
-import {Bird, BirdType, Commands} from './bird';
 import {Chromosome} from '../chromosome';
-import {Events} from '../../event-manager/events';
+import {Bird, BirdType, Commands} from './bird';
 import {NeuralNetwork} from '../../ai/neural-network';
 import {dimensionHeight, dimensionWidth} from '../../game';
-import {EventManager} from '../../event-manager/event-manager';
 
 export class GeneticallyTrainedBird extends Bird {
     private BIAS = 0.3;
@@ -23,9 +21,9 @@ export class GeneticallyTrainedBird extends Bird {
                     maxValue: dimensionHeight * scale,
                 },
                 {
-                    //verticalDistanceToTheCenterOfClosestPipeGap
-                    minValue: -dimensionHeight * scale,
-                    maxValue: dimensionHeight * scale,
+                    //closestPipeGapVerticalPosition
+                    minValue: 0,
+                    maxValue: dimensionHeight * scale / 2,
                 },
                 {
                     //horizontalDistanceToClosestPipe
@@ -43,12 +41,12 @@ export class GeneticallyTrainedBird extends Bird {
 
     protected handleBirdInput(data: {
         verticalPosition: number,
-        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        closestPipeGapVerticalPosition: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
         const output = this.neuralNetwork.doTheMagic(data.verticalPosition,
-            data.verticalDistanceToTheCenterOfClosestPipeGap,
+            data.closestPipeGapVerticalPosition,
             data.horizontalDistanceToClosestPipe);
         if (output[0] > this.BIAS) {
             this.commands.push(Commands.FLAP_WING);
@@ -57,7 +55,7 @@ export class GeneticallyTrainedBird extends Bird {
         return false;
     }
 
-    protected onBirdDeath() {
-        EventManager.emit(Events.GENETICALLY_TRAINED_BIRD_DIED, {chromosome: this.chromosome});
+    protected dataToSendOnBirdDeath(): any {
+        return this.chromosome;
     }
 }

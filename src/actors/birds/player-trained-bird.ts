@@ -20,12 +20,12 @@ export class PlayerTrainedBird extends Bird {
 
         EventManager.on(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, async (data: {
             verticalPosition,
-            verticalDistanceToTheCenterOfClosestPipeGap,
+            closestPipeGapVerticalPosition,
             horizontalDistanceToClosestPipe,
             output
         }) => {
             PlayerTrainedBird.inputData.push({
-                input: [data.verticalPosition, data.verticalDistanceToTheCenterOfClosestPipeGap, data.horizontalDistanceToClosestPipe],
+                input: [data.verticalPosition, data.closestPipeGapVerticalPosition, data.horizontalDistanceToClosestPipe],
                 output: [data.output]
             });
             await PlayerTrainedBird.neuralNetwork.trainAsync(PlayerTrainedBird.inputData);
@@ -38,7 +38,7 @@ export class PlayerTrainedBird extends Bird {
 
     protected handleBirdInput(data: {
         verticalPosition: number,
-        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        closestPipeGapVerticalPosition: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
@@ -46,7 +46,7 @@ export class PlayerTrainedBird extends Bird {
             return false;
         }
         const outputs = PlayerTrainedBird.neuralNetwork
-            .run([data.verticalPosition, data.verticalDistanceToTheCenterOfClosestPipeGap, data.horizontalDistanceToClosestPipe]);
+            .run([data.verticalPosition, data.closestPipeGapVerticalPosition, data.horizontalDistanceToClosestPipe]);
         if (outputs.length > 0 && outputs[0] > 0.5) {
             this.commands.push(Commands.FLAP_WING);
             return true;

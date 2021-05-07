@@ -17,7 +17,6 @@ import {PlayerTrainedBird} from '../actors/birds/player-trained-bird';
 import {BirdType} from '../actors/birds/bird';
 
 export class MainScene extends Phaser.Scene {
-    private geneticallyTrainedResults: { chromosome: Chromosome, duration: number }[] = [];
     private birdsResults: { type: BirdType, duration: number }[] = [];
     private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
     private pipesCreated: number = 0;
@@ -40,8 +39,7 @@ export class MainScene extends Phaser.Scene {
             closestPipeToTheBird: true,
             birdXPosition: birdXPosition
         });
-        EventManager.on(Events.BIRD_DIED, (data: { type: BirdType }) => this.onAnyBirdDeath(data));
-        EventManager.on(Events.GENETICALLY_TRAINED_BIRD_DIED, (data: { chromosome: Chromosome }) => this.onGeneticallyTrainedBirdDeath(data));
+        EventManager.on(Events.BIRD_DIED, (options: { type: BirdType, data: any }) => this.onAnyBirdDeath(options));
     }
 
     private createBirds(data: { birds: Chromosome[] }) {
@@ -91,9 +89,9 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private onAnyBirdDeath(data: { type: BirdType }) {
+    private onAnyBirdDeath(options: { type: BirdType, data: any }) {
         --this.livingBirdsCounter;
-        const birdResult = {type: data.type, duration: this.sceneDuration};
+        const birdResult = {type: options.type, duration: this.sceneDuration, data: options.data};
         this.birdsResults.push(birdResult);
 
         if (this.livingBirdsCounter === 0) {
@@ -101,16 +99,10 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private onGeneticallyTrainedBirdDeath(data: { chromosome: Chromosome }) {
-        const birdResult = {chromosome: data.chromosome, duration: this.sceneDuration};
-        this.geneticallyTrainedResults.push(birdResult);
-    }
-
     private endGeneration() {
         this.scene.pause();
         setTimeout(() => {
             this.scene.start('SplashScene', {
-                geneticallyTrainedResults: this.geneticallyTrainedResults,
                 results: this.birdsResults
             });
             this.destroy();
@@ -119,7 +111,6 @@ export class MainScene extends Phaser.Scene {
 
     private destroy() {
         this.birdsResults = [];
-        this.geneticallyTrainedResults = [];
         this.livingBirdsCounter = 0;
         this.secondsToCreateNextPipe = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
         this.pipesCreated = 0;

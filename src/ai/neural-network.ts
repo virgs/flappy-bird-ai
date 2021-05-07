@@ -23,7 +23,7 @@ export class NeuralNetwork {
 
     public randomlyGenerateBrain(): number[] {
         const genesAmount = this.config.inputs.length * this.config.hiddenNeurons + this.config.hiddenNeurons * this.config.outputs;
-        this.config.weights = Array.from(Array(genesAmount)).map(() => Math.random());
+        this.config.weights = Array.from(Array(genesAmount)).map(() => -100 + Math.random() * 200);
         return this.config.weights;
     }
 
@@ -32,11 +32,11 @@ export class NeuralNetwork {
             throw new Error(`Amount of function argument '${inputValues.length}' should match configuration inputs quantity '${this.config.inputs.length}'`);
         }
         const hiddenNeurons = this.config.hiddenNeurons;
-        const normalizedInputValue = inputValues
-            .map((value, index) => NeuralNetwork.normalizeInput(this.config.inputs[index], value));
+        // const normalizedInputValue = inputValues
+        //     .map((value, index) => NeuralNetwork.normalizeInput(this.config.inputs[index], value));
         const hiddenNeuronsMath = this.config.weights
             .reduce((acc, weight, index) => {
-                const normalizedInputValueWeighted = normalizedInputValue[index % inputValues.length] * weight;
+                const normalizedInputValueWeighted = inputValues[index % inputValues.length] * weight;
                 if (acc[index % hiddenNeurons]) {
                     acc[index % hiddenNeurons] += normalizedInputValueWeighted;
                 } else {
@@ -44,14 +44,15 @@ export class NeuralNetwork {
                 }
                 return acc;
             }, [])
-            .map(neuron => neuron / inputValues.length);
+            .map(neuron => Math.tanh(neuron / hiddenNeurons));
+
         const outputs = this.config.outputs;
         const zeroedOutputs = Array.from(Array(outputs)).map(() => 0);
         return hiddenNeuronsMath.reduce((acc, hiddenNeuronValue, index) => {
             acc[index % outputs] += hiddenNeuronValue;
             return acc;
         }, zeroedOutputs)
-            .map(outputValue => Math.tanh(outputValue / hiddenNeurons));
+            .map(outputValue => Math.tanh(outputValue));
     }
 
     private static normalizeInput(input: NeuralNetworkInput, value: number) {

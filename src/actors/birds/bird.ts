@@ -46,7 +46,7 @@ export abstract class Bird {
 
     protected abstract handleBirdInput(data: {
         verticalPosition: number,
-        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        closestPipeGapVerticalPosition: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean;
@@ -90,12 +90,12 @@ export abstract class Bird {
             this.handleCommands();
             this.inputTimeCounterMs += options.delta;
             if (this.inputTimeCounterMs > flapCoolDownMs) {
-                const verticalDistanceToTheCenterOfClosestPipeGap = this.hitBoxSprite.getCenter().y - this.closestPipe.verticalOffset;
+                const closestPipeGapVerticalPosition = this.closestPipe.verticalOffset;
                 const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
 
                 if (this.handleBirdInput({
                     verticalPosition: this.hitBoxSprite.getCenter().y,
-                    verticalDistanceToTheCenterOfClosestPipeGap,
+                    closestPipeGapVerticalPosition,
                     horizontalDistanceToClosestPipe,
                     delta: options.delta
                 })) {
@@ -141,14 +141,12 @@ export abstract class Bird {
             this.alive = false;
             this.birdSprite.anims.pause();
             this.birdSprite.setAlpha(0.4);
-            this.onBirdDeath();
-            EventManager.emit(Events.BIRD_DIED, {type: this.birdType});
+            EventManager.emit(Events.BIRD_DIED, {type: this.birdType, data: this.dataToSendOnBirdDeath()});
         }
     }
 
-    // tslint:disable-next-line:no-empty
-    protected onBirdDeath(): void {
-
+    protected dataToSendOnBirdDeath(): any {
+        return null;
     }
 
     private applyGravity(options: { delta; pixelsPerSecond }): void {

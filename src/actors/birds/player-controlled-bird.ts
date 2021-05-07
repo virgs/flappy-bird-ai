@@ -4,7 +4,7 @@ import {Events} from '../../event-manager/events';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 
 export class PlayerControlledBird extends Bird {
-    private readonly notFlappedEventTimeThresholdMs: number = 500;
+    private readonly notFlappedEventTimeThresholdMs: number = 250;
     private readonly keys: Phaser.Input.Keyboard.Key[] = [];
     private notFlappedEventCounter: number = 0;
     private hasControlledAnythingInRound: boolean = false;
@@ -16,7 +16,7 @@ export class PlayerControlledBird extends Bird {
 
     protected handleBirdInput(data: {
         verticalPosition: number,
-        verticalDistanceToTheCenterOfClosestPipeGap: number,
+        closestPipeGapVerticalPosition: number,
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
@@ -27,7 +27,7 @@ export class PlayerControlledBird extends Bird {
             this.commands.push(Commands.FLAP_WING);
             EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
                 verticalPosition: data.verticalPosition,
-                verticalDistanceToTheCenterOfClosestPipeGap: data.verticalDistanceToTheCenterOfClosestPipeGap,
+                closestPipeGapVerticalPosition: data.closestPipeGapVerticalPosition,
                 horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
                 output: 1
             });
@@ -40,7 +40,7 @@ export class PlayerControlledBird extends Bird {
                 this.notFlappedEventCounter %= this.notFlappedEventTimeThresholdMs;
                 EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
                     verticalPosition: data.verticalPosition,
-                    verticalDistanceToTheCenterOfClosestPipeGap: data.verticalDistanceToTheCenterOfClosestPipeGap,
+                    closestPipeGapVerticalPosition: data.closestPipeGapVerticalPosition,
                     horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
                     output: 0
                 });
