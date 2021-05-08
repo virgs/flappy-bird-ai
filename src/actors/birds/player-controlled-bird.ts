@@ -26,6 +26,7 @@ export class PlayerControlledBird extends Bird {
             this.hasControlledAnythingInRound = true;
             this.commands.push(Commands.FLAP_WING);
             EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
+                inputTimeCounterMs: this.inputTimeCounterMs,
                 verticalPosition: data.verticalPosition,
                 closestPipeGapVerticalPosition: data.closestPipeGapVerticalPosition,
                 horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,
@@ -39,6 +40,7 @@ export class PlayerControlledBird extends Bird {
             if (this.hasControlledAnythingInRound) {
                 this.notFlappedEventCounter %= this.notFlappedEventTimeThresholdMs;
                 EventManager.emit(Events.PLAYER_CONTROLLED_BIRD_FLAPPED, {
+                    inputTimeCounterMs: this.inputTimeCounterMs,
                     verticalPosition: data.verticalPosition,
                     closestPipeGapVerticalPosition: data.closestPipeGapVerticalPosition,
                     horizontalDistanceToClosestPipe: data.horizontalDistanceToClosestPipe,

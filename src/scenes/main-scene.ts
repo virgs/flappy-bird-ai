@@ -13,8 +13,8 @@ import {
 } from '../constants';
 import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
 import {PlayerControlledBird} from '../actors/birds/player-controlled-bird';
-import {PlayerTrainedBird} from '../actors/birds/player-trained-bird';
 import {BirdType} from '../actors/birds/bird';
+import {SupervisedTrainedBird} from '../actors/birds/supervised-trained-bird';
 
 export class MainScene extends Phaser.Scene {
     private birdsResults: { type: BirdType, duration: number }[] = [];
@@ -54,7 +54,7 @@ export class MainScene extends Phaser.Scene {
                 }, chromosome));
 
         ++this.livingBirdsCounter;
-        new PlayerTrainedBird({
+        new SupervisedTrainedBird({
             initialPosition: new Point(birdsInitialPosition.x + 10, birdsInitialPosition.y),
             scene: this,
             id: birdsIdCounter++
@@ -67,7 +67,8 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    public update(time: number, delta: number): void {
+    public update(time: number, elapsedTime: number): void {
+        const delta = elapsedTime;
         this.sceneDuration += delta;
         EventManager.emit(Events.UPDATE, {delta: delta, pixelsPerSecond: horizontalVelocityInPixelsPerSecond});
         this.checkPipeCreation(delta);

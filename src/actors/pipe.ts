@@ -66,7 +66,7 @@ export class Pipe {
                 sprites: this.pipesSprites,
                 verticalOffset: this.verticalOffset + dimensionHeight * scale / 2
             });
-            if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < this.birdXPosition)) {
+            if (this.pipesSprites.every(sprite => sprite.getBounds().right < this.birdXPosition)) {
                 this.closestPipeToTheBird = false;
                 EventManager.emit(Events.PIPE_BEYOND_BIRD, {destroyedPipeId: this.id});
             }

@@ -15,22 +15,27 @@ export class GeneticAlgorithm {
         const bestCitizens = oldGenerationResults
             .filter((_, index) => index > oldGenerationResults.length - this.selectedPopulationPerGeneration - 1);
         return Array.from(Array(this.populationPerGeneration))
-            .map(() => this.generateNewPopulationFromBestCitizens(bestCitizens));
+            .map(() => this.createNewCitizen(bestCitizens));
     }
 
-    private generateNewPopulationFromBestCitizens(bestCitizens: { chromosome: Chromosome; duration: number }[]): Chromosome {
-        const firstParentIndex = Math.floor(Math.random() * bestCitizens.length);
-        const secondParentIndex = Math.floor(Math.random() * bestCitizens.length);
-        const firstParent = bestCitizens[firstParentIndex];
-        const secondParent = bestCitizens[secondParentIndex];
+    private createNewCitizen(parents: { chromosome: Chromosome; duration: number }[]): Chromosome {
+        const firstParentIndex = Math.floor(Math.random() * parents.length);
+        const secondParentIndex = Math.floor(Math.random() * parents.length);
+        const firstParent = parents[firstParentIndex];
+        const secondParent = parents[secondParentIndex];
+        const crossOverCutIndex = Math.floor(Math.random() * firstParent.chromosome.genes.length);
         const genes = firstParent.chromosome.genes
             .map((_, index) => {
                 let geneValue = firstParent.chromosome.genes[index];
-                if (Math.random() > 0.5) {
+                if (index > crossOverCutIndex) {
                     geneValue = secondParent.chromosome.genes[index];
                 }
                 if (Math.random() < this.mutationRate) {
+                    // if (Math.random() > 0.5) {
                     geneValue *= Math.random() * 2 - 1;
+                    // } else {
+                    //     geneValue += Math.random() * 2 - 1;
+                    // }
                 }
                 return geneValue;
             });

@@ -1,12 +1,10 @@
-import {scale} from '../../scale';
 import {Chromosome} from '../chromosome';
 import {Bird, BirdType, Commands} from './bird';
 import {NeuralNetwork} from '../../ai/neural-network';
 import {dimensionHeight, dimensionWidth} from '../../game';
+import {scale} from '../../scale';
 
 export class GeneticallyTrainedBird extends Bird {
-    private BIAS = 0.3;
-
     private readonly chromosome: Chromosome;
     private readonly neuralNetwork: NeuralNetwork;
 
@@ -14,28 +12,14 @@ export class GeneticallyTrainedBird extends Bird {
         super(options, BirdType.GENETICALLY_TRAINED);
         this.chromosome = chromosome;
         this.neuralNetwork = new NeuralNetwork({
-            inputs: [
-                {
-                    //verticalPosition
-                    minValue: 0,
-                    maxValue: dimensionHeight * scale,
-                },
-                {
-                    //closestPipeGapVerticalPosition
-                    minValue: 0,
-                    maxValue: dimensionHeight * scale / 2,
-                },
-                {
-                    //horizontalDistanceToClosestPipe
-                    minValue: -dimensionWidth * scale / 4,
-                    maxValue: dimensionWidth * scale / 2,
-                }],
-            hiddenNeurons: 4,
-            outputs: 1,
-            weights: this.chromosome ? this.chromosome.genes : null
-        });
-        if (!this.chromosome) {
-            this.chromosome = {genes: this.neuralNetwork.randomlyGenerateBrain()};
+            inputs: 3,
+            hiddenNeurons: 5,
+            outputs: 1
+        }, this.chromosome ? this.chromosome.genes : null);
+        if (!this.chromosome || !this.chromosome.genes) {
+            this.chromosome = {
+                genes: this.neuralNetwork.getWeights()
+            };
         }
     }
 
@@ -45,10 +29,10 @@ export class GeneticallyTrainedBird extends Bird {
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
-        const output = this.neuralNetwork.doTheMagic(data.verticalPosition,
-            data.closestPipeGapVerticalPosition,
-            data.horizontalDistanceToClosestPipe);
-        if (output[0] > this.BIAS) {
+        const output = this.neuralNetwork.doTheMagic([data.verticalPosition / (dimensionHeight * scale),
+            data.closestPipeGapVerticalPosition / (dimensionHeight * scale),
+            data.horizontalDistanceToClosestPipe / (dimensionWidth * scale)]);
+        if (output[0] > -0.2) {
             this.commands.push(Commands.FLAP_WING);
             return true;
         }

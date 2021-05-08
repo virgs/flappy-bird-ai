@@ -2,7 +2,8 @@ import {BirdType} from '../actors/birds/bird';
 
 export class RoundEvolutionChart {
     private readonly chartOptions: any;
-    private readonly longestData: number[] = [0];
+    private readonly geneticLongestData: number[] = [0];
+    private readonly geneticAverageData: number[] = [0];
     private readonly playerData: number[] = [0];
     private readonly playerTrainedData: number[] = [0];
     private readonly chart: any = null;
@@ -51,17 +52,26 @@ export class RoundEvolutionChart {
             },
             series: [
                 {
-                    name: 'Genetic',
-                    color:  '#FFC200',
+                    name: 'Genetic best',
+                    color: '#FFC200',
                     lineWidth: 1,
                     marker: {
                         enabled: false
                     },
-                    data: this.longestData
+                    data: this.geneticLongestData
+                },
+                {
+                    name: 'Genetic average',
+                    color: '#181202',
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    data: this.geneticAverageData
                 },
                 {
                     name: `Player`,
-                    color:  '#00B5C2',
+                    color: '#00B5C2',
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -70,7 +80,7 @@ export class RoundEvolutionChart {
                 },
                 {
                     name: 'Player trained',
-                    color:  '#00E852',
+                    color: '#00E852',
                     lineWidth: 1,
                     marker: {
                         enabled: false
@@ -82,15 +92,20 @@ export class RoundEvolutionChart {
         this.chart = Highcharts.chart('generations-evolution-chart-container', this.chartOptions);
     }
 
-    public addLastRoundResult(results: { type: BirdType; duration: number }[]): void {
+    public addLastRoundResult(results: { type: BirdType; duration: number, data: any }[]): void {
         const geneticResult = results
             .filter(result => result.type === BirdType.GENETICALLY_TRAINED);
         const geneticSortedResult = geneticResult
             .sort((a, b) => a.duration - b.duration);
 
         const bestGeneticTrainedCitizen = geneticSortedResult[geneticSortedResult.length - 1];
+        console.log(bestGeneticTrainedCitizen.data);
         const geneticLongestDuration = bestGeneticTrainedCitizen.duration / 1000;
-        this.longestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
+        this.geneticLongestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
+
+        const geneticAverageDuration = geneticSortedResult
+            .reduce((acc, result) => acc + result.duration, 0) / (1000 * geneticSortedResult.length);
+        this.geneticAverageData.push(parseFloat(geneticAverageDuration.toFixed(2)));
 
         const playerResult = results
             .find(result => result.type === BirdType.PLAYER_CONTROLLED).duration / 1000;
@@ -100,7 +115,7 @@ export class RoundEvolutionChart {
             .find(result => result.type === BirdType.PLAYER_TRAINED).duration / 1000;
         this.playerTrainedData.push(parseFloat(playerTrainedResult.toFixed(2)));
 
-        this.chartOptions.xAxis.max = Math.ceil(this.longestData.length * 1.25);
+        this.chartOptions.xAxis.max = Math.ceil(this.geneticLongestData.length * 1.25);
         this.chart.update(this.chartOptions);
     }
 }

@@ -25,15 +25,15 @@ export abstract class Bird {
     private readonly birdSprite: Phaser.GameObjects.Sprite;
     private readonly birdTextureKey: string;
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
-    private readonly id: number;
 
-    private alive: boolean = true;
     private verticalSpeed: number = 0;
-    private inputTimeCounterMs: number = 0;
 
     private closestPipe: any;
     private readonly birdType: BirdType;
 
+    protected alive: boolean = true;
+    protected readonly id: number;
+    protected inputTimeCounterMs: number = 0;
     protected commands: Commands[] = [];
 
     protected constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, birdType: BirdType) {
@@ -87,35 +87,7 @@ export abstract class Bird {
 
     public update(options: { delta, pixelsPerSecond }): void {
         if (this.alive) {
-            this.handleCommands();
-            this.inputTimeCounterMs += options.delta;
-            if (this.inputTimeCounterMs > flapCoolDownMs) {
-                const closestPipeGapVerticalPosition = this.closestPipe.verticalOffset;
-                const horizontalDistanceToClosestPipe = this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x;
-
-                if (this.handleBirdInput({
-                    verticalPosition: this.hitBoxSprite.getCenter().y,
-                    closestPipeGapVerticalPosition,
-                    horizontalDistanceToClosestPipe,
-                    delta: options.delta
-                })) {
-                    this.inputTimeCounterMs = 0;
-                }
-            }
-            if (!this.birdIsOutOfBounds()) {
-                this.birdSprite.setAngle((this.verticalSpeed / maxBirdVerticalSpeed) * maxBirdAngle);
-                this.hitBoxSprite.setAngle((this.verticalSpeed / maxBirdVerticalSpeed) * maxBirdAngle);
-                if (this.verticalSpeed > 0) {
-                    this.birdSprite.anims.stop();
-                } else if (!this.birdSprite.anims.isPlaying) {
-                    this.birdSprite.anims.play(this.birdTextureKey);
-                }
-            } else {
-                this.killBird();
-            }
-            if (this.alive) {
-                this.handlePipeCollision();
-            }
+            this.applyAliveLogic(options);
         } else {
             this.birdSprite.x -= options.delta * options.pixelsPerSecond;
             this.hitBoxSprite.x -= options.delta * options.pixelsPerSecond;
@@ -125,6 +97,38 @@ export abstract class Bird {
             }
         }
         this.applyGravity(options);
+    }
+
+    private applyAliveLogic(options: { delta: number, pixelsPerSecond: number }) {
+        this.handleCommands();
+        this.inputTimeCounterMs += options.delta;
+        if (this.inputTimeCounterMs > flapCoolDownMs) {
+            const closestPipeGapVerticalPosition = this.closestPipe ? this.closestPipe.verticalOffset : 0;
+            const horizontalDistanceToClosestPipe = this.closestPipe ? this.closestPipe.sprites[0].x - this.hitBoxSprite.getCenter().x : 0;
+
+            if (this.handleBirdInput({
+                verticalPosition: this.hitBoxSprite.getCenter().y,
+                closestPipeGapVerticalPosition,
+                horizontalDistanceToClosestPipe,
+                delta: options.delta
+            })) {
+                this.inputTimeCounterMs = 0;
+            }
+        }
+        if (!this.birdIsOutOfBounds()) {
+            this.birdSprite.setAngle((this.verticalSpeed / maxBirdVerticalSpeed) * maxBirdAngle);
+            this.hitBoxSprite.setAngle((this.verticalSpeed / maxBirdVerticalSpeed) * maxBirdAngle);
+            if (this.verticalSpeed > 0) {
+                this.birdSprite.anims.stop();
+            } else if (!this.birdSprite.anims.isPlaying) {
+                this.birdSprite.anims.play(this.birdTextureKey);
+            }
+        } else {
+            this.killBird();
+        }
+        if (this.alive) {
+            this.handlePipeCollision();
+        }
     }
 
     private handlePipeCollision(): void {

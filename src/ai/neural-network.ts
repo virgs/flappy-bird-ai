@@ -1,68 +1,47 @@
-type NeuralNetworkInput = {
-    minValue: number;
-    maxValue: number;
-};
-
 type NeuralNetworkConfig = {
-    inputs: NeuralNetworkInput[],
-    outputs: number,
+    inputs: number,
     hiddenNeurons: number,
-    weights?: number[]
+    outputs: number,
 };
 
 export class NeuralNetwork {
+    private readonly weights: number[];
     private readonly config: NeuralNetworkConfig;
 
-    public constructor(config: NeuralNetworkConfig) {
+    public constructor(config: NeuralNetworkConfig, weights?: number[]) {
         this.config = config;
-        const genesAmount = this.config.inputs.length * this.config.hiddenNeurons + this.config.hiddenNeurons * this.config.outputs;
-        if (this.config.weights && this.config.weights.length !== genesAmount) {
-            throw new Error(`Wrong number of genes '${this.config.weights.length}'. Correct value should be '${genesAmount}' [hiddenNeurons * (inputs + outputs)]`);
+        this.weights = weights;
+        if (!this.weights) {
+            const weightsAmount = (this.config.inputs + this.config.outputs) * this.config.hiddenNeurons;
+            this.weights = Array.from(Array(weightsAmount)).map(() => Math.random() * 2 - 1);
         }
     }
 
-    public randomlyGenerateBrain(): number[] {
-        const genesAmount = this.config.inputs.length * this.config.hiddenNeurons + this.config.hiddenNeurons * this.config.outputs;
-        this.config.weights = Array.from(Array(genesAmount)).map(() => -100 + Math.random() * 200);
-        return this.config.weights;
+    public getWeights(): number[] {
+        return this.weights;
     }
 
-    public doTheMagic(...inputValues: number[]): number[] {
-        if (inputValues.length !== this.config.inputs.length) {
-            throw new Error(`Amount of function argument '${inputValues.length}' should match configuration inputs quantity '${this.config.inputs.length}'`);
+    public doTheMagic(inputValues: number[]): number[] {
+        if (inputValues.length !== this.config.inputs) {
+            throw new Error(`Amount of function argument '${inputValues.length}' should match configuration inputs quantity '${this.config.inputs}'`);
         }
-        const hiddenNeurons = this.config.hiddenNeurons;
-        // const normalizedInputValue = inputValues
-        //     .map((value, index) => NeuralNetwork.normalizeInput(this.config.inputs[index], value));
-        const hiddenNeuronsMath = this.config.weights
-            .reduce((acc, weight, index) => {
-                const normalizedInputValueWeighted = inputValues[index % inputValues.length] * weight;
-                if (acc[index % hiddenNeurons]) {
-                    acc[index % hiddenNeurons] += normalizedInputValueWeighted;
-                } else {
-                    acc[index % hiddenNeurons] = normalizedInputValueWeighted;
-                }
-                return acc;
-            }, [])
-            .map(neuron => Math.tanh(neuron / hiddenNeurons));
 
-        const outputs = this.config.outputs;
+        const middleLayer = NeuralNetwork.processLayer(inputValues,
+            this.weights
+                .filter((_, index) => index >= 0 && index < this.config.inputs * this.config.hiddenNeurons),
+            this.config.hiddenNeurons);
+        return NeuralNetwork.processLayer(middleLayer,
+            this.weights
+                .filter((_, index) => index >= this.config.inputs * this.config.hiddenNeurons),
+            this.config.outputs);
+    }
+
+    private static processLayer(inputLayerValues: number[], weights: number[], outputs: number): number[] {
         const zeroedOutputs = Array.from(Array(outputs)).map(() => 0);
-        return hiddenNeuronsMath.reduce((acc, hiddenNeuronValue, index) => {
-            acc[index % outputs] += hiddenNeuronValue;
+        return weights.reduce((acc, weight, index) => {
+            acc[index % outputs] += weight * inputLayerValues[index % inputLayerValues.length];
             return acc;
         }, zeroedOutputs)
             .map(outputValue => Math.tanh(outputValue));
     }
-
-    private static normalizeInput(input: NeuralNetworkInput, value: number) {
-        if (value > input.maxValue) {
-            return 1;
-        }
-        if (value < input.minValue) {
-            return 0;
-        }
-        return (value - input.minValue) / (input.maxValue - input.minValue);
-    }
-
 }
