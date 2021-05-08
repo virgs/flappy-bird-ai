@@ -37,4 +37,20 @@ export class GeneticAlgorithm {
             });
         return {genes};
     }
+
+    //Every bird is a candidate. The ones that have best fitness value (normalized) have more probability to be chosen
+
+    //function pickOne() {
+    //   let index = 0;
+    //   let r = random(1);
+    //   while (r > 0) {
+    //     r = r - savedBirds[index].fitness;
+    //     index++;
+    //   }
+    //   index--;
+    //   let bird = savedBirds[index];
+    //   let child = new Bird(bird.brain);
+    //   child.mutate();
+    //   return child;
+    // }
 }
