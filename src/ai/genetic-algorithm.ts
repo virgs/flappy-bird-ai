@@ -31,11 +31,7 @@ export class GeneticAlgorithm {
                     geneValue = secondParent.chromosome.genes[index];
                 }
                 if (Math.random() < this.mutationRate) {
-                    // if (Math.random() > 0.5) {
                     geneValue *= Math.random() * 2 - 1;
-                    // } else {
-                    //     geneValue += Math.random() * 2 - 1;
-                    // }
                 }
                 return geneValue;
             });
