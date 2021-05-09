@@ -83,6 +83,7 @@ export abstract class Bird {
     private registerEvents(scene): void {
         EventManager.on(Events.CLOSEST_PIPE_MOVED, options => this.closestPipe = options);
         EventManager.on(Events.UPDATE, updateOptions => this.update(updateOptions));
+        EventManager.on(Events.KILL_BIRDS, () => this.killBird());
     }
 
     public update(options: { delta, pixelsPerSecond }): void {

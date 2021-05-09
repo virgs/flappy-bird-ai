@@ -1,4 +1,5 @@
 import Point = Phaser.Geom.Point;
+import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 import {Pipe} from '../actors/pipe';
 import {dimensionHeight} from '../game';
 import {Platform} from '../actors/platform';
@@ -22,6 +23,7 @@ export class MainScene extends Phaser.Scene {
     private pipesCreated: number = 0;
     private sceneDuration: number = 0;
     private livingBirdsCounter: number = 0;
+    private endGameKey: Phaser.Input.Keyboard.Key;
 
     constructor() {
         super({
@@ -40,6 +42,7 @@ export class MainScene extends Phaser.Scene {
             birdXPosition: birdXPosition
         });
         EventManager.on(Events.BIRD_DIED, (options: { type: BirdType, data: any }) => this.onAnyBirdDeath(options));
+        this.endGameKey = this.input.keyboard.addKey(KeyCodes.ESC);
     }
 
     private createBirds(data: { birds: Chromosome[] }) {
@@ -72,6 +75,9 @@ export class MainScene extends Phaser.Scene {
         this.sceneDuration += delta;
         EventManager.emit(Events.UPDATE, {delta: delta, pixelsPerSecond: horizontalVelocityInPixelsPerSecond});
         this.checkPipeCreation(delta);
+        if (this.endGameKey.isDown) {
+            EventManager.emit(Events.KILL_BIRDS);
+        }
         document.querySelector('#time-display').textContent = (this.sceneDuration / 1000).toFixed(1);
         document.querySelector('#living-birds').textContent = `${this.livingBirdsCounter}/${this.birdsResults.length + this.livingBirdsCounter}`;
     }

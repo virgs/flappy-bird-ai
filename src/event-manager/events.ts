@@ -6,4 +6,5 @@ export enum Events {
     PIPE_BEYOND_BIRD,
     BIRD_DIED,
     PLAYER_CONTROLLED_BIRD_FLAPPED,
+    KILL_BIRDS,
 }

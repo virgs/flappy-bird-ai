@@ -17,10 +17,10 @@ export class SplashScene extends Phaser.Scene {
             key: 'SplashScene'
         });
         const urlQueryHandler = new UrlQueryHandler();
-        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 1500));
+        this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 50));
         const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.01));
-        const relativeSelectedPopulationPerGeneration: number = parseFloat(urlQueryHandler.getParameterByName('relativeSelectedPopulationPerGeneration', 0.01));
-        const absoluteSelectedPopulationPerGeneration: number = Math.floor(relativeSelectedPopulationPerGeneration * this.populationPerGeneration);
+        const relativeSelectedPopulationPerGeneration: number = parseFloat(urlQueryHandler.getParameterByName('relativeSelectedPopulationPerGeneration', 0.1));
+        const absoluteSelectedPopulationPerGeneration: number = Math.max(Math.ceil(relativeSelectedPopulationPerGeneration * this.populationPerGeneration), 2);
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, absoluteSelectedPopulationPerGeneration);
     }
 

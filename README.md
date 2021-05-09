@@ -17,6 +17,6 @@ There were four mains goals behind it:
 
 The idea is to randomly generates breeds of birds neural networks and combine the best of them to evolve through time. It usually finds a good neural network before the 5th generation.
 
-If you want to, [you can watch it live or/and defy the AI](https://virgs.github.io/flappy-bird-ai) Remember to control the __BLUE__ one. Press SPACE BAR to jump.
+If you want to, [you can watch it live or/and defy the AI](https://virgs.github.io/flappy-bird-ai?mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01) . Remember to control the __BLUE__ one. Press SPACE BAR to jump. Feel free to mess around with the __url query params__ (Defaults to: mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01)
 
 ![Preview](./preview.gif)
