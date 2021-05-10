@@ -1,7 +1,7 @@
 # flappy-bird-ai
 
 This project was created for fun and studying purposes.
-There were four mains goals behind it:
+These were the mains goals behind it:
 
 1. Use the _Reactive Message Orientation Object Orientation_. A paradigm I conceived to try to reflect [Reactive System](https://www.reactivemanifesto.org/) design in a OO level to get the hang of it and get used to the difficulties that may occur.
     To do this, I elaborated two ground rules:
@@ -13,7 +13,9 @@ There were four mains goals behind it:
 
 3. Study [Genetic Algorithms](./src/ai/genetic-algorithm.ts). Select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
 
-4. Have fun. Yay.
+4. Study [reinforcement learning and q-learning](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these two variables, the agent chooses the optimal action (flap/not to flap).
+
+5. Have fun. Yay.
 
 The idea is to randomly generates breeds of birds neural networks and combine the best of them to evolve through time. It usually finds a good neural network before the 5th generation.
 
