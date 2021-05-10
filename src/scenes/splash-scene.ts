@@ -18,9 +18,9 @@ export class SplashScene extends Phaser.Scene {
         });
         const urlQueryHandler = new UrlQueryHandler();
         this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 100));
-        const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.02));
+        const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.05));
         const relativeSelectedPopulationPerGeneration: number = parseFloat(urlQueryHandler
-            .getParameterByName('relativeSelectedPopulationPerGeneration', 0.01));
+            .getParameterByName('relativeSelectedPopulationPerGeneration', 0.05));
         const absoluteSelectedPopulationPerGeneration: number =
             Math.max(Math.ceil(relativeSelectedPopulationPerGeneration * this.populationPerGeneration), 2);
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, absoluteSelectedPopulationPerGeneration);

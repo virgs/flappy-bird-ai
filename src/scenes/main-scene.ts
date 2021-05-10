@@ -15,15 +15,18 @@ import {
 import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
 import {PlayerControlledBird} from '../actors/birds/player-controlled-bird';
 import {BirdType} from '../actors/birds/bird';
-import {SupervisedTrainedBird} from '../actors/birds/supervised-trained-bird';
+import {BirdQ} from '../actors/birds/bird-q';
+import {scale} from '../scale';
 
 export class MainScene extends Phaser.Scene {
+    private readonly birdsInitialPosition = new Point(birdXPosition, dimensionHeight / 4);
     private birdsResults: { type: BirdType, duration: number }[] = [];
     private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
     private pipesCreated: number = 0;
     private sceneDuration: number = 0;
     private livingBirdsCounter: number = 0;
     private endGameKey: Phaser.Input.Keyboard.Key;
+    private readonly qBirdsAmount: number = 50;
 
     constructor() {
         super({
@@ -32,7 +35,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     public async init(data: { birds: Chromosome[] }): Promise<void> {
-        this.livingBirdsCounter = data.birds.length;
+        this.endGameKey = this.input.keyboard.addKey(KeyCodes.ESC);
         new Platform({scene: this});
         this.createBirds(data);
         new Pipe({
@@ -42,32 +45,36 @@ export class MainScene extends Phaser.Scene {
             birdXPosition: birdXPosition
         });
         EventManager.on(Events.BIRD_DIED, (options: { type: BirdType, data: any }) => this.onAnyBirdDeath(options));
-        this.endGameKey = this.input.keyboard.addKey(KeyCodes.ESC);
     }
 
     private createBirds(data: { birds: Chromosome[] }) {
-        const birdsInitialPosition = new Point(birdXPosition, dimensionHeight / 4);
-        let birdsIdCounter: number = 0;
         data.birds
-            .forEach((chromosome: Chromosome) =>
+            .forEach((chromosome: Chromosome) => {
                 new GeneticallyTrainedBird({
                     scene: this,
-                    initialPosition: birdsInitialPosition,
-                    id: birdsIdCounter++
-                }, chromosome));
+                    initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 20 - 10,
+                        this.birdsInitialPosition.y),
+                    id: this.livingBirdsCounter
+                }, chromosome);
+                ++this.livingBirdsCounter;
+            });
 
-        ++this.livingBirdsCounter;
-        new SupervisedTrainedBird({
-            initialPosition: new Point(birdsInitialPosition.x + 10, birdsInitialPosition.y),
-            scene: this,
-            id: birdsIdCounter++
+        const verticalQBirdsOffset = dimensionHeight * (scale / this.qBirdsAmount);
+        Array.from(Array(this.qBirdsAmount)).forEach((_, index) => {
+            new BirdQ({
+                initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 20 - 10,
+                    this.birdsInitialPosition.y + index * verticalQBirdsOffset),
+                scene: this,
+                id: this.livingBirdsCounter
+            });
+            ++this.livingBirdsCounter;
         });
-        ++this.livingBirdsCounter;
         new PlayerControlledBird({
-            initialPosition: new Point(birdsInitialPosition.x + 20, birdsInitialPosition.y),
+            initialPosition: new Point(this.birdsInitialPosition.x + 20, this.birdsInitialPosition.y),
             scene: this,
-            id: birdsIdCounter++
+            id: this.livingBirdsCounter
         });
+        ++this.livingBirdsCounter;
     }
 
     public update(time: number, elapsedTime: number): void {

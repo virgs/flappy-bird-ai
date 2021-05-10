@@ -5,7 +5,7 @@ export class RoundEvolutionChart {
     private readonly geneticLongestData: number[] = [0];
     private readonly geneticAverageData: number[] = [0];
     private readonly playerData: number[] = [0];
-    private readonly supervisedTrainedData: number[] = [0];
+    private readonly qTableData: number[] = [0];
     private readonly chart: any = null;
 
     public constructor() {
@@ -79,13 +79,13 @@ export class RoundEvolutionChart {
                     data: this.playerData
                 },
                 {
-                    name: 'Supervised trained',
+                    name: 'Best QBird',
                     color: '#00E852',
                     lineWidth: 1,
                     marker: {
                         enabled: false
                     },
-                    data: this.supervisedTrainedData
+                    data: this.qTableData
                 }]
         };
         // @ts-expect-error
@@ -99,7 +99,6 @@ export class RoundEvolutionChart {
             .sort((a, b) => a.duration - b.duration);
 
         const bestGeneticTrainedCitizen = geneticSortedResult[geneticSortedResult.length - 1];
-        console.log(bestGeneticTrainedCitizen.data);
         const geneticLongestDuration = bestGeneticTrainedCitizen.duration / 1000;
         this.geneticLongestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
 
@@ -111,9 +110,10 @@ export class RoundEvolutionChart {
             .find(result => result.type === BirdType.PLAYER_CONTROLLED).duration / 1000;
         this.playerData.push(parseFloat(playerResult.toFixed(2)));
 
-        const playerTrainedResult = results
-            .find(result => result.type === BirdType.SUPERVISED_TRAINED).duration / 1000;
-        this.supervisedTrainedData.push(parseFloat(playerTrainedResult.toFixed(2)));
+        const qBirdsBest = results
+            .filter(result => result.type === BirdType.Q_TABLE)
+            .reduce((acc, result) => acc > result.duration ? acc: result.duration, 0) / 1000;
+        this.qTableData.push(parseFloat(qBirdsBest.toFixed(2)));
 
         this.chartOptions.xAxis.max = Math.ceil(this.geneticLongestData.length * 1.25);
         this.chart.update(this.chartOptions);

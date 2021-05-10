@@ -5,6 +5,5 @@ export enum Events {
     CLOSEST_PIPE_MOVED,
     PIPE_BEYOND_BIRD,
     BIRD_DIED,
-    BIRD_FLAPPED,
     KILL_BIRDS,
 }

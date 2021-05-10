@@ -1,10 +1,8 @@
 import {scale} from '../../scale';
 import {Chromosome} from '../chromosome';
 import {Bird, BirdType, Commands} from './bird';
-import {Events} from '../../event-manager/events';
 import {NeuralNetwork} from '../../ai/neural-network';
 import {dimensionHeight, dimensionWidth} from '../../game';
-import {EventManager} from '../../event-manager/event-manager';
 
 export class GeneticallyTrainedBird extends Bird {
     private readonly chromosome: Chromosome;
@@ -17,7 +15,7 @@ export class GeneticallyTrainedBird extends Bird {
         this.chromosome = chromosome;
         this.neuralNetwork = new NeuralNetwork({
             inputs: 3,
-            hiddenNeurons: 5,
+            hiddenNeurons: 6,
             outputs: 1
         }, this.chromosome ? this.chromosome.genes : null);
         if (!this.chromosome || !this.chromosome.genes) {
@@ -39,28 +37,18 @@ export class GeneticallyTrainedBird extends Bird {
         const output = this.neuralNetwork.doTheMagic(inputValues);
         if (output[0] > -0.2) {
             this.commands.push(Commands.FLAP_WING);
-            this.emitDecision(inputValues, true);
             return true;
         }
         this.notFlappedEventCounter += data.delta;
         if (this.notFlappedEventCounter > this.notFlappedEventTimeThresholdMs) {
             this.notFlappedEventCounter %= this.notFlappedEventTimeThresholdMs;
-            this.emitDecision(inputValues, false);
         }
 
         return false;
     }
 
-    protected dataToSendOnBirdDeath(): any {
+    protected onBirdDeath(): any {
         return this.chromosome;
     }
 
-    private emitDecision(inputValues: number[], output: boolean) {
-        EventManager.emit(Events.BIRD_FLAPPED, {
-            id: this.id,
-            inputs: inputValues,
-            output: output ? 1 : 0
-        });
-
-    }
 }
