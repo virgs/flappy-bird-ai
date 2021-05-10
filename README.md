@@ -6,7 +6,7 @@ These were the mains goals behind it:
 1. Use the _Reactive Message Orientation Object Orientation_. A paradigm I conceived to try to reflect [Reactive System](https://www.reactivemanifesto.org/) design in a OO level to get the hang of it and get used to the difficulties that may occur.
     To do this, I elaborated two ground rules:
 
-    - __Message oriented object communication__: no public methods besides. Every communication has to be through a message mechanism (Event emitters) and serializable objects (dto, vo, and others). Objects are not aware of each other.
+    - __Message oriented object communication__: no public methods. Every communication has to be through a message mechanism (Event emitters) and serializable objects (dto, vo, and others). Objects are not aware of each other.
     - __Stateless messages__: the messages should include every information it needs, so the receivers process them accordingly.
 
 2. Study [Neural Network](./src/ai/neural-network.ts). Find a mathematical function that receives inputs (bird y position, the closest pipe gap x position, the closest pipe gap y position) and results in a single output (should jump?).
