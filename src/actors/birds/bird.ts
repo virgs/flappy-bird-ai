@@ -13,7 +13,7 @@ export enum Commands {
 export enum BirdType {
     GENETICALLY_TRAINED,
     PLAYER_CONTROLLED,
-    PLAYER_TRAINED,
+    SUPERVISED_TRAINED,
 }
 
 export abstract class Bird {
@@ -146,7 +146,11 @@ export abstract class Bird {
             this.alive = false;
             this.birdSprite.anims.pause();
             this.birdSprite.setAlpha(0.4);
-            EventManager.emit(Events.BIRD_DIED, {type: this.birdType, data: this.dataToSendOnBirdDeath()});
+            EventManager.emit(Events.BIRD_DIED, {
+                type: this.birdType,
+                data: this.dataToSendOnBirdDeath(),
+                id: this.id
+            });
         }
     }
 

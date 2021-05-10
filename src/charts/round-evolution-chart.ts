@@ -5,7 +5,7 @@ export class RoundEvolutionChart {
     private readonly geneticLongestData: number[] = [0];
     private readonly geneticAverageData: number[] = [0];
     private readonly playerData: number[] = [0];
-    private readonly playerTrainedData: number[] = [0];
+    private readonly supervisedTrainedData: number[] = [0];
     private readonly chart: any = null;
 
     public constructor() {
@@ -79,13 +79,13 @@ export class RoundEvolutionChart {
                     data: this.playerData
                 },
                 {
-                    name: 'Player trained',
+                    name: 'Supervised trained',
                     color: '#00E852',
                     lineWidth: 1,
                     marker: {
                         enabled: false
                     },
-                    data: this.playerTrainedData
+                    data: this.supervisedTrainedData
                 }]
         };
         // @ts-expect-error
@@ -112,8 +112,8 @@ export class RoundEvolutionChart {
         this.playerData.push(parseFloat(playerResult.toFixed(2)));
 
         const playerTrainedResult = results
-            .find(result => result.type === BirdType.PLAYER_TRAINED).duration / 1000;
-        this.playerTrainedData.push(parseFloat(playerTrainedResult.toFixed(2)));
+            .find(result => result.type === BirdType.SUPERVISED_TRAINED).duration / 1000;
+        this.supervisedTrainedData.push(parseFloat(playerTrainedResult.toFixed(2)));
 
         this.chartOptions.xAxis.max = Math.ceil(this.geneticLongestData.length * 1.25);
         this.chart.update(this.chartOptions);
