@@ -1,9 +1,9 @@
 import {scale} from '../scale';
-import Point = Phaser.Geom.Point;
 import {DEBUG_MODE} from '../constants';
 import {Events} from '../event-manager/events';
 import {dimensionHeight, dimensionWidth} from '../game';
 import {EventManager} from '../event-manager/event-manager';
+import Point = Phaser.Geom.Point;
 
 export class Pipe {
     private readonly gapInPixels = 80;
@@ -21,7 +21,7 @@ export class Pipe {
         this.birdXPosition = options.birdXPosition;
         this.id = options.identifier;
 
-        this.verticalOffset = (Math.random() * (dimensionHeight / 2)) - dimensionHeight / 2;
+        this.verticalOffset = (Math.random() * (dimensionHeight * 0.4)) - (dimensionHeight * 0.5);
         const position = new Point(dimensionWidth * scale, this.verticalOffset * scale);
         this.createSprites(options, position);
         this.registerInEvents();

@@ -3,7 +3,7 @@ import {BirdType} from '../actors/birds/bird';
 export class RoundEvolutionChart {
     private readonly chartOptions: any;
     private readonly geneticLongestData: number[] = [0];
-    private readonly geneticAverageData: number[] = [0];
+    // private readonly geneticAverageData: number[] = [0];
     private readonly playerData: number[] = [0];
     private readonly qTableData: number[] = [0];
     private readonly chart: any = null;
@@ -60,15 +60,15 @@ export class RoundEvolutionChart {
                     },
                     data: this.geneticLongestData
                 },
-                {
-                    name: 'Genetic average',
-                    color: '#181202',
-                    lineWidth: 1,
-                    marker: {
-                        enabled: false
-                    },
-                    data: this.geneticAverageData
-                },
+                // {
+                //     name: 'Genetic average',
+                //     color: '#181202',
+                //     lineWidth: 1,
+                //     marker: {
+                //         enabled: false
+                //     },
+                //     data: this.geneticAverageData
+                // },
                 {
                     name: `Player`,
                     color: '#00B5C2',
@@ -98,13 +98,14 @@ export class RoundEvolutionChart {
         const geneticSortedResult = geneticResult
             .sort((a, b) => a.duration - b.duration);
 
-        const bestGeneticTrainedCitizen = geneticSortedResult[geneticSortedResult.length - 1];
-        const geneticLongestDuration = bestGeneticTrainedCitizen.duration / 1000;
-        this.geneticLongestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
-
-        const geneticAverageDuration = geneticSortedResult
-            .reduce((acc, result) => acc + result.duration, 0) / (1000 * geneticSortedResult.length);
-        this.geneticAverageData.push(parseFloat(geneticAverageDuration.toFixed(2)));
+        if (geneticSortedResult.length > 0) {
+            const bestGeneticTrainedCitizen = geneticSortedResult[geneticSortedResult.length - 1];
+            const geneticLongestDuration = bestGeneticTrainedCitizen.duration / 1000;
+            this.geneticLongestData.push(parseFloat(geneticLongestDuration.toFixed(2)));
+        }
+        // const geneticAverageDuration = geneticSortedResult
+        //     .reduce((acc, result) => acc + result.duration, 0) / (1000 * geneticSortedResult.length);
+        // this.geneticAverageData.push(parseFloat(geneticAverageDuration.toFixed(2)));
 
         const playerResult = results
             .find(result => result.type === BirdType.PLAYER_CONTROLLED).duration / 1000;
@@ -112,10 +113,11 @@ export class RoundEvolutionChart {
 
         const qBirdsBest = results
             .filter(result => result.type === BirdType.Q_TABLE)
-            .reduce((acc, result) => acc > result.duration ? acc: result.duration, 0) / 1000;
+            .reduce((acc, result) => acc > result.duration ? acc : result.duration, 0) / 1000;
+        console.log(qBirdsBest)
         this.qTableData.push(parseFloat(qBirdsBest.toFixed(2)));
 
-        this.chartOptions.xAxis.max = Math.ceil(this.geneticLongestData.length * 1.25);
+        this.chartOptions.xAxis.max = Math.ceil(this.playerData.length * 1.25);
         this.chart.update(this.chartOptions);
     }
 }

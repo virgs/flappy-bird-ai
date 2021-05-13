@@ -13,12 +13,12 @@ These were the mains goals behind it:
 
 3. Study [Genetic Algorithms](./src/ai/genetic-algorithm.ts). Select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
 
-4. Study [reinforcement learning and q-learning](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these two variables, the agent chooses the optimal action (flap/not to flap).
+4. Study [reinforcement learning and q-learning](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these variables, the agent chooses the optimal action (flap/not to flap).
 
 5. Have fun. Yay.
 
 The idea is to randomly generates breeds of birds neural networks and combine the best of them to evolve through time. It usually finds a good neural network before the 5th generation.
 
-If you want to, [you can watch it live or/and defy the AI](https://virgs.github.io/flappy-bird-ai?mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01) . Remember to control the __BLUE__ one (press SPACE BAR to jump and ESC to reinitialize round). Feel free to mess around with the __url query params__ (Defaults to: mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01)
+If you want to, [you can watch it live or/and defy the AI](https://virgs.github.io/flappy-bird-ai?mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01&qBirdsNumber=100) . Remember to control the __BLUE__ one (press SPACE BAR to jump and ESC to reinitialize round). Feel free to mess around with the __url query params__ (Defaults to: mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01)
 
 ![Preview](./preview.gif)

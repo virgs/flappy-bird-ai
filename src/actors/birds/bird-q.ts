@@ -1,60 +1,52 @@
 import {Bird, BirdType, Commands} from './bird';
-import {dimensionHeight, dimensionWidth} from '../../game';
 import {scale} from '../../scale';
 
-enum QActions {
+enum Action {
     FLAP = 'FLAP',
     DO_NOT_FLAP = 'DO_NOT_FLAP'
 }
 
+type State = {
+    horizontalDistanceToGap: number,
+    verticalDistanceToGap: number,
+    verticalDistanceToCeiling: number
+};
+
+enum Rewards {
+    die = -100000,
+    // passThroughPipeGap = 10,
+    stayAlive = 10
+}
+
+type ActionValues = {
+    [Action.FLAP]: number,
+    [Action.DO_NOT_FLAP]: number,
+};
+
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
 export class BirdQ extends Bird {
-    // private static readonly maxFutureQ: number = 50;
-    private static readonly rewards = {
-        die: -1000,
-        stayAlive: 15
-    };
 
     //The learning rate controls how quickly the model is adapted to the problem, and is often in the range between 0.0 and 1.0.
-    private static readonly learningRate: number = 0.95;
+    private static readonly learningRate: number = 0.35;
 
     //The discount factor is a measure of how much we want to care about future rewards rather than immediate rewards.
     //It is usually fairly high (because we put greater importance on long term gains) and between 0 and 1.
-    private static readonly discountFactor: number = 0.75;
+    private static readonly discountFactor: number = 0.8;
 
-    private static readonly pixelPrecision = 15;
+    private static readonly pixelGridSpatialAbstraction = 5;
 
     private static qTable: {
-        [QActions.FLAP]: number,
-        [QActions.DO_NOT_FLAP]: number
-    }[][] = null;
+        [state: string]: ActionValues
+    } = {};
 
-    private lastHorizontalDiff?: number;
-    private lastVerticalDiff?: number;
-    private lastAction?: QActions;
-    private currentHorizontalDiff?: number;
-    private currentVerticalDiff?: number;
+    private lastState: State | undefined = undefined;
+    private currentState: State | undefined = undefined;
+    private lastAction: Action = Action.DO_NOT_FLAP;
+
+    private counterMs = 0;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }) {
         super(options, BirdType.Q_TABLE);
-        if (BirdQ.qTable === null) {
-            BirdQ.initializeQTable();
-        }
-    }
-
-    private static initializeQTable() {
-        const maxHorizontalDistance = Math.floor(dimensionWidth / BirdQ.pixelPrecision);
-        const maxVerticalDistance = 2 * Math.floor(dimensionHeight / BirdQ.pixelPrecision);
-        BirdQ.qTable = [];
-        for (let horizontal = 0; horizontal < maxHorizontalDistance; ++horizontal) {
-            BirdQ.qTable[horizontal] = [];
-            for (let vertical = 0; vertical < maxVerticalDistance; ++vertical) {
-                BirdQ.qTable[horizontal][vertical] = {
-                    [QActions.FLAP]: 0,
-                    [QActions.DO_NOT_FLAP]: 0
-                };
-            }
-        }
     }
 
     protected handleBirdInput(data: {
@@ -63,55 +55,115 @@ export class BirdQ extends Bird {
         horizontalDistanceToClosestPipe: number,
         delta: number
     }): boolean {
+        this.counterMs += data.delta;
+        if (this.counterMs < 200) {
+            return false;
+        }
+        this.counterMs = 0;
 
-        const nextHorizontalDiff = Math.abs(Math.floor(data.horizontalDistanceToClosestPipe / (BirdQ.pixelPrecision * scale)));
-        const nextVerticalDiff = Math.floor((data.closestPipeGapVerticalPosition - data.verticalPosition) / (BirdQ.pixelPrecision * scale)) +
-            Math.floor(dimensionHeight / BirdQ.pixelPrecision); //avoid negative numbers
-
-        if (this.lastHorizontalDiff !== undefined &&
-            this.lastVerticalDiff !== undefined &&
-            this.lastAction !== undefined) {
-            this.updateQValue(BirdQ.rewards.stayAlive);
+        const denominator = BirdQ.pixelGridSpatialAbstraction * scale;
+        this.currentState = {
+            horizontalDistanceToGap: Math.floor(data.horizontalDistanceToClosestPipe / denominator),
+            verticalDistanceToGap: Math.floor((data.closestPipeGapVerticalPosition - data.verticalPosition) / denominator),
+            verticalDistanceToCeiling: Math.floor(data.verticalPosition / denominator)
+        };
+        if (!this.lastState) {
+            this.lastState = this.currentState;
+            return false;
         }
 
-        this.lastHorizontalDiff = this.currentHorizontalDiff;
-        this.lastVerticalDiff = this.currentVerticalDiff;
-
-        this.currentHorizontalDiff = nextHorizontalDiff;
-        this.currentVerticalDiff = nextVerticalDiff;
-
-        if (this.lastHorizontalDiff !== nextHorizontalDiff && this.lastVerticalDiff !== nextVerticalDiff) {
-            return this.shouldFlap();
+        const stateChanged = this.lastState.horizontalDistanceToGap !== this.currentState.horizontalDistanceToGap ||
+            this.lastState.verticalDistanceToGap !== this.currentState.verticalDistanceToGap ||
+            this.lastState.verticalDistanceToCeiling !== this.currentState.verticalDistanceToCeiling;
+        if (stateChanged) {
+            this.updateQValue(Rewards.stayAlive);
+            const shouldFlap = this.shouldFlap();
+            this.lastState = this.currentState;
+            return shouldFlap;
         }
+        this.lastState = this.currentState;
         return false;
+
     }
 
     protected onBirdDeath(): any {
-        if (this.lastVerticalDiff && this.lastHorizontalDiff) {
-            this.updateQValue(BirdQ.rewards.die);
+        if (this.lastState) {
+            this.updateQValue(Rewards.die);
         }
         return super.onBirdDeath();
     }
 
     private shouldFlap(): boolean {
-        const qActions = BirdQ.qTable[this.currentHorizontalDiff][this.currentVerticalDiff];
-        if (qActions[QActions.FLAP] > qActions[QActions.DO_NOT_FLAP]) {
+        const qActions = BirdQ.getQElement(this.currentState);
+        const flapChancesAreHigher = qActions[Action.FLAP] > qActions[Action.DO_NOT_FLAP];
+
+        if (flapChancesAreHigher) {
             this.commands.push(Commands.FLAP_WING);
-            this.lastAction = QActions.FLAP;
+            this.lastAction = Action.FLAP;
             return true;
+        } else {
+            this.lastAction = Action.DO_NOT_FLAP;
+            return false;
         }
-        this.lastAction = QActions.DO_NOT_FLAP;
-        return false;
     }
 
-    private updateQValue(reward: number) {
-        //new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
-        const futureQActions = BirdQ.qTable[this.currentHorizontalDiff][this.currentVerticalDiff];
-        const estimateMaxQValue = Math.max(futureQActions[QActions.FLAP], futureQActions[QActions.DO_NOT_FLAP]);
+    private updateQValue(reward: Rewards) {
+        //https://github.com/yashkotadia/FlapPy-Bird-RL-Q-Learning-Bot
+        //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
+        //Q[s,a] ←(1-α) Q[s,a] + α(r+ γmaxa' Q[s',a']).
+        //https://repositorio.ufu.br/bitstream/123456789/22184/3/MetodosInteligenciaArtificial.pdf
+        //     //new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
 
-        const currentElement = BirdQ.qTable[this.lastHorizontalDiff][this.lastVerticalDiff];
-        const currentQValue: number = currentElement[this.lastAction];
-        currentElement[this.lastAction] =
-            (1 - BirdQ.learningRate) * currentQValue + BirdQ.learningRate * (reward + BirdQ.discountFactor * estimateMaxQValue);
+        const futureQActions = BirdQ.getQElement(this.currentState);
+
+        const estimateMaxQValue = Math.max(futureQActions[Action.FLAP], futureQActions[Action.DO_NOT_FLAP]);
+        BirdQ.getQElement(this.lastState)[this.lastAction] +=
+            BirdQ.learningRate * (reward + BirdQ.discountFactor * estimateMaxQValue - BirdQ.getQElement(this.lastState)[this.lastAction]);
+    }
+
+    private static getQElement(state: State): ActionValues {
+        const index = `${state.horizontalDistanceToGap}|${state.verticalDistanceToGap}|${state.verticalDistanceToCeiling}`;
+        if (!BirdQ.qTable[index]) {
+            const indexes = this.createIndexesCloseToState(state);
+            const average = indexes.reduce((acc, item) => {
+                    const value = BirdQ.qTable[item.index];
+                    if (value) {
+                        acc.counter += item.importance;
+                        acc.sum[Action.DO_NOT_FLAP] += value[Action.DO_NOT_FLAP] * item.importance;
+                        acc.sum[Action.FLAP] += value[Action.FLAP] * item.importance;
+                    }
+                    return acc;
+                },
+                {
+                    counter: 0,
+                    sum: {
+                        [Action.DO_NOT_FLAP]: 0,
+                        [Action.FLAP]: 0
+                    } as ActionValues
+                }
+            );
+
+            BirdQ.qTable[index] = {
+                [Action.DO_NOT_FLAP]: average.counter > 0 ? average.sum[Action.DO_NOT_FLAP] / average.counter : 0,
+                [Action.FLAP]: average.counter > 0 ? average.sum[Action.FLAP] / average.counter : 0,
+            };
+        }
+        return BirdQ.qTable[index];
+    }
+
+    private static createIndexesCloseToState(state: State) {
+        const indexes: { importance: number, index: string }[] = [];
+        for (let first = -1; first < 2; ++first) {
+            for (let second = -1; second < 2; ++second) {
+                for (let third = -1; third < 2; ++third) {
+                    const importance = 1;
+                    indexes.push({
+                        importance,
+                        index: `${state.horizontalDistanceToGap + first}|${state.verticalDistanceToGap + second}|${state.verticalDistanceToCeiling + third}`
+                    });
+                }
+            }
+        }
+        return indexes;
     }
 }

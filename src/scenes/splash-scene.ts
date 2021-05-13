@@ -7,6 +7,7 @@ import {RoundEvolutionChart} from '../charts/round-evolution-chart';
 export class SplashScene extends Phaser.Scene {
     private static readonly MIN_SPLASH_TIME: 200;
 
+    private readonly qBirdsNumber: number;
     private readonly chartEvolutionChart: RoundEvolutionChart = new RoundEvolutionChart();
     private readonly populationPerGeneration: number;
     private geneticAlgorithm: GeneticAlgorithm;
@@ -17,6 +18,7 @@ export class SplashScene extends Phaser.Scene {
             key: 'SplashScene'
         });
         const urlQueryHandler = new UrlQueryHandler();
+        this.qBirdsNumber = parseInt(urlQueryHandler.getParameterByName('qBirdsNumber', 100));
         this.populationPerGeneration = parseInt(urlQueryHandler.getParameterByName('populationPerGeneration', 100));
         const mutationRate: number = parseFloat(urlQueryHandler.getParameterByName('mutationRate', 0.05));
         const relativeSelectedPopulationPerGeneration: number = parseFloat(urlQueryHandler
@@ -61,7 +63,8 @@ export class SplashScene extends Phaser.Scene {
 
     private startMainScene(nextGeneration: Chromosome[]) {
         const mainSceneStartFunction = () => this.scene.start('MainScene', {
-            birds: nextGeneration
+            geneticBirds: nextGeneration,
+            qBirdsNumber: this.qBirdsNumber
         });
         if (this.loadCompleted) {
             mainSceneStartFunction();

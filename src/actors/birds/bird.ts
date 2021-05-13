@@ -31,8 +31,8 @@ export abstract class Bird {
     private closestPipe: any;
     private readonly birdType: BirdType;
 
-    protected alive: boolean = true;
     protected readonly id: number;
+    protected alive: boolean = true;
     protected inputTimeCounterMs: number = 0;
     protected commands: Commands[] = [];
 
@@ -143,6 +143,7 @@ export abstract class Bird {
 
     private killBird(): void {
         if (this.alive) {
+            this.verticalSpeed = 0;
             this.alive = false;
             this.birdSprite.anims.pause();
             this.birdSprite.setAlpha(0.4);
