@@ -1,5 +1,7 @@
 # flappy-bird-ai
 
+![screenshot](./screenshot.png)
+
 This project was created for fun and studying purposes.
 These were the mains goals behind it:
 
@@ -13,7 +15,7 @@ These were the mains goals behind it:
 
 3. Study [Genetic Algorithms](./src/ai/genetic-algorithm.ts). Select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
 
-4. Study [reinforcement learning and q-learning](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these variables, the agent chooses the optimal action (flap/not to flap).
+4. Study [Reinforcement Learning (q-learning)](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these variables, the agent chooses the optimal action (flap/not to flap).
 
 5. Have fun. Yay.
 
