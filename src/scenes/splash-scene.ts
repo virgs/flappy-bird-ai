@@ -1,8 +1,9 @@
-import {BirdType} from '../actors/birds/bird';
 import {Chromosome} from '../actors/chromosome';
 import {UrlQueryHandler} from '../url-query-handler';
 import {GeneticAlgorithm} from '../ai/genetic-algorithm';
 import {RoundEvolutionChart} from '../charts/round-evolution-chart';
+import {SimulatedAnnealingAlgorithm} from '../ai/simulated-annealing-algorithm';
+import {BirdAttributes, BirdValues} from '../actors/birds/bird-attributes';
 
 export class SplashScene extends Phaser.Scene {
     private static readonly MIN_SPLASH_TIME: 200;
@@ -10,7 +11,8 @@ export class SplashScene extends Phaser.Scene {
     private readonly qBirdsNumber: number;
     private readonly chartEvolutionChart: RoundEvolutionChart = new RoundEvolutionChart();
     private readonly populationPerGeneration: number;
-    private geneticAlgorithm: GeneticAlgorithm;
+    private readonly simulatedAnnealingAlgorithm: SimulatedAnnealingAlgorithm;
+    private readonly geneticAlgorithm: GeneticAlgorithm;
     private loadCompleted: boolean;
 
     constructor() {
@@ -26,6 +28,7 @@ export class SplashScene extends Phaser.Scene {
         const absoluteSelectedPopulationPerGeneration: number =
             Math.max(Math.ceil(relativeSelectedPopulationPerGeneration * this.populationPerGeneration), 2);
         this.geneticAlgorithm = new GeneticAlgorithm(mutationRate, this.populationPerGeneration, absoluteSelectedPopulationPerGeneration);
+        this.simulatedAnnealingAlgorithm = new SimulatedAnnealingAlgorithm();
     }
 
     public preload(): void {
@@ -33,21 +36,25 @@ export class SplashScene extends Phaser.Scene {
     }
 
     public init(data: {
-        results: { type: BirdType, duration: number, data: any }[]
+        results: { attributes: BirdAttributes, duration: number, data: any, id: number }[]
     }): void {
         this.loadCompleted = false;
         this.splashScreen();
+        let simulatedAnnealingNextPopulation: Chromosome[] = Array.from(Array(100));
 
         if (data.results) {
-            this.chartEvolutionChart.addLastRoundResult(data.results);
+            this.chartEvolutionChart.addLastRoundResults(data.results);
+            simulatedAnnealingNextPopulation =
+                this.simulatedAnnealingAlgorithm.createNextGeneration(data.results
+                    .filter(result => result.attributes === BirdValues.SIMULATED_ANNEALING));
         }
-        const nextGeneration = this.getNextGeneration((data.results || [])
-            .filter(result => result.type === BirdType.GENETICALLY_TRAINED)
+        const geneticNextGeneration = this.getGeneticNextGeneration((data.results || [])
+            .filter(result => result.attributes === BirdValues.GENETICALLY_TRAINED)
             .map(result => ({chromosome: result.data, duration: result.duration})));
 
         this.time.addEvent({
             delay: SplashScene.MIN_SPLASH_TIME,
-            callback: () => this.startMainScene(nextGeneration)
+            callback: () => this.startMainScene(geneticNextGeneration, simulatedAnnealingNextPopulation)
         });
 
     }
@@ -61,10 +68,11 @@ export class SplashScene extends Phaser.Scene {
         this.load.on('complete', () => this.loadCompleted = true);
     }
 
-    private startMainScene(nextGeneration: Chromosome[]) {
+    private startMainScene(nextGeneration: Chromosome[], simulatedAnnealingNextPopulation: Chromosome[]) {
         const mainSceneStartFunction = () => this.scene.start('MainScene', {
             geneticBirds: nextGeneration,
-            qBirdsNumber: this.qBirdsNumber
+            qBirdsNumber: this.qBirdsNumber,
+            simulatedAnnealingNextPopulation
         });
         if (this.loadCompleted) {
             mainSceneStartFunction();
@@ -73,7 +81,7 @@ export class SplashScene extends Phaser.Scene {
         }
     }
 
-    private getNextGeneration(geneticResults: { chromosome: Chromosome; duration: number }[]): Chromosome[] {
+    private getGeneticNextGeneration(geneticResults: { chromosome: Chromosome; duration: number }[]): Chromosome[] {
         if (geneticResults && geneticResults.length) {
             return this.geneticAlgorithm.createNextGeneration(geneticResults);
         }

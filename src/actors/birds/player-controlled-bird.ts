@@ -1,11 +1,12 @@
-import {Bird, BirdType, Commands} from './bird';
+import {Bird, Commands} from './bird';
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes;
+import {BirdValues} from './bird-attributes';
 
 export class PlayerControlledBird extends Bird {
     private readonly keys: Phaser.Input.Keyboard.Key[] = [];
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }) {
-        super(options, BirdType.PLAYER_CONTROLLED);
+        super(options, BirdValues.PLAYER_CONTROLLED);
         this.keys = [options.scene.input.keyboard.addKey(KeyCodes.SPACE)];
     }
 

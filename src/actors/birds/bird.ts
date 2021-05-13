@@ -4,42 +4,33 @@ import {floorHeightInPixels} from '../platform';
 import {Events} from '../../event-manager/events';
 import {EventManager} from '../../event-manager/event-manager';
 import {DEBUG_MODE, flapCoolDownMs, flapImpulse, gravity, maxBirdAngle, maxBirdVerticalSpeed} from '../../constants';
+import {BirdAttributes} from './bird-attributes';
 import RectangleToRectangle = Phaser.Geom.Intersects.RectangleToRectangle;
 
 export enum Commands {
     FLAP_WING
 }
 
-export enum BirdType {
-    GENETICALLY_TRAINED,
-    PLAYER_CONTROLLED,
-    Q_TABLE,
-}
-
 export abstract class Bird {
-    private static readonly textureKeys: string[] = ['bird-yellow', 'bird-blue', 'bird-green', 'bird-red'];
-
     private readonly assetsProportion = 0.125;
     private readonly hitBoxScale = 0.7;
 
     private readonly birdSprite: Phaser.GameObjects.Sprite;
-    private readonly birdTextureKey: string;
+    private readonly birdType: BirdAttributes;
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite;
 
     private verticalSpeed: number = 0;
 
     private closestPipe: any;
-    private readonly birdType: BirdType;
 
     protected readonly id: number;
     protected alive: boolean = true;
     protected inputTimeCounterMs: number = 0;
     protected commands: Commands[] = [];
 
-    protected constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, birdType: BirdType) {
+    protected constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, birdType: BirdAttributes) {
         this.birdType = birdType;
         this.id = options.id;
-        this.birdTextureKey = Bird.textureKeys[birdType];
         [this.birdSprite, this.hitBoxSprite] = this.createSprite(options);
         this.registerEvents(options.scene);
     }
@@ -52,12 +43,12 @@ export abstract class Bird {
     }): boolean;
 
     private createSprite(options: { initialPosition: Phaser.Geom.Point; scene: Phaser.Scene }): Phaser.GameObjects.Sprite[] {
-        const birdSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdTextureKey);
+        const birdSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdType.texture);
         birdSprite.setScale(scale * this.assetsProportion);
-        if (!options.scene.anims.get(this.birdTextureKey)) {
+        if (!options.scene.anims.get(this.birdType.texture)) {
             options.scene.anims.create({
-                key: this.birdTextureKey,
-                frames: options.scene.anims.generateFrameNumbers(this.birdTextureKey, {
+                key: this.birdType.texture,
+                frames: options.scene.anims.generateFrameNumbers(this.birdType.texture, {
                     start: 1,
                     end: 3
                 }),
@@ -65,10 +56,10 @@ export abstract class Bird {
                 frameRate: 12
             });
         }
-        birdSprite.anims.load(this.birdTextureKey);
-        birdSprite.anims.play(this.birdTextureKey);
+        birdSprite.anims.load(this.birdType.texture);
+        birdSprite.anims.play(this.birdType.texture);
 
-        const hitBoxSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdTextureKey);
+        const hitBoxSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, this.birdType.texture);
         hitBoxSprite.setScale(scale * this.assetsProportion * this.hitBoxScale);
         if (DEBUG_MODE) {
             hitBoxSprite.setTint(0x88FF0000);
@@ -122,7 +113,7 @@ export abstract class Bird {
             if (this.verticalSpeed > 0) {
                 this.birdSprite.anims.stop();
             } else if (!this.birdSprite.anims.isPlaying) {
-                this.birdSprite.anims.play(this.birdTextureKey);
+                this.birdSprite.anims.play(this.birdType.texture);
             }
         } else {
             this.killBird();
@@ -148,7 +139,7 @@ export abstract class Bird {
             this.birdSprite.anims.pause();
             this.birdSprite.setAlpha(0.4);
             EventManager.emit(Events.BIRD_DIED, {
-                type: this.birdType,
+                attributes: this.birdType,
                 data: this.onBirdDeath(),
                 id: this.id
             });

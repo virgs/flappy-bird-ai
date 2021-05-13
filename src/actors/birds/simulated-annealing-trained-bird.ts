@@ -5,12 +5,12 @@ import {NeuralNetwork} from '../../ai/neural-network';
 import {dimensionHeight, dimensionWidth} from '../../game';
 import {BirdValues} from './bird-attributes';
 
-export class GeneticallyTrainedBird extends Bird {
+export class SimulatedAnnealingTrainedBird extends Bird {
     private readonly chromosome: Chromosome;
     private readonly neuralNetwork: NeuralNetwork;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }, chromosome) {
-        super(options, BirdValues.GENETICALLY_TRAINED);
+        super(options, BirdValues.SIMULATED_ANNEALING);
         this.chromosome = chromosome;
         this.neuralNetwork = new NeuralNetwork({
             inputs: 3,

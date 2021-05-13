@@ -12,15 +12,16 @@ import {
     horizontalVelocityInPixelsPerSecond,
     randomFactorGapIntervalBetweenPipesInPixels
 } from '../constants';
-import {PlayerControlledBird} from '../actors/birds/player-controlled-bird';
-import {BirdType} from '../actors/birds/bird';
+import {SimulatedAnnealingTrainedBird} from '../actors/birds/simulated-annealing-trained-bird';
+import {BirdAttributes} from '../actors/birds/bird-attributes';
+import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
 import {BirdQ} from '../actors/birds/bird-q';
 import {scale} from '../scale';
-import {GeneticallyTrainedBird} from '../actors/birds/genetically-trained-bird';
+import {PlayerControlledBird} from '../actors/birds/player-controlled-bird';
 
 export class MainScene extends Phaser.Scene {
     private readonly birdsInitialPosition = new Point(birdXPosition, dimensionHeight / 4);
-    private birdsResults: { type: BirdType, duration: number }[] = [];
+    private birdsResults: { attributes: BirdAttributes, duration: number, id: number, data: any }[] = [];
     private secondsToCreateNextPipe: number = averageGapIntervalBetweenPipesInPixels / horizontalVelocityInPixelsPerSecond;
     private pipesCreated: number = 0;
     private sceneDuration: number = 0;
@@ -33,7 +34,11 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    public async init(data: { geneticBirds: Chromosome[], qBirdsNumber: number }): Promise<void> {
+    public async init(data: {
+        geneticBirds: Chromosome[],
+        qBirdsNumber: number,
+        simulatedAnnealingNextPopulation: Chromosome[]
+    }): Promise<void> {
         this.endGameKey = this.input.keyboard.addKey(KeyCodes.ESC);
         new Platform({scene: this});
         this.createBirds(data);
@@ -43,10 +48,14 @@ export class MainScene extends Phaser.Scene {
             closestPipeToTheBird: true,
             birdXPosition: birdXPosition
         });
-        EventManager.on(Events.BIRD_DIED, (options: { type: BirdType, data: any }) => this.onAnyBirdDeath(options));
+        EventManager.on(Events.BIRD_DIED, (options: { attributes: BirdAttributes, data: any, id: number }) => this.onAnyBirdDeath(options));
     }
 
-    private createBirds(data: { geneticBirds: Chromosome[], qBirdsNumber: number }) {
+    private createBirds(data: {
+        geneticBirds: Chromosome[],
+        qBirdsNumber: number,
+        simulatedAnnealingNextPopulation: Chromosome[]
+    }) {
         data.geneticBirds
             .forEach((chromosome: Chromosome) => {
                 new GeneticallyTrainedBird({
@@ -57,8 +66,20 @@ export class MainScene extends Phaser.Scene {
                 }, chromosome);
                 ++this.livingBirdsCounter;
             });
-        const verticalQBirdsOffset = dimensionHeight * 0.5 * (scale / data.qBirdsNumber);
-        Array.from(Array(data.qBirdsNumber)).forEach((_, index) => {
+        data.simulatedAnnealingNextPopulation
+            .forEach((chromosome: Chromosome) => {
+                new SimulatedAnnealingTrainedBird({
+                    scene: this,
+                    initialPosition: new Point(this.birdsInitialPosition.x,
+                        this.birdsInitialPosition.y + dimensionHeight * 0.5),
+                    id: this.livingBirdsCounter
+                }, chromosome);
+                ++this.livingBirdsCounter;
+            });
+
+        const verticalQBirdsOffset = dimensionHeight * 0.5 * (scale / data.qBirdsNumber || 1);
+        Array.from(Array(data.qBirdsNumber))
+            .forEach((_, index) => {
             new BirdQ({
                 initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 100,
                     this.birdsInitialPosition.y + index * verticalQBirdsOffset),
@@ -102,9 +123,9 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private onAnyBirdDeath(options: { type: BirdType, data: any }) {
+    private onAnyBirdDeath(options: { attributes: BirdAttributes; data: any; id: number }) {
         --this.livingBirdsCounter;
-        const birdResult = {type: options.type, duration: this.sceneDuration, data: options.data};
+        const birdResult = {attributes: options.attributes, duration: this.sceneDuration, data: options.data, id: options.id};
         this.birdsResults.push(birdResult);
 
         if (this.livingBirdsCounter === 0) {

@@ -1,5 +1,6 @@
-import {Bird, BirdType, Commands} from './bird';
+import {Bird, Commands} from './bird';
 import {scale} from '../../scale';
+import {BirdValues} from './bird-attributes';
 
 enum Action {
     FLAP = 'FLAP',
@@ -46,7 +47,7 @@ export class BirdQ extends Bird {
     private counterMs = 0;
 
     public constructor(options: { initialPosition: Phaser.Geom.Point, scene: Phaser.Scene, id: number }) {
-        super(options, BirdType.Q_TABLE);
+        super(options, BirdValues.Q_TABLE);
     }
 
     protected handleBirdInput(data: {
