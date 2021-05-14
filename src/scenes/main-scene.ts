@@ -56,16 +56,16 @@ export class MainScene extends Phaser.Scene {
         qBirdsNumber: number,
         simulatedAnnealingNextPopulation: Chromosome[]
     }) {
-        // data.geneticBirds
-        //     .forEach((chromosome: Chromosome) => {
-        //         new GeneticallyTrainedBird({
-        //             scene: this,
-        //             initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 20,
-        //                 this.birdsInitialPosition.y),
-        //             id: this.livingBirdsCounter
-        //         }, chromosome);
-        //         ++this.livingBirdsCounter;
-        //     });
+        data.geneticBirds
+            .forEach((chromosome: Chromosome) => {
+                new GeneticallyTrainedBird({
+                    scene: this,
+                    initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 20,
+                        this.birdsInitialPosition.y),
+                    id: this.livingBirdsCounter
+                }, chromosome);
+                ++this.livingBirdsCounter;
+            });
         data.simulatedAnnealingNextPopulation
             .forEach((chromosome: Chromosome) => {
                 new SimulatedAnnealingTrainedBird({
@@ -77,24 +77,24 @@ export class MainScene extends Phaser.Scene {
                 ++this.livingBirdsCounter;
             });
 
-        // const verticalQBirdsOffset = dimensionHeight * 0.5 * (scale / data.qBirdsNumber || 1);
-        // Array.from(Array(data.qBirdsNumber))
-        //     .forEach((_, index) => {
-        //     new BirdQ({
-        //         initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 100,
-        //             this.birdsInitialPosition.y + index * verticalQBirdsOffset),
-        //         scene: this,
-        //         id: this.livingBirdsCounter
-        //     });
-        //     ++this.livingBirdsCounter;
-        // });
-        //
-        // new PlayerControlledBird({
-        //     initialPosition: new Point(this.birdsInitialPosition.x + 100, this.birdsInitialPosition.y),
-        //     scene: this,
-        //     id: this.livingBirdsCounter
-        // });
-        // ++this.livingBirdsCounter;
+        const verticalQBirdsOffset = dimensionHeight * 0.5 * (scale / data.qBirdsNumber || 1);
+        Array.from(Array(data.qBirdsNumber))
+            .forEach((_, index) => {
+            new BirdQ({
+                initialPosition: new Point(this.birdsInitialPosition.x + Math.random() * 100,
+                    this.birdsInitialPosition.y + index * verticalQBirdsOffset),
+                scene: this,
+                id: this.livingBirdsCounter
+            });
+            ++this.livingBirdsCounter;
+        });
+
+        new PlayerControlledBird({
+            initialPosition: new Point(this.birdsInitialPosition.x + 100, this.birdsInitialPosition.y),
+            scene: this,
+            id: this.livingBirdsCounter
+        });
+        ++this.livingBirdsCounter;
     }
 
     public update(time: number, elapsedTime: number): void {
