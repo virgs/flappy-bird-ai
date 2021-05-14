@@ -6,7 +6,7 @@ type ResultType = { attributes: BirdAttributes; duration: number; data: any; id:
 export class SimulatedAnnealingAlgorithm {
     private readonly maxNumberOfIterations: number = 10;
     private readonly maxSuccessPerIteration: number = 2;
-    private readonly temperatureReducer: number = 0.5;
+    private readonly temperatureReducer: number = 0.75;
 
     private temperature: number = .75;
     private lastResult: ResultType = null;
