@@ -74,6 +74,7 @@ export class Platform {
         firstFloorSprite.displayOriginX = 0;
         firstFloorSprite.displayOriginY = 0;
         firstFloorSprite.y = dimensionHeight * scale - firstFloorSprite.displayHeight / 3;
+        firstFloorSprite.setDepth(99999999999);
         this.floorSprites.push(firstFloorSprite);
 
         const secondFloorSprite = options.scene.add.sprite(0, dimensionHeight * scale, this.floorTextureKey);
@@ -82,6 +83,7 @@ export class Platform {
         secondFloorSprite.displayOriginY = 0;
         secondFloorSprite.x = firstFloorSprite.displayWidth;
         secondFloorSprite.y = dimensionHeight * scale - secondFloorSprite.displayHeight / 3;
+        secondFloorSprite.setDepth(99999999);
         this.floorSprites.push(secondFloorSprite);
     }
 }
