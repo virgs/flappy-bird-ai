@@ -11,7 +11,7 @@ These were the mains goals behind it:
     - __Message oriented object communication__: no public methods. Every communication has to be through a message mechanism (Event emitters) and serializable objects (dto, vo, and others). Objects are not aware of each other.
     - __Stateless messages__: the messages should include every information it needs, so the receivers process them accordingly.
 
-1. Study [NeuroEvolution of Augmenting Topologies (NEAT)](https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies). A combination of [Neural Network](./src/ai/neural-network.ts) and [Genetic Algorithms](./src/ai/genetic-algorithm.ts). The idea is to find a mathematical function that receives inputs (bird y position, the closest pipe gap x position, the closest pipe gap y position) and results in a single output (should jump?). After that, select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
+1. Study NeuroEvolutionary algorithms. A combination of [Neural Network](./src/ai/neural-network.ts) and [Genetic Algorithms](./src/ai/genetic-algorithm.ts). The idea is to find a mathematical function that receives inputs (bird y position, the closest pipe gap x position, the closest pipe gap y position) and results in a single output (should jump?). After that, select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
 
 1. Study [Reinforcement Learning (q-learning)](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these variables, the agent chooses the optimal action (flap/not to flap).
 
