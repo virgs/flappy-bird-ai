@@ -1,48 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Flappy bird</title>
-    <link rel="icon" href="./favicon.png">
-
-    <meta name="description`" content="Flappy bird with neural network"/>
-    <meta name="keywords" content="flappy, bird, neural network, game, fun"/>
-    <meta name="author" content="Virgs, https://github.com/virgs"/>
-    <meta name="language" content="EN"/>
-    <meta property="og:title" content="Flappy Bird AI"/>
-    <meta property="og:image:secure_url" itemprop="image"
-          content="https://raw.githubusercontent.com/virgs/flappy-bird-ai/master/screenshot.png"/>
-    <meta property="og:image" itemprop="image"
-          content="https://raw.githubusercontent.com/virgs/flappy-bird-ai/master/screenshot.png"/>
-    <meta property="og:description" content="Flappy bird with neural network"/>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles/css/styles.css">
-    <script src="build/bundle.js"></script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css">
+    <title>Flappy Bird</title>
 </head>
+
 <body>
-<div class="container">
-    <div id="game"></div>
-</div>
-<div class="hud">
-    <div id="generations-evolution-chart-container"></div>
-    <div id="score-counter">
-        <div>
-            Living birds: <span id="living-birds">0</span>
-        </div>
-        <div>
-            Round time: <span id="time-display">0.00</span>s
-        </div>
-        <div>
-            Total time: <span id="total-time-display">0.00</span>s
-        </div>
-    </div>
-</div>
-<script>
-    let totalTime = 0;
-    setInterval(() => {
-        totalTime += 0.1
-        document.querySelector('#total-time-display').textContent = totalTime.toFixed(1).toString();
-    }, 100)
-</script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
 </body>
 </html>
