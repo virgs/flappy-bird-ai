@@ -1,56 +1,67 @@
 {
-    "name": "flappy-bird-ai",
-    "version": "1.0.0",
-    "description": "Flappy bird played by AI",
-    "keywords": [
-        "flappy bird",
-        "Phaser3",
-        "TypeScript",
-        "Webpack",
-        "Game",
-        "neural network"
-    ],
-    "license": "MIT",
-    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/virgs/flappy-bird-ai.git"
-    },
-    "author": {
-        "name": "virgs",
-        "email": "guilherme.moraes@outlook.com"
-    },
-    "bugs": {
-        "url": "https://github.com/virgs/flappy-bird-ai/issues"
-    },
-    "homepage": "https://github.com/virgs/flappy-bird-ai#readme",
-    "scripts": {
-        "format": "prettier --write 'src/**/*.{tsx,ts}'",
-        "dev": "node log.js dev & vite --config vite/config.dev.mjs",
-        "build": "node log.js build & vite build --config vite/config.prod.mjs",
-        "dev-nolog": "vite --config vite/config.dev.mjs",
-        "build-nolog": "vite build --config vite/config.prod.mjs"
-    },
-    "dependencies": {
-        "bootstrap": "^5.3.5",
-        "phaser": "^3.88.2",
-        "react": "^19.0.0",
-        "react-bootstrap": "^2.10.9",
-        "react-dom": "^19.0.0"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.22.0",
-        "@types/react": "^19.0.10",
-        "@types/react-dom": "^19.0.4",
-        "@vitejs/plugin-react": "^4.3.4",
-        "eslint": "^9.22.0",
-        "eslint-plugin-react-hooks": "^5.2.0",
-        "eslint-plugin-react-refresh": "^0.4.19",
-        "globals": "^16.0.0",
-        "prettier": "^3.5.3",
-        "terser": "^5.28.1",
-        "typescript": "~5.7.2",
-        "typescript-eslint": "^8.26.1",
-        "vite": "^6.3.1"
-    }
+  "name": "flappy-bird-ai",
+  "version": "1.0.0",
+  "description": "Flappy bird played by AI",
+  "keywords": [
+    "flappy bird",
+    "Phaser3",
+    "TypeScript",
+    "Webpack",
+    "Game",
+    "Neural Network",
+    "Genetic Algorithm",
+    "AI",
+    "Reinforcement Learning",
+    "Machine Learning",
+    "Game AI",
+    "Game Development",
+    "Game Programming",
+    "Game AI Programming",
+    "Game AI Development",
+    "QuTable",
+    "Simmulated Annealing"
+  ],
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virgs/flappy-bird-ai.git"
+  },
+  "author": {
+    "name": "virgs",
+    "email": "guilherme.moraes@outlook.com"
+  },
+  "bugs": {
+    "url": "https://github.com/virgs/flappy-bird-ai/issues"
+  },
+  "homepage": "https://github.com/virgs/flappy-bird-ai#readme",
+  "scripts": {
+    "format": "prettier --write 'src/**/*.{tsx,ts}'",
+    "dev": "node log.js dev & vite --config vite/config.dev.mjs",
+    "build": "node log.js build & vite build --config vite/config.prod.mjs",
+    "dev-nolog": "vite --config vite/config.dev.mjs",
+    "build-nolog": "vite build --config vite/config.prod.mjs"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "phaser": "^3.88.2",
+    "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "terser": "^5.28.1",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  }
 }
