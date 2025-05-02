@@ -13,10 +13,6 @@ export class Platform {
     constructor(options: { scene: Phaser.Scene }) {
         this.createBackgroundSprites(options)
         this.createFloorSprites(options)
-
-        // EventManager.on(Events.DESTROY, () => {
-        //     this.backgroundSprites.concat(this.floorSprites).forEach(sprite => sprite.destroy())
-        // })
     }
 
     public update(options: { delta: number }): void {
@@ -40,9 +36,12 @@ export class Platform {
             .forEach(sprite => sprite.setAlpha(this.alpha))
     }
 
+    destroy() {
+        this.backgroundSprites.concat(this.floorSprites).forEach(sprite => sprite.destroy())
+    }
+
     private createBackgroundSprites(options: { scene: Phaser.Scene }) {
         ;[constants.assets.backgroundNight.name, constants.assets.backgroundDay.name].forEach(assetName => {
-            console.log('createBackgroundSprites', assetName)
             const firstSprite = options.scene.add.sprite(0, 0, assetName)
             firstSprite.displayOriginX = 0
             firstSprite.displayOriginY = 0

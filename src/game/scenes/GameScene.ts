@@ -15,20 +15,16 @@ export class GameScene extends Scene {
     private pipesCreated: number = 0
     private sceneDuration: number = 0
     private livingBirdsCounter: number = 0
-    private endGameKey?: Phaser.Input.Keyboard.Key
     private platform: Platform
 
     constructor() {
         super('GameScene')
     }
 
-    create() {
+    create(data: any) {
+        console.log('GameScene scene create', data)
         EventBus.emit('current-scene-ready', this)
-        this.endGameKey = this.input.keyboard?.addKey(Input.Keyboard.KeyCodes.ESC)
         this.platform = new Platform({ scene: this })
-    }
-
-    init(data: any) {
         // this.createBirds(data)
         // new Pipe({
         //     scene: this,
@@ -40,9 +36,6 @@ export class GameScene extends Scene {
 
     update(time: number, delta: number): void {
         this.sceneDuration += delta
-        if (this.endGameKey?.isDown) {
-            this.changeScene()
-        }
         this.platform.update({
             delta: delta,
         })
@@ -51,7 +44,8 @@ export class GameScene extends Scene {
         // this.updateScore(delta)
     }
 
-    changeScene() {
-        this.scene.start('GameOver')
+    abort() {
+        this.platform.destroy()
+        this.scene.start('MathScene')
     }
 }
