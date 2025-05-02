@@ -1,8 +1,7 @@
-import { GameOver } from './scenes/GameOver'
-import { Game as MainGame } from './scenes/Game'
-import { MainMenu } from './scenes/MainMenu'
+import { GameScene } from './scenes/GameScene'
+import { MathScene } from './scenes/MathScene'
 import { AUTO, Game } from 'phaser'
-import { Preloader } from './scenes/Preloader'
+import { PreloaderScene } from './scenes/PreloaderScene'
 import { constants } from './constants'
 
 //  Find out more information about the Game Config at:
@@ -17,11 +16,11 @@ const exportGameConfig: Phaser.Types.Core.GameConfig = {
     },
     parent: 'game-container',
     backgroundColor: '#028af8',
-    scene: [Preloader, MainMenu, MainGame, GameOver],
+    scene: [PreloaderScene, MathScene, GameScene],
 }
 
-const StartGame = (parent: string) => {
+const startGame = (parent: string) => {
     return new Game({ ...exportGameConfig, parent })
 }
 
-export default StartGame
+export default startGame

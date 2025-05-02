@@ -1,23 +1,14 @@
 import { Scene } from 'phaser'
 import { constants } from '../constants'
 
-export class Preloader extends Scene {
+export class PreloaderScene extends Scene {
     // private birdSprite: Phaser.GameObjects.Sprite
 
     constructor() {
         super('Preloader')
     }
 
-    init(options: { [key: string]: any }) {
-        console.log('Preloader scene initialized with options:', options)
-        // if (!this.birdSprite) {
-        //     this.birdSprite = this.createSprite()
-        // }
-    }
-
     preload(options: { [key: string]: any }) {
-        console.log('Preloader scene preloaded with options:', options)
-
         Object.keys(constants.assets).forEach(key => {
             const asset = constants.assets[key as keyof typeof constants.assets]
             this.load.image(asset.name, asset.path)
@@ -29,20 +20,15 @@ export class Preloader extends Scene {
             const { frameWidth, frameHeight } = constants.spriteSheet
             this.load.spritesheet(asset.name, asset.path, { frameWidth, frameHeight })
         })
-
-        this.load.on('complete', () => {
-            console.log('Assets loaded')
-        })
     }
 
-    create(options: { [key: string]: any }) {
-        console.log('Preloader scene created with options:', options)
+    create() {
         // this.children.removeAll(true)
 
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu')
+        this.scene.start('MathScene')
     }
 
     // private createSprite(): Phaser.GameObjects.Sprite {
