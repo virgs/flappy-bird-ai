@@ -30,9 +30,12 @@ export class Pipe {
             options.onPassedBirds()
         }
         if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < 0)) {
-            this.pipesSprites.forEach(sprite => sprite.destroy())
             this.outOfScreen = true
         }
+    }
+
+    destroy(): void {
+        this.pipesSprites.forEach(sprite => sprite.destroy())
     }
 
     public isOutOfScreen(): boolean {

@@ -55,6 +55,7 @@ export class GameScene extends Scene {
     }
 
     abort() {
+        this.pipes.forEach(pipe => pipe.destroy())
         this.platform.destroy()
         this.scene.start('MathScene')
     }
