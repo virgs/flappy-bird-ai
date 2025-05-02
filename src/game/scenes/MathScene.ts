@@ -46,7 +46,7 @@ export class MathScene extends Scene {
 
         //initialize game with settings
 
-        this.scene.start('Game', settings)
+        this.scene.start('GameScene', settings)
     }
 
     // moveLogo(vueCallback: ({ x, y }: { x: number; y: number }) => void) {

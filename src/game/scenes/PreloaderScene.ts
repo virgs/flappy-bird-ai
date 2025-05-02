@@ -8,7 +8,7 @@ export class PreloaderScene extends Scene {
         super('Preloader')
     }
 
-    preload(options: { [key: string]: any }) {
+    preload() {
         Object.keys(constants.assets).forEach(key => {
             const asset = constants.assets[key as keyof typeof constants.assets]
             this.load.image(asset.name, asset.path)

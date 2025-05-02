@@ -28,11 +28,12 @@ function App() {
             <Row className='h-100 g-0 justify-content-center align-items-center'>
                 {!gameRunning &&
                     <Col xs={12} sm={8} lg={12} className='h-100'>
-                        <SelectPlayersComponent value={defaultPlayersSettings} onPlayersSelected={(settings) => startGame(settings)} />
+                        <SelectPlayersComponent value={defaultPlayersSettings}
+                            onPlayersSelected={(settings) => startGame(settings)} />
                     </Col>
                 }
                 <Col xs={12} sm={8} lg={12} className='h-100'>
-                    {<PhaserGameComponent onSceneChange={scene => setGameScene(scene)} />}
+                    <PhaserGameComponent onSceneChange={scene => setGameScene(scene)} />
                 </Col>
                 {/* <Col xs={12} sm={8} lg={12} className='h-75'>
                     {renderMainComponent()}
