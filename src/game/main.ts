@@ -2,7 +2,7 @@ import { GameScene } from './scenes/GameScene'
 import { MathScene } from './scenes/MathScene'
 import { AUTO, Game } from 'phaser'
 import { PreloaderScene } from './scenes/PreloaderScene'
-import { constants } from './constants'
+import { constants } from './Constants'
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig

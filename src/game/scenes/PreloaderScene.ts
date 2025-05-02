@@ -1,5 +1,5 @@
 import { Scene } from 'phaser'
-import { constants } from '../constants'
+import { constants } from '../Constants'
 
 export class PreloaderScene extends Scene {
     // private birdSprite: Phaser.GameObjects.Sprite

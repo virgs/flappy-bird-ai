@@ -1,4 +1,4 @@
-import { constants } from '../constants'
+import { constants } from '../Constants'
 
 export class Platform {
     private readonly assetsWidthDifference = constants.gameDimensions.width / 2
@@ -47,7 +47,6 @@ export class Platform {
             firstSprite.displayOriginY = 0
             firstSprite.scaleX = constants.gameDimensions.width / firstSprite.displayWidth
             firstSprite.scaleY = constants.gameDimensions.height / firstSprite.displayHeight
-            firstSprite.setDepth(99999999999)
             this.backgroundSprites.push(firstSprite)
 
             const secondSprite = options.scene.add.sprite(constants.gameDimensions.width, 0, assetName)
@@ -55,7 +54,6 @@ export class Platform {
             secondSprite.displayOriginY = 0
             secondSprite.scaleX = constants.gameDimensions.width / secondSprite.displayWidth
             secondSprite.scaleY = constants.gameDimensions.height / secondSprite.displayHeight
-            secondSprite.setDepth(99999999999)
 
             this.backgroundSprites.push(secondSprite)
         })
@@ -67,7 +65,6 @@ export class Platform {
         const firstFloorSprite = options.scene.add.sprite(0, yPosition, floorTextureKey)
         firstFloorSprite.displayOriginX = 0
         firstFloorSprite.displayOriginY = 0
-        firstFloorSprite.setDepth(99999999999)
         firstFloorSprite.scaleX = constants.gameDimensions.width / firstFloorSprite.displayWidth
         firstFloorSprite.scaleY = (constants.gameDimensions.height * 0.15) / firstFloorSprite.displayHeight
         this.floorSprites.push(firstFloorSprite)
@@ -75,7 +72,6 @@ export class Platform {
         const secondFloorSprite = options.scene.add.sprite(constants.gameDimensions.width, yPosition, floorTextureKey)
         secondFloorSprite.displayOriginX = 0
         secondFloorSprite.displayOriginY = 0
-        secondFloorSprite.setDepth(99999999999)
         secondFloorSprite.scaleX = constants.gameDimensions.width / secondFloorSprite.displayWidth
         secondFloorSprite.scaleY = (constants.gameDimensions.height * 0.15) / secondFloorSprite.displayHeight
         this.floorSprites.push(secondFloorSprite)

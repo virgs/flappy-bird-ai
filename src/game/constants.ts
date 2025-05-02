@@ -67,11 +67,11 @@ export const constants = {
     },
     physics: {
         gravity: 0.0015,
-        horizontalVelocityInPixelsPerSecond: 0.25,
+        horizontalVelocityInPixelsPerSecond: 0.2,
     },
     birdAttributes: {
         initialPosition: {
-            x: 75,
+            x: 275,
             y: 150,
         },
         maxBirdAngle: 55,
@@ -80,7 +80,7 @@ export const constants = {
         flapCoolDownMs: 100,
     },
     pipes: {
-        averageHorizontalGapInPixels: 500,
+        averageHorizontalGapInPixels: 350,
         randomFactorHorizontalGapInPixels: 200,
         averageVerticalGapInPixels: 200,
     },
