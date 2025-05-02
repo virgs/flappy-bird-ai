@@ -2,7 +2,7 @@ import { Scene } from 'phaser'
 import { constants } from '../constants'
 
 export class Preloader extends Scene {
-    private birdSprite: Phaser.GameObjects.Sprite
+    // private birdSprite: Phaser.GameObjects.Sprite
 
     constructor() {
         super('Preloader')
@@ -10,9 +10,9 @@ export class Preloader extends Scene {
 
     init(options: { [key: string]: any }) {
         console.log('Preloader scene initialized with options:', options)
-        if (!this.birdSprite) {
-            this.birdSprite = this.createSprite()
-        }
+        // if (!this.birdSprite) {
+        //     this.birdSprite = this.createSprite()
+        // }
     }
 
     preload(options: { [key: string]: any }) {
@@ -42,30 +42,29 @@ export class Preloader extends Scene {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        // this.scene.start('MainMenu')
+        this.scene.start('MainMenu')
     }
 
-    private createSprite(): Phaser.GameObjects.Sprite {
-        const resourceKey = constants.spriteSheet.assets.birdYellow.name
-        console.log('Creating sprite with resource key:', resourceKey)
-        const birdSprite = this.add.sprite(
-            constants.gameDimensions.width / 2,
-            constants.gameDimensions.height / 2,
-            resourceKey
-        )
-        // birdSprite.setScale(0.5)
-        if (!this.anims.get(resourceKey)) {
-            this.anims.create({
-                key: resourceKey,
-                frames: this.anims.generateFrameNumbers(resourceKey, {
-                    start: constants.spriteSheet.frameNumbers.start,
-                    end: constants.spriteSheet.frameNumbers.end,
-                }),
-                frameRate: constants.spriteSheet.animation.frameRate,
-                repeat: constants.spriteSheet.animation.repeat,
-            })
-        }
-        birdSprite.anims.play(resourceKey)
-        return birdSprite
-    }
+    // private createSprite(): Phaser.GameObjects.Sprite {
+    //     const resourceKey = constants.spriteSheet.assets.birdYellow.name
+    //     const birdSprite = this.add.sprite(
+    //         constants.gameDimensions.width / 2,
+    //         constants.gameDimensions.height / 2,
+    //         resourceKey
+    //     )
+    //     // birdSprite.setScale(0.5)
+    //     if (!this.anims.get(resourceKey)) {
+    //         this.anims.create({
+    //             key: resourceKey,
+    //             frames: this.anims.generateFrameNumbers(resourceKey, {
+    //                 start: constants.spriteSheet.frameNumbers.start,
+    //                 end: constants.spriteSheet.frameNumbers.end,
+    //             }),
+    //             frameRate: constants.spriteSheet.animation.frameRate,
+    //             repeat: constants.spriteSheet.animation.repeat,
+    //         })
+    //     }
+    //     birdSprite.anims.play(resourceKey)
+    //     return birdSprite
+    // }
 }

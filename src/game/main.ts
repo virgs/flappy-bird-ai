@@ -1,4 +1,3 @@
-import { Boot } from './scenes/Boot'
 import { GameOver } from './scenes/GameOver'
 import { Game as MainGame } from './scenes/Game'
 import { MainMenu } from './scenes/MainMenu'
@@ -18,7 +17,7 @@ const exportGameConfig: Phaser.Types.Core.GameConfig = {
     },
     parent: 'game-container',
     backgroundColor: '#028af8',
-    scene: [Boot, Preloader, MainMenu, MainGame, GameOver],
+    scene: [Preloader, MainMenu, MainGame, GameOver],
 }
 
 const StartGame = (parent: string) => {

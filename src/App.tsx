@@ -1,8 +1,16 @@
 import { useRef, useState } from 'react'
 import { IRefPhaserGame, PhaserGame } from './PhaserGame'
 import { MainMenu } from './game/scenes/MainMenu'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { defaultPlayersSettings } from './settings/PlayerSettings';
+import { SelectPlayersComponent } from './settings/SelectPlayersComponent';
+
 
 function App() {
+    const [showGame, setShowGame] = useState<boolean>(false)
+
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true)
 
@@ -64,31 +72,26 @@ function App() {
         setCanMoveSprite(scene.scene.key !== 'MainMenu')
     }
 
+    const renderMainComponent = () => {
+        if (showGame) {
+            return <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+        }
+        return <></>
+    }
+
     return (
-        <div id="app">
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-            <div>
-                <div>
-                    <button className="button" onClick={changeScene}>
-                        Change Scene
-                    </button>
-                </div>
-                <div>
-                    <button disabled={canMoveSprite} className="button" onClick={moveSprite}>
-                        Toggle Movement
-                    </button>
-                </div>
-                <div className="spritePosition">
-                    Sprite Position:
-                    <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-                </div>
-                <div>
-                    <button className="button" onClick={addSprite}>
-                        Add New Sprite
-                    </button>
-                </div>
-            </div>
-        </div>
+        <Container fluid={"lg"} id='app'>
+            <Row className='h-100 g-0 justify-content-center align-items-center'>
+                <Col xs={12} sm={8} lg={12} className='h-100'>
+                    <SelectPlayersComponent value={defaultPlayersSettings} onPlayersSelected={() => ({})} />
+                </Col>
+                {/* <Col xs={12} sm={8} lg={12} className='h-75'>
+                    {renderMainComponent()}
+                </Col>
+                <Col xs={12} sm={4} lg={12} className='h-25'>
+                </Col> */}
+            </Row>
+        </Container>
     )
 }
 

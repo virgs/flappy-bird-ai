@@ -1,0 +1,21 @@
+#select-players-component {
+    background-color: var(--bs-secondary);
+    font-family: var(--flappy-bird-font);
+
+    .accordion {
+        overflow-y: auto;
+    }
+
+    .accordion-button::after {
+        display: none;
+    }
+
+    .accordion-button {
+        background-color: transparent !important;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-position: right center;
+        background-color: unset !important;
+    }
+}
