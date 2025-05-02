@@ -1,40 +1,71 @@
 import { Scene } from 'phaser'
+import { constants } from '../constants'
 
 export class Preloader extends Scene {
+    private birdSprite: Phaser.GameObjects.Sprite
+
     constructor() {
         super('Preloader')
     }
 
-    init() {
-        //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background')
+    init(options: { [key: string]: any }) {
+        console.log('Preloader scene initialized with options:', options)
+        if (!this.birdSprite) {
+            this.birdSprite = this.createSprite()
+        }
+    }
 
-        //  A simple progress bar. This is the outline of the bar.
-        this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)
+    preload(options: { [key: string]: any }) {
+        console.log('Preloader scene preloaded with options:', options)
 
-        //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        const bar = this.add.rectangle(512 - 230, 384, 4, 28, 0xffffff)
+        Object.keys(constants.assets).forEach(key => {
+            const asset = constants.assets[key as keyof typeof constants.assets]
+            this.load.image(asset.name, asset.path)
+        })
+        //  Load the sprite sheet
+        //  The sprite sheet is a collection of images that are used to create animations
+        Object.keys(constants.spriteSheet.assets).forEach(key => {
+            const asset = constants.spriteSheet.assets[key as keyof typeof constants.spriteSheet.assets]
+            const { frameWidth, frameHeight } = constants.spriteSheet
+            this.load.spritesheet(asset.name, asset.path, { frameWidth, frameHeight })
+        })
 
-        //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
-        this.load.on('progress', (progress: number) => {
-            //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-            bar.width = 4 + 460 * progress
+        this.load.on('complete', () => {
+            console.log('Assets loaded')
         })
     }
 
-    preload() {
-        //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets')
+    create(options: { [key: string]: any }) {
+        console.log('Preloader scene created with options:', options)
+        // this.children.removeAll(true)
 
-        this.load.image('logo', 'logo.png')
-        this.load.image('star', 'star.png')
-    }
-
-    create() {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
-
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu')
+        // this.scene.start('MainMenu')
+    }
+
+    private createSprite(): Phaser.GameObjects.Sprite {
+        const resourceKey = constants.spriteSheet.assets.birdYellow.name
+        console.log('Creating sprite with resource key:', resourceKey)
+        const birdSprite = this.add.sprite(
+            constants.gameDimensions.width / 2,
+            constants.gameDimensions.height / 2,
+            resourceKey
+        )
+        // birdSprite.setScale(0.5)
+        if (!this.anims.get(resourceKey)) {
+            this.anims.create({
+                key: resourceKey,
+                frames: this.anims.generateFrameNumbers(resourceKey, {
+                    start: constants.spriteSheet.frameNumbers.start,
+                    end: constants.spriteSheet.frameNumbers.end,
+                }),
+                frameRate: constants.spriteSheet.animation.frameRate,
+                repeat: constants.spriteSheet.animation.repeat,
+            })
+        }
+        birdSprite.anims.play(resourceKey)
+        return birdSprite
     }
 }
