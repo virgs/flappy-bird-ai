@@ -10,10 +10,10 @@ import topPipe from '../assets/images/top-pipe.png?url'
 
 export const constants = {
     spriteSheet: {
-        frameWidth: 174, // 522 / 3,
+        frameWidth: 174, // image.width / 3,
         frameHeight: 124,
         scale: 0.5,
-        hitBoxScale: 0.7,
+        hitBoxScale: 0.85,
         animation: {
             repeat: -1,
             frameRate: 12,
@@ -85,11 +85,12 @@ export const constants = {
     obstacles: {
         scale: 4,
         gapInPixels: 80,
-        maxVerticalOffset: 0.5,
-        minVerticalOffset: 0.1,
-        total: 5,
-        averageHorizontalGapInPixels: 350,
-        randomFactorHorizontalGapInPixels: 200,
-        averageVerticalGapInPixels: 200,
+        verticalOffset: {
+            min: 0.1,
+            max: 0.5,
+            total: 5,
+        },
+        horizontalGap: 350,
+        verticalGap: 200,
     },
 }

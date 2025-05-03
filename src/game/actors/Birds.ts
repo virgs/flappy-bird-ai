@@ -1,5 +1,5 @@
 import { Geom } from 'phaser'
-import { PlayerSettings } from '../../settings/PlayerSettings'
+import { BirdSettings } from '../../settings/BirdSettings'
 import { constants } from '../Constants'
 import { Obstacle } from './Obstacle'
 
@@ -7,9 +7,10 @@ export enum Commands {
     FLAP_WING,
 }
 
-type BirdProps = {
+export type BirdProps = {
+    onDieCallback: Function
     initialPosition: Phaser.Geom.Point
-    playerSettings: PlayerSettings
+    playerSettings: BirdSettings
     scene: Phaser.Scene
 }
 
@@ -19,19 +20,17 @@ type UpdateProps = {
 }
 
 export abstract class Bird {
-    private readonly playerSettings: PlayerSettings
-
     private readonly birdSprite: Phaser.GameObjects.Sprite
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite
 
     private verticalSpeed: number = 0
-
     protected alive: boolean = true
     protected inputTimeCounterMs: number = 0
     protected commands: Commands[] = []
+    protected options: BirdProps
 
     protected constructor(options: BirdProps) {
-        this.playerSettings = options.playerSettings
+        this.options = options
         ;[this.birdSprite, this.hitBoxSprite] = this.createSprite(options)
     }
 
@@ -47,7 +46,7 @@ export abstract class Bird {
         scene: Phaser.Scene
     }): Phaser.GameObjects.Sprite[] {
         const scale = constants.spriteSheet.scale
-        const textureKey = this.playerSettings.texture
+        const textureKey = this.options.playerSettings.texture
         const birdSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, textureKey)
         birdSprite.setScale(scale)
         birdSprite.setDepth(10)
@@ -72,8 +71,9 @@ export abstract class Bird {
             this.handleCommands()
             this.handleInput(options)
             this.handleFloorCollision()
-            this.adjustSprite()
+            this.handleCeilingCollision()
             this.handleObstacleCollision(options)
+            this.adjustSprite()
         } else {
             this.moveBackwards(options)
         }
@@ -98,7 +98,7 @@ export abstract class Bird {
             if (this.verticalSpeed > 0) {
                 this.birdSprite.anims.stop()
             } else if (!this.birdSprite.anims.isPlaying) {
-                this.birdSprite.anims.play(this.playerSettings.texture)
+                this.birdSprite.anims.play(this.options.playerSettings.texture)
             }
         }
     }
@@ -142,10 +142,14 @@ export abstract class Bird {
     }
 
     private killBird(): void {
-        this.verticalSpeed = 0
-        this.alive = false
-        this.birdSprite.anims.pause()
-        this.birdSprite.setAlpha(0.4)
+        if (this.alive) {
+            this.verticalSpeed = 0
+            this.alive = false
+            this.birdSprite.anims.pause()
+            this.birdSprite.setAlpha(0.4)
+            this.options.onDieCallback(this.options.playerSettings)
+            this.onBirdDeath()
+        }
     }
 
     public destroy(): void {
@@ -175,6 +179,13 @@ export abstract class Bird {
     private handleFloorCollision(): void {
         const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.bottom > constants.gameDimensions.height - constants.gameDimensions.floorHeight) {
+            this.killBird()
+        }
+    }
+
+    private handleCeilingCollision(): void {
+        const birdBounds = this.hitBoxSprite.getBounds()
+        if (birdBounds.top < 0) {
             this.killBird()
         }
     }

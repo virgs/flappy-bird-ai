@@ -5,7 +5,7 @@ import { JSX, useState } from 'react'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import { PlayerSettings } from './PlayerSettings'
+import { GameSettings } from './GameSettings'
 import './SelectPlayersComponent.scss'
 
 type AccordionForm = {
@@ -17,12 +17,12 @@ type AccordionForm = {
 }
 
 export type SelectPlayersComponentProps = {
-    value: PlayerSettings
-    onPlayersSelected: (players: PlayerSettings) => void
+    value: GameSettings
+    onPlayersSelected: (players: GameSettings) => void
 }
 
 export const SelectPlayersComponent = (props: SelectPlayersComponentProps) => {
-    const [players, setPlayers] = useState<PlayerSettings & { [key: string]: any }>(props.value)
+    const [players, setPlayers] = useState<GameSettings>(props.value)
 
     const accordionSructure: AccordionForm[] = [
         {

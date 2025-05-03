@@ -1,37 +1,66 @@
-import { Geom, Scene } from 'phaser'
+import { Scene } from 'phaser'
+import { BirdSettings } from '../../settings/BirdSettings'
+import { GameSettings } from '../../settings/GameSettings'
+import { sleep } from '../../time/sleep'
+import { BirdFactory } from '../actors/BirdFactory'
+import { Bird } from '../actors/Birds'
 import { Obstacle } from '../actors/Obstacle'
 import { Platform } from '../actors/Platform'
 import { constants } from '../Constants'
 import { EventBus } from '../EventBus'
-import { HumanControlledBird } from '../actors/HumanControlledBird'
-import { Bird } from '../actors/Birds'
+
+export type GameSceneOutput = {
+    aborted: boolean
+    birdPerformance?: BirdPerformance
+}
+
+export type ResultData = {
+    [key: string]: {
+        timeAlive: number
+    }[]
+}
+export class BirdPerformance {
+    private readonly result: ResultData = {}
+    public constructor(settings: GameSettings) {
+        Object.keys(settings).forEach(key => {
+            const playerSettings = settings[key as keyof GameSettings]
+            this.result[playerSettings.key] = []
+        })
+    }
+
+    public computeDeath(birdSettings: BirdSettings, timeAlive: number) {
+        this.result[birdSettings.key].push({ timeAlive: timeAlive })
+    }
+    public getResults(): ResultData {
+        return this.result
+    }
+}
 
 export class GameScene extends Scene {
-    private readonly birdsInitialPosition = new Geom.Point(
-        constants.birdAttributes.initialPosition.x,
-        constants.birdAttributes.initialPosition.y
-    )
-    private secondsToCreateNextPipe: number =
-        constants.obstacles.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
+    private readonly obstacleIntervalsInSeconds: number =
+        constants.obstacles.horizontalGap / constants.physics.horizontalVelocityInPixelsPerSecond
+    private gameOver: boolean = false
     private obstacles: Obstacle[] = []
     private birds: Bird[] = []
     private sceneDuration: number = 0
     private platform: Platform
+    private secondsSinceLastObstacleCreation: number = 0
     private closestObstacleIndex: number = 0
-    private totalObstaclesCreated: number
-    private livingBirdsCounter: number = 0
+    private birdPerformance: BirdPerformance
+    private birdSettings: GameSettings
 
     constructor() {
         super('GameScene')
     }
 
-    create(data: any) {
-        console.log('GameScene scene create', data)
+    public create(gameSettings: GameSettings) {
         EventBus.emit('current-scene-ready', this)
+        this.birdSettings = gameSettings
+        this.birdPerformance = new BirdPerformance(gameSettings)
         this.obstacles = []
         this.birds = []
-        this.totalObstaclesCreated = 0
-        this.livingBirdsCounter = 0
+        this.gameOver = false
+        this.secondsSinceLastObstacleCreation = 0
         this.sceneDuration = 0
         this.closestObstacleIndex = 0
         this.platform = new Platform({ scene: this })
@@ -41,24 +70,33 @@ export class GameScene extends Scene {
                 scene: this,
             })
         )
-        this.totalObstaclesCreated = 1
 
-        this.birds.push(
-            new HumanControlledBird({
-                initialPosition: this.birdsInitialPosition,
-                scene: this,
-            })
-        )
+        this.birds = BirdFactory.createBirds(this, gameSettings, (bird: BirdSettings) => {
+            this.birdPerformance.computeDeath(bird, this.sceneDuration)
+        })
     }
 
-    update(_time: number, delta: number): void {
+    public update(_time: number, delta: number): void {
+        if (this.gameOver) {
+            return
+        }
         this.sceneDuration += delta
         this.platform.update({
             delta: delta,
         })
         this.updateObstacles(delta)
         this.updateBirds(delta)
-        // this.updateScore(delta)
+        this.checkGameOver()
+    }
+
+    private async checkGameOver() {
+        if (this.birds.length === 0) {
+            if (this.birdSettings.human?.enabled) {
+                await sleep(2000)
+            }
+            this.gameOver = true
+            this.scene.start('EvaluationScene', this.birdPerformance.getResults())
+        }
     }
 
     private updateBirds(delta: number) {
@@ -78,9 +116,18 @@ export class GameScene extends Scene {
     }
 
     public abort() {
+        this.destroy()
+        const output: GameSceneOutput = {
+            aborted: true,
+            birdPerformance: undefined,
+        }
+        this.scene.start('EvaluationScene', output)
+    }
+
+    private destroy() {
         this.obstacles.forEach(pipe => pipe.destroy())
         this.platform.destroy()
-        this.scene.start('MathScene')
+        this.birds.forEach(bird => bird.destroy())
     }
 
     private updateObstacles(delta: number) {
@@ -107,11 +154,9 @@ export class GameScene extends Scene {
             return true
         })
 
-        this.secondsToCreateNextPipe -= delta
-        if (this.secondsToCreateNextPipe <= 0) {
-            this.totalObstaclesCreated++
-            this.secondsToCreateNextPipe =
-                constants.obstacles.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
+        this.secondsSinceLastObstacleCreation += delta
+        if (this.secondsSinceLastObstacleCreation >= this.obstacleIntervalsInSeconds) {
+            this.secondsSinceLastObstacleCreation = 0
             this.obstacles.push(
                 new Obstacle({
                     scene: this,

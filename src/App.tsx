@@ -6,30 +6,31 @@ import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import { PhaserGameComponent } from './PhaserGameComponent'
-import { MathScene } from './game/scenes/MathScene'
-import { defaultPlayersSettings, PlayerSettings } from './settings/PlayerSettings'
-import { SelectPlayersComponent } from './settings/SelectPlayersComponent'
 import { GameScene } from './game/scenes/GameScene'
+import { EvaluationScene } from './game/scenes/EvaluationScene'
+import { GameSettings } from './settings/GameSettings'
+import { defaultBirdSettings } from './settings/DefaultBirdSettings'
+import { SelectPlayersComponent } from './settings/SelectPlayersComponent'
 
 function App() {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
-    const [gameScene, setGameScene] = useState<Phaser.Scene | undefined>(undefined)
-    const [playerSettings, setPlayerSettings] = useState<PlayerSettings>(defaultPlayersSettings)
+    const [scene, setGameScene] = useState<Phaser.Scene | undefined>(undefined)
+    const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultBirdSettings)
 
-    const startGame = (settings: PlayerSettings) => {
-        if (gameScene) {
+    const startGame = (settings: GameSettings) => {
+        if (scene) {
             setPlayerSettings(settings)
             setGameRunning(true)
-            const scene = gameScene as MathScene
-            scene.startGame(settings)
+            const evaluationScene = scene as EvaluationScene
+            evaluationScene.startGame(settings)
         }
     }
 
     const abortGame = () => {
-        if (gameScene) {
+        if (scene) {
             setGameRunning(false)
-            const scene = gameScene as GameScene
-            scene.abort()
+            const gameScene = scene as GameScene
+            gameScene.abort()
         }
     }
 
@@ -39,7 +40,7 @@ function App() {
                 {!gameRunning && (
                     <Col xs={12} sm={8} lg={12} className="h-100">
                         <SelectPlayersComponent
-                            value={defaultPlayersSettings}
+                            value={playerSettings}
                             onPlayersSelected={settings => startGame(settings)}
                         />
                     </Col>

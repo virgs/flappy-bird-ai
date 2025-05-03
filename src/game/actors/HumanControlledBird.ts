@@ -1,13 +1,14 @@
-import { Bird, Commands } from './Birds'
+import { EventBus } from '../EventBus'
+import { Bird, BirdProps, Commands } from './Birds'
 import KeyCodes = Phaser.Input.Keyboard.KeyCodes
-import { defaultPlayersSettings } from '../../settings/PlayerSettings'
 
 export class HumanControlledBird extends Bird {
     private readonly keys?: (Phaser.Input.Keyboard.Key | undefined)[] = []
 
-    public constructor(options: { initialPosition: Phaser.Geom.Point; scene: Phaser.Scene }) {
-        super({ ...options, playerSettings: defaultPlayersSettings.human })
+    public constructor(options: BirdProps) {
+        super(options)
         this.keys = [options.scene.input.keyboard?.addKey(KeyCodes.SPACE)]
+        EventBus.on('game-container-pointer-down', () => this.commands.push(Commands.FLAP_WING))
     }
 
     protected childProcessInput(): boolean {

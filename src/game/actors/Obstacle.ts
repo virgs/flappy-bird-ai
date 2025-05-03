@@ -22,11 +22,11 @@ export class Obstacle {
         this.birdsXPosition = constants.birdAttributes.initialPosition.x
 
         const verticalOffsetOptions = Array.from(
-            { length: constants.obstacles.total },
+            { length: constants.obstacles.verticalOffset.total },
             (_, i) =>
-                constants.obstacles.minVerticalOffset +
-                (i * (constants.obstacles.maxVerticalOffset - constants.obstacles.minVerticalOffset)) /
-                    constants.obstacles.total
+                constants.obstacles.verticalOffset.min +
+                (i * (constants.obstacles.verticalOffset.max - constants.obstacles.verticalOffset.min)) /
+                    constants.obstacles.verticalOffset.total
         )
         const randomIndex = Math.floor(Math.random() * verticalOffsetOptions.length)
         this.verticalOffset = verticalOffsetOptions[randomIndex] * constants.gameDimensions.height
