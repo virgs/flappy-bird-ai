@@ -66,14 +66,14 @@ export class Platform {
         firstFloorSprite.displayOriginX = 0
         firstFloorSprite.displayOriginY = 0
         firstFloorSprite.scaleX = constants.gameDimensions.width / firstFloorSprite.displayWidth
-        firstFloorSprite.scaleY = (constants.gameDimensions.height * 0.15) / firstFloorSprite.displayHeight
+        firstFloorSprite.scaleY = constants.gameDimensions.floorHeight / firstFloorSprite.displayHeight
         this.floorSprites.push(firstFloorSprite)
 
         const secondFloorSprite = options.scene.add.sprite(constants.gameDimensions.width, yPosition, floorTextureKey)
         secondFloorSprite.displayOriginX = 0
         secondFloorSprite.displayOriginY = 0
         secondFloorSprite.scaleX = constants.gameDimensions.width / secondFloorSprite.displayWidth
-        secondFloorSprite.scaleY = (constants.gameDimensions.height * 0.15) / secondFloorSprite.displayHeight
+        secondFloorSprite.scaleY = constants.gameDimensions.floorHeight / secondFloorSprite.displayHeight
         this.floorSprites.push(secondFloorSprite)
     }
 }

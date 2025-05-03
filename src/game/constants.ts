@@ -12,6 +12,8 @@ export const constants = {
     spriteSheet: {
         frameWidth: 174, // 522 / 3,
         frameHeight: 124,
+        scale: 0.5,
+        hitBoxScale: 0.7,
         animation: {
             repeat: -1,
             frameRate: 12,
@@ -64,22 +66,28 @@ export const constants = {
     gameDimensions: {
         width: 1024,
         height: 768,
+        floorHeight: 0.15 * 768, // 0.15 * height
     },
     physics: {
-        gravity: 0.0015,
-        horizontalVelocityInPixelsPerSecond: 0.2,
+        gravity: 0.003,
+        horizontalVelocityInPixelsPerSecond: 0.25,
     },
     birdAttributes: {
         initialPosition: {
             x: 275,
             y: 150,
         },
-        maxBirdAngle: 55,
-        maxBirdVerticalSpeed: 0.5,
-        flapImpulse: 1.1 * 0.5, // 1.1 * maxBirdVerticalSpeed
-        flapCoolDownMs: 100,
+        maxBirdAngle: 85,
+        maxBirdVerticalSpeed: 0.75,
+        flapImpulse: 1.1 * 0.75, // 1.1 * maxBirdVerticalSpeed
+        flapCoolDownMs: 200,
     },
-    pipes: {
+    obstacles: {
+        scale: 4,
+        gapInPixels: 80,
+        maxVerticalOffset: 0.5,
+        minVerticalOffset: 0.1,
+        total: 5,
         averageHorizontalGapInPixels: 350,
         randomFactorHorizontalGapInPixels: 200,
         averageVerticalGapInPixels: 200,

@@ -1,21 +1,33 @@
-import { Geom, Scene } from 'phaser'
+import { Geom } from 'phaser'
 import { constants } from '../Constants'
 
-type PipeOptions = {
+type ObstacleProps = {
     scene: Phaser.Scene
 }
 
-export class Pipe {
+export class Obstacle {
+    public getHitBoxes() {
+        return this.pipesSprites.map(sprite => {
+            const bounds = sprite.getBounds()
+            return new Geom.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height)
+        })
+    }
     private readonly gapInPixels = 80
     private readonly verticalOffset: number
     private readonly pipesSprites: Phaser.GameObjects.Sprite[] = []
     private readonly birdsXPosition: number
     private outOfScreen: boolean = false
 
-    constructor(options: PipeOptions) {
+    constructor(options: ObstacleProps) {
         this.birdsXPosition = constants.birdAttributes.initialPosition.x
 
-        const verticalOffsetOptions = Array.from({ length: 5 }, (_, i) => 0.1 + i * 0.1)
+        const verticalOffsetOptions = Array.from(
+            { length: constants.obstacles.total },
+            (_, i) =>
+                constants.obstacles.minVerticalOffset +
+                (i * (constants.obstacles.maxVerticalOffset - constants.obstacles.minVerticalOffset)) /
+                    constants.obstacles.total
+        )
         const randomIndex = Math.floor(Math.random() * verticalOffsetOptions.length)
         this.verticalOffset = verticalOffsetOptions[randomIndex] * constants.gameDimensions.height
         const position = new Geom.Point(constants.gameDimensions.width, this.verticalOffset)
@@ -34,16 +46,24 @@ export class Pipe {
         }
     }
 
+    getVerticalOffset() {
+        return this.verticalOffset
+    }
+
     destroy(): void {
         this.pipesSprites.forEach(sprite => sprite.destroy())
+    }
+
+    getHorizontalPosition(): number {
+        return this.pipesSprites[0].x
     }
 
     public isOutOfScreen(): boolean {
         return this.outOfScreen
     }
 
-    private createSprites(options: PipeOptions, position: Phaser.Geom.Point) {
-        const scale = 4
+    private createSprites(options: ObstacleProps, position: Phaser.Geom.Point) {
+        const scale = constants.obstacles.scale
         const topPipeSprite = options.scene.add.sprite(position.x, position.y, constants.assets.topPipe.name)
         topPipeSprite.displayOriginX = 0
         topPipeSprite.displayOriginY = 0

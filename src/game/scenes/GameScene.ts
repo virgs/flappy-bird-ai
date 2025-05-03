@@ -1,23 +1,25 @@
 import { Geom, Scene } from 'phaser'
-import { Pipe } from '../actors/pipe'
+import { Obstacle } from '../actors/Obstacle'
 import { Platform } from '../actors/Platform'
 import { constants } from '../Constants'
 import { EventBus } from '../EventBus'
+import { HumanControlledBird } from '../actors/HumanControlledBird'
+import { Bird } from '../actors/Birds'
 
 export class GameScene extends Scene {
     private readonly birdsInitialPosition = new Geom.Point(
         constants.birdAttributes.initialPosition.x,
         constants.birdAttributes.initialPosition.y
     )
-    // private birdsResults: { attributes: BirdAttributes; duration: number; id: number; data: any }[] = []
     private secondsToCreateNextPipe: number =
-        constants.pipes.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
-    private pipesCreated: number
+        constants.obstacles.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
+    private obstacles: Obstacle[] = []
+    private birds: Bird[] = []
     private sceneDuration: number = 0
-    private livingBirdsCounter: number = 0
     private platform: Platform
-    private readonly pipes: Pipe[] = []
-    private closestPipeIndex: number = 0
+    private closestObstacleIndex: number = 0
+    private totalObstaclesCreated: number
+    private livingBirdsCounter: number = 0
 
     constructor() {
         super('GameScene')
@@ -26,20 +28,27 @@ export class GameScene extends Scene {
     create(data: any) {
         console.log('GameScene scene create', data)
         EventBus.emit('current-scene-ready', this)
-        this.pipes.slice(0, this.pipes.length)
-        this.pipesCreated = 0
+        this.obstacles = []
+        this.birds = []
+        this.totalObstaclesCreated = 0
         this.livingBirdsCounter = 0
         this.sceneDuration = 0
-        this.closestPipeIndex = 0
+        this.closestObstacleIndex = 0
         this.platform = new Platform({ scene: this })
 
-        this.pipes.push(
-            new Pipe({
+        this.obstacles.push(
+            new Obstacle({
                 scene: this,
             })
         )
-        this.pipesCreated = 1
-        // this.createBirds(data)
+        this.totalObstaclesCreated = 1
+
+        this.birds.push(
+            new HumanControlledBird({
+                initialPosition: this.birdsInitialPosition,
+                scene: this,
+            })
+        )
     }
 
     update(_time: number, delta: number): void {
@@ -47,51 +56,64 @@ export class GameScene extends Scene {
         this.platform.update({
             delta: delta,
         })
-        this.updatePipes(delta)
-
-        // this.updateBirds(delta)
-        // this.updatePipes(delta)
+        this.updateObstacles(delta)
+        this.updateBirds(delta)
         // this.updateScore(delta)
     }
 
-    abort() {
-        this.pipes.forEach(pipe => pipe.destroy())
+    private updateBirds(delta: number) {
+        this.birds.forEach(bird => {
+            bird.update({
+                delta: delta,
+                closestObstacle: this.obstacles[this.closestObstacleIndex],
+            })
+        })
+        this.birds = this.birds.filter(bird => {
+            if (bird.isOutOfScreen()) {
+                bird.destroy()
+                return false
+            }
+            return true
+        })
+    }
+
+    public abort() {
+        this.obstacles.forEach(pipe => pipe.destroy())
         this.platform.destroy()
         this.scene.start('MathScene')
     }
 
-    private updatePipes(delta: number) {
+    private updateObstacles(delta: number) {
         // Process pipes and remove those that are out of screen
-        const outOfScreenPipesCount = this.pipes.filter((pipe, index) => {
+        this.obstacles = this.obstacles.filter((pipe, index) => {
             // Update each pipe
             pipe.update({
                 delta: delta,
                 onPassedBirds: () => {
                     // Adjust closest pipe index when birds pass it
-                    if (this.closestPipeIndex === index) {
-                        this.closestPipeIndex++
+                    if (this.closestObstacleIndex === index) {
+                        this.closestObstacleIndex++
                     }
                 },
             })
+            if (pipe.isOutOfScreen()) {
+                // Remove out-of-screen pipes from the beginning of the array
+                --this.closestObstacleIndex
+                pipe.destroy()
+                return false
+            }
 
             // Check if pipe should be removed
-            return pipe.isOutOfScreen()
-        }).length
-
-        // Remove out-of-screen pipes from the beginning of the array
-        if (outOfScreenPipesCount > 0) {
-            // Remove the pipes that are out of screen
-            this.pipes.splice(0, outOfScreenPipesCount)
-            this.closestPipeIndex -= outOfScreenPipesCount
-        }
+            return true
+        })
 
         this.secondsToCreateNextPipe -= delta
         if (this.secondsToCreateNextPipe <= 0) {
-            this.pipesCreated++
+            this.totalObstaclesCreated++
             this.secondsToCreateNextPipe =
-                constants.pipes.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
-            this.pipes.push(
-                new Pipe({
+                constants.obstacles.averageHorizontalGapInPixels / constants.physics.horizontalVelocityInPixelsPerSecond
+            this.obstacles.push(
+                new Obstacle({
                     scene: this,
                 })
             )

@@ -30,9 +30,7 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
             }
             EventBus.removeListener('current-scene-ready')
         }
-    }, []);
-
+    }, [])
 
     return <div id="game-container"></div>
-
-};
+}
