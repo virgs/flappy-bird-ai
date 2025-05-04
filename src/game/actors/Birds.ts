@@ -1,12 +1,14 @@
 import { Geom } from 'phaser'
 import { gameConstants } from '../GameConstants'
 import { Obstacle } from './Obstacle'
+import { BirdTypes } from '../../settings/BirdSettings'
 
 export enum Commands {
     FLAP_WING,
 }
 
 export type BirdProps = {
+    type: BirdTypes
     texture: string
     initialPosition: Phaser.Geom.Point
     scene: Phaser.Scene
@@ -31,6 +33,10 @@ export abstract class Bird {
     protected constructor(options: BirdProps) {
         this.options = options
         ;[this.birdSprite, this.hitBoxSprite] = this.createSprite(options)
+    }
+
+    public getType(): BirdTypes {
+        return this.options.type
     }
 
     protected abstract childProcessInput(data: {

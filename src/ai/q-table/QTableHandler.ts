@@ -1,5 +1,5 @@
 import { Action, State } from '../../game/actors/BirdQTable'
-import { QTableBirdSettings, Range } from '../../settings/BirdSettings'
+import { QTableBirdSettings } from '../../settings/BirdSettings'
 
 export type ActionValues = {
     [Action.FLAP]: number
@@ -9,19 +9,16 @@ export type ActionValues = {
 export type QTable = { [state: string]: ActionValues }
 
 export class QTableHandler {
-    private readonly learningRate: number
-    private readonly discountFactor: number
+    private readonly settings: QTableBirdSettings
     private readonly table: QTable
-    private readonly gridSpatialAbstraction: {
-        horizontal: Range
-        vertical: Range
-    }
 
     public constructor(settings: QTableBirdSettings) {
-        this.learningRate = settings.learningRate.value
-        this.discountFactor = settings.discountFactor.value
-        this.gridSpatialAbstraction = settings.gridSpatialAbstraction
+        this.settings = settings
         this.table = settings.qTable || {}
+    }
+
+    public getQTableBirdSettings(): QTableBirdSettings {
+        return { ...this.settings, qTable: this.table }
     }
 
     public getState(
@@ -30,10 +27,14 @@ export class QTableHandler {
         verticalDistanceToCeiling: number
     ): State {
         return {
-            horizontalDistanceToGap: Math.floor(horizontalDistanceToGap / this.gridSpatialAbstraction.horizontal.value),
-            verticalDistanceToGap: Math.floor(verticalDistanceToGap / this.gridSpatialAbstraction.vertical.value),
+            horizontalDistanceToGap: Math.floor(
+                horizontalDistanceToGap / this.settings.gridSpatialAbstraction.horizontal.value
+            ),
+            verticalDistanceToGap: Math.floor(
+                verticalDistanceToGap / this.settings.gridSpatialAbstraction.vertical.value
+            ),
             verticalDistanceToCeiling: Math.floor(
-                verticalDistanceToCeiling / this.gridSpatialAbstraction.vertical.value
+                verticalDistanceToCeiling / this.settings.gridSpatialAbstraction.vertical.value
             ),
         }
     }
@@ -95,7 +96,9 @@ export class QTableHandler {
 
         const estimateMaxQValue = Math.max(futureQActions[Action.FLAP], futureQActions[Action.DO_NOT_FLAP])
         this.getQElement(data.lastState)[data.lastAction] +=
-            this.learningRate *
-            (data.reward + this.discountFactor * estimateMaxQValue - this.getQElement(data.lastState)[data.lastAction])
+            this.settings.learningRate.value *
+            (data.reward +
+                this.settings.discountFactor.value * estimateMaxQValue -
+                this.getQElement(data.lastState)[data.lastAction])
     }
 }

@@ -1,12 +1,13 @@
 import { Scene } from 'phaser'
 
+import { BirdTypes } from '../../settings/BirdSettings'
 import { GameSettings } from '../../settings/GameSettings'
 import { sleep } from '../../time/sleep'
+import { BirdQTable } from '../actors/BirdQTable'
 import { EventBus } from '../EventBus'
 import { RoundResult } from './GameScene'
 
 export class EvaluationScene extends Scene {
-    private gameInitialSettings: GameSettings
     private iterations: number = 0
 
     public constructor() {
@@ -14,15 +15,22 @@ export class EvaluationScene extends Scene {
     }
 
     public async init(output: RoundResult) {
-        if (this.gameInitialSettings && !output.aborted) {
-            if (this.gameInitialSettings.humanSettings.enabled) {
+        if (output.aborted === false) {
+            if (output.birdPerformances.some(performance => performance.bird.getType() === BirdTypes.HUMAN)) {
                 await sleep(2000)
             }
-            //@ts-expect-error
-            const qTable = this.gameInitialSettings.qTableSettings.qTable.qTable ?? {}
-            console.log('Qtable states', this.iterations, Object.keys(qTable).length, qTable)
+            const gameSettings: GameSettings = { ...output.gameSettings }
+
+            gameSettings.qTableSettings.birds = output.birdPerformances
+                .filter(performance => performance.bird.getType() === BirdTypes.Q_TABLE)
+                .map(performance => (performance.bird as BirdQTable).getQTableBirdSettings())
+
+            gameSettings.qTableSettings.birds.forEach(bird =>
+                console.log(Object.keys(bird.qTable ?? {}).length, bird.qTable)
+            )
             this.iterations++
-            this.scene.start('GameScene', this.gameInitialSettings)
+            console.log('Iterations', this.iterations)
+            this.scene.start('GameScene', gameSettings)
         }
     }
 
@@ -31,9 +39,8 @@ export class EvaluationScene extends Scene {
     }
 
     public startGame(playersSettings: GameSettings) {
-        console.log('EvaluationScene startGame', playersSettings)
-        this.gameInitialSettings = playersSettings
         this.iterations = 0
+        console.log('EvaluationScene startGame', playersSettings)
         this.scene.start('GameScene', playersSettings)
     }
 }

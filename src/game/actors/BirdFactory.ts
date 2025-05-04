@@ -4,6 +4,7 @@ import { gameConstants } from '../GameConstants'
 import { Bird } from './Birds'
 import { HumanControlledBird } from './HumanControlledBird'
 import { BirdQTable } from './BirdQTable'
+import { BirdTypes } from '../../settings/BirdSettings'
 
 export class BirdFactory {
     private static readonly birdsInitialPosition = new Geom.Point(
@@ -16,6 +17,7 @@ export class BirdFactory {
         if (options.humanSettings?.enabled) {
             birds.push(
                 new HumanControlledBird({
+                    type: options.humanSettings.birdType,
                     texture: options.humanSettings.texture,
                     initialPosition: this.birdsInitialPosition,
                     scene: scene,
@@ -31,6 +33,7 @@ export class BirdFactory {
                         this.birdsInitialPosition.y + 10
                     )
                     return new BirdQTable({
+                        type: BirdTypes.Q_TABLE,
                         qTableBirdSettings: qTableBirdSettings,
                         texture: qTableSettings.texture,
                         initialPosition: position,

@@ -29,6 +29,10 @@ export class BirdQTable extends Bird {
         this.qTableHandler = new QTableHandler(this.qTableBirdSettings)
     }
 
+    public getQTableBirdSettings(): QTableBirdSettings {
+        return this.qTableHandler.getQTableBirdSettings()
+    }
+
     protected childProcessInput(data: {
         verticalPosition: number
         closestPipeGapVerticalPosition: number
