@@ -1,28 +1,27 @@
-import { QTableSettings } from '../../settings/BirdSettings'
-import { Action, State } from './BirdQTable'
+import { Action, State } from '../../game/actors/BirdQTable'
+import { QTableBirdSettings, Range } from '../../settings/BirdSettings'
 
 export type ActionValues = {
     [Action.FLAP]: number
     [Action.DO_NOT_FLAP]: number
 }
 
-export class QTable {
+export type QTable = { [state: string]: ActionValues }
+
+export class QTableHandler {
     private readonly learningRate: number
     private readonly discountFactor: number
+    private readonly table: QTable
     private readonly gridSpatialAbstraction: {
-        horizontal: number
-        vertical: number
+        horizontal: Range
+        vertical: Range
     }
 
-    private qTable: {
-        [state: string]: ActionValues
-    } = {}
-
-    public constructor(settings: QTableSettings) {
-        this.learningRate = settings.learningRate
-        this.discountFactor = settings.discountFactor
+    public constructor(settings: QTableBirdSettings) {
+        this.learningRate = settings.learningRate.value
+        this.discountFactor = settings.discountFactor.value
         this.gridSpatialAbstraction = settings.gridSpatialAbstraction
-        this.qTable = {}
+        this.table = settings.qTable || {}
     }
 
     public getState(
@@ -31,19 +30,21 @@ export class QTable {
         verticalDistanceToCeiling: number
     ): State {
         return {
-            horizontalDistanceToGap: Math.floor(horizontalDistanceToGap / this.gridSpatialAbstraction.horizontal),
-            verticalDistanceToGap: Math.floor(verticalDistanceToGap / this.gridSpatialAbstraction.vertical),
-            verticalDistanceToCeiling: Math.floor(verticalDistanceToCeiling / this.gridSpatialAbstraction.vertical),
+            horizontalDistanceToGap: Math.floor(horizontalDistanceToGap / this.gridSpatialAbstraction.horizontal.value),
+            verticalDistanceToGap: Math.floor(verticalDistanceToGap / this.gridSpatialAbstraction.vertical.value),
+            verticalDistanceToCeiling: Math.floor(
+                verticalDistanceToCeiling / this.gridSpatialAbstraction.vertical.value
+            ),
         }
     }
 
     public getQElement(state: State): ActionValues {
         const index = `${state.horizontalDistanceToGap}|${state.verticalDistanceToGap}|${state.verticalDistanceToCeiling}`
-        if (!this.qTable[index]) {
+        if (!this.table[index]) {
             const indexes = this.createIndexesCloseToState(state)
             const average = indexes.reduce(
                 (acc, item) => {
-                    const value = this.qTable[item.index]
+                    const value = this.table[item.index]
                     if (value) {
                         acc.counter += item.importance
                         acc.sum[Action.DO_NOT_FLAP] += value[Action.DO_NOT_FLAP] * item.importance
@@ -60,12 +61,12 @@ export class QTable {
                 }
             )
 
-            this.qTable[index] = {
+            this.table[index] = {
                 [Action.DO_NOT_FLAP]: average.counter > 0 ? average.sum[Action.DO_NOT_FLAP] / average.counter : 0,
                 [Action.FLAP]: average.counter > 0 ? average.sum[Action.FLAP] / average.counter : 0,
             }
         }
-        return this.qTable[index]
+        return this.table[index]
     }
 
     private createIndexesCloseToState(state: State) {

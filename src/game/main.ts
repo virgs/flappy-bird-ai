@@ -2,14 +2,14 @@ import { GameScene } from './scenes/GameScene'
 import { EvaluationScene } from './scenes/EvaluationScene'
 import { AUTO, Game } from 'phaser'
 import { PreloaderScene } from './scenes/PreloaderScene'
-import { constants } from './Constants'
+import { gameConstants } from './GameConstants'
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
 const exportGameConfig: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: constants.gameDimensions.width,
-    height: constants.gameDimensions.height,
+    width: gameConstants.gameDimensions.width,
+    height: gameConstants.gameDimensions.height,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,

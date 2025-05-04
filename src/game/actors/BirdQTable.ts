@@ -1,6 +1,6 @@
-import { QTableSettings } from '../../settings/BirdSettings'
+import { QTableHandler } from '../../ai/q-table/QTableHandler'
+import { QTableBirdSettings } from '../../settings/BirdSettings'
 import { Bird, BirdProps, Commands } from './Birds'
-import { QTable } from './QTable'
 
 export enum Action {
     FLAP = 'FLAP',
@@ -15,18 +15,18 @@ export type State = {
 
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
 export class BirdQTable extends Bird {
-    private readonly birdSettings: QTableSettings
-    private readonly qTable: QTable
+    private readonly qTableHandler: QTableHandler
+    private readonly qTableBirdSettings: QTableBirdSettings
     private lastState?: State = undefined
     private currentState?: State = undefined
     private lastAction: Action = Action.DO_NOT_FLAP
 
     private counterMs = 0
 
-    public constructor(options: BirdProps) {
+    public constructor(options: BirdProps & { qTableBirdSettings: QTableBirdSettings }) {
         super(options)
-        this.birdSettings = options.playerSettings as QTableSettings
-        this.qTable = this.birdSettings.qTable!
+        this.qTableBirdSettings = options.qTableBirdSettings
+        this.qTableHandler = new QTableHandler(this.qTableBirdSettings)
     }
 
     protected childProcessInput(data: {
@@ -36,12 +36,12 @@ export class BirdQTable extends Bird {
         delta: number
     }): boolean {
         this.counterMs += data.delta
-        if (this.counterMs < this.birdSettings.timeGridInMs) {
+        if (this.counterMs < this.qTableBirdSettings.timeGridInMs.value) {
             return false
         }
         this.counterMs = 0
 
-        this.currentState = this.qTable.getState(
+        this.currentState = this.qTableHandler.getState(
             data.horizontalDistanceToClosestPipe,
             data.closestPipeGapVerticalPosition - data.verticalPosition,
             data.verticalPosition
@@ -56,10 +56,10 @@ export class BirdQTable extends Bird {
             this.lastState.verticalDistanceToGap !== this.currentState.verticalDistanceToGap ||
             this.lastState.verticalDistanceToCeiling !== this.currentState.verticalDistanceToCeiling
         if (stateChanged) {
-            this.qTable.updateQValue({
+            this.qTableHandler.updateQValue({
                 currentState: this.currentState,
                 lastState: this.lastState,
-                reward: this.birdSettings.reward.stayAlive,
+                reward: this.qTableBirdSettings.reward.stayAlive.value,
                 lastAction: this.lastAction,
             })
             const shouldFlap = this.shouldFlap()
@@ -72,10 +72,10 @@ export class BirdQTable extends Bird {
 
     protected onBirdDeath(): void {
         if (this.lastState) {
-            this.qTable.updateQValue({
+            this.qTableHandler.updateQValue({
                 currentState: this.currentState!,
                 lastState: this.lastState,
-                reward: this.birdSettings.reward.die,
+                reward: this.qTableBirdSettings.reward.die.value,
                 lastAction: this.lastAction,
             })
         }
@@ -83,7 +83,7 @@ export class BirdQTable extends Bird {
     }
 
     private shouldFlap(): boolean {
-        const qActions = this.qTable.getQElement(this.currentState!)
+        const qActions = this.qTableHandler.getQElement(this.currentState!)
         const flapChancesAreHigher = qActions[Action.FLAP] >= qActions[Action.DO_NOT_FLAP]
 
         if (flapChancesAreHigher) {

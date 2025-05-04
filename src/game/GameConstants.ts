@@ -8,11 +8,11 @@ import bottomPipe from '../assets/images/bottom-pipe.png?url'
 import floor from '../assets/images/floor.png?url'
 import topPipe from '../assets/images/top-pipe.png?url'
 
-export const constants = {
+export const gameConstants = {
     spriteSheet: {
         frameWidth: 174, // image.width / 3,
         frameHeight: 124,
-        scale: 0.5,
+        scale: 0.45,
         hitBoxScale: 0.85,
         animation: {
             repeat: -1,
@@ -77,20 +77,20 @@ export const constants = {
             x: 275,
             y: 150,
         },
-        maxBirdAngle: 85,
+        maxBirdAngle: 85, // degrees
         maxBirdVerticalSpeed: 0.75,
-        flapImpulse: 1.1 * 0.75, // 1.1 * maxBirdVerticalSpeed
+        flapImpulse: 1 * 0.75, // 1.1 * maxBirdVerticalSpeed
         flapCoolDownMs: 200,
     },
     obstacles: {
         scale: 4,
-        gapInPixels: 80,
         verticalOffset: {
+            // proportion of the screen height
             min: 0.1,
             max: 0.5,
             total: 5,
         },
-        horizontalGap: 350,
-        verticalGap: 200,
+        verticalGapInPixels: 80,
+        horizontalGapInPixels: 350,
     },
 }

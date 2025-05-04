@@ -5,53 +5,75 @@ import { JSX, useState } from 'react'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
+import { BirdSettings } from './BirdSettings'
 import { GameSettings } from './GameSettings'
-import './SelectPlayersComponent.scss'
+import './SelectBirdsComponent.scss'
 
 type AccordionForm = {
     label: string
-    key: string
     color: string
     icon: IconDefinition
     body: JSX.Element
+    getBirdsSettings: (gameSettings: GameSettings) => BirdSettings
+    setEnabled: (value: boolean, gameSettings: GameSettings) => GameSettings
 }
 
-export type SelectPlayersComponentProps = {
+export type SelectGameSettings = {
     value: GameSettings
     onPlayersSelected: (players: GameSettings) => void
 }
 
-export const SelectPlayersComponent = (props: SelectPlayersComponentProps) => {
-    const [players, setPlayers] = useState<GameSettings>(props.value)
+export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
+    const [gameSettings, setGameSettings] = useState<GameSettings>(props.value)
 
     const accordionSructure: AccordionForm[] = [
         {
             label: 'Human',
-            key: 'human',
             color: 'warning',
             icon: faGamepad,
             body: <></>,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.humanSettings,
+            setEnabled: (value: boolean, gameSettings: GameSettings) => {
+                const newGameSettings = { ...gameSettings }
+                newGameSettings.humanSettings.enabled = value
+                return newGameSettings
+            },
         },
         {
             label: 'Neuro Evolutionary',
-            key: 'neuroEvolutionaty',
             color: 'success',
             icon: faDna,
             body: <></>,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.neuroEvolutionarySettings,
+            setEnabled: (value: boolean, gameSettings: GameSettings) => {
+                const newGameSettings = { ...gameSettings }
+                newGameSettings.neuroEvolutionarySettings.enabled = value
+                return newGameSettings
+            },
         },
         {
             label: 'Simulated Annealing',
-            key: 'simmulatedAnnealing',
             color: 'danger',
             icon: faTemperatureLow,
             body: <></>,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simmulatedAnnealingSettings,
+            setEnabled: (value: boolean, gameSettings: GameSettings) => {
+                const newGameSettings = { ...gameSettings }
+                newGameSettings.simmulatedAnnealingSettings.enabled = value
+                return newGameSettings
+            },
         },
         {
             label: 'Q Table',
-            key: 'qTable',
             color: 'info',
             icon: faTableList,
             body: <>adasdasdsa</>,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qTableSettings,
+            setEnabled: (value: boolean, gameSettings: GameSettings) => {
+                const newGameSettings = { ...gameSettings }
+                newGameSettings.qTableSettings.enabled = value
+                return newGameSettings
+            },
         },
     ]
 
@@ -60,7 +82,8 @@ export const SelectPlayersComponent = (props: SelectPlayersComponentProps) => {
             <p className="header fs-1 text-center">Select players</p>
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {
-                    const backgroundColor = players[item.key].enabled ? `var(--bs-${item.color})` : 'var(--bs-light)'
+                    const birdSettings = item.getBirdsSettings(gameSettings)
+                    const backgroundColor = birdSettings.enabled ? `var(--bs-${item.color})` : 'var(--bs-light)'
                     return (
                         <Accordion.Item
                             eventKey={index.toString()}
@@ -84,11 +107,11 @@ export const SelectPlayersComponent = (props: SelectPlayersComponentProps) => {
                                         e.stopPropagation() // Prevent the accordion from expanding
                                     }}
                                     onChange={e => {
-                                        const newPlayers = { ...players }
-                                        newPlayers[item.key].enabled = e.target.checked
-                                        setPlayers(newPlayers)
+                                        const newGameSettings = { ...gameSettings }
+                                        item.setEnabled(e.target.checked, newGameSettings)
+                                        setGameSettings(newGameSettings)
                                     }}
-                                    checked={players[item.key].enabled}
+                                    checked={birdSettings.enabled}
                                     id={item.label + '-switch'}
                                 />
                             </Accordion.Header>
@@ -100,8 +123,8 @@ export const SelectPlayersComponent = (props: SelectPlayersComponentProps) => {
             <Button
                 variant="outline-primary"
                 className="play-button mt-auto w-100"
-                disabled={Object.values(players).every(player => !player.enabled)}
-                onPointerDown={() => props.onPlayersSelected(players)}>
+                disabled={Object.values(gameSettings).every(player => !player.enabled)}
+                onPointerDown={() => props.onPlayersSelected(gameSettings)}>
                 <span className="align-self-center fs-2">Play</span>
                 <FontAwesomeIcon icon={faPlay} className="mx-3 fs-2" />
             </Button>

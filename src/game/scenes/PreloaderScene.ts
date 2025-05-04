@@ -1,5 +1,5 @@
 import { Scene } from 'phaser'
-import { constants } from '../Constants'
+import { gameConstants } from '../GameConstants'
 
 export class PreloaderScene extends Scene {
     // private birdSprite: Phaser.GameObjects.Sprite
@@ -9,15 +9,15 @@ export class PreloaderScene extends Scene {
     }
 
     preload() {
-        Object.keys(constants.assets).forEach(key => {
-            const asset = constants.assets[key as keyof typeof constants.assets]
+        Object.keys(gameConstants.assets).forEach(key => {
+            const asset = gameConstants.assets[key as keyof typeof gameConstants.assets]
             this.load.image(asset.name, asset.path)
         })
         //  Load the sprite sheet
         //  The sprite sheet is a collection of images that are used to create animations
-        Object.keys(constants.spriteSheet.assets).forEach(key => {
-            const asset = constants.spriteSheet.assets[key as keyof typeof constants.spriteSheet.assets]
-            const { frameWidth, frameHeight } = constants.spriteSheet
+        Object.keys(gameConstants.spriteSheet.assets).forEach(key => {
+            const asset = gameConstants.spriteSheet.assets[key as keyof typeof gameConstants.spriteSheet.assets]
+            const { frameWidth, frameHeight } = gameConstants.spriteSheet
             this.load.spritesheet(asset.name, asset.path, { frameWidth, frameHeight })
         })
     }

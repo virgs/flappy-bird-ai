@@ -10,7 +10,7 @@ import { GameScene } from './game/scenes/GameScene'
 import { EvaluationScene } from './game/scenes/EvaluationScene'
 import { GameSettings } from './settings/GameSettings'
 import { defaultBirdSettings } from './settings/DefaultBirdSettings'
-import { SelectPlayersComponent } from './settings/SelectPlayersComponent'
+import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 
 function App() {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
@@ -39,7 +39,7 @@ function App() {
             <Row className="h-100 g-0 justify-content-center align-items-center">
                 {!gameRunning && (
                     <Col xs={12} sm={8} lg={12} className="h-100">
-                        <SelectPlayersComponent
+                        <SelectGameSettingsComponent
                             value={playerSettings}
                             onPlayersSelected={settings => startGame(settings)}
                         />

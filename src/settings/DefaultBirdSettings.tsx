@@ -1,37 +1,26 @@
-import { constants } from '../game/Constants';
-import { GameSettings } from './GameSettings';
-
+import { gameConstants } from '../game/GameConstants'
+import { BirdTypes } from './BirdSettings'
+import { GameSettings } from './GameSettings'
+import { qBirdDefaultSettings } from '../ai/q-table/QBirdDefaultSettings'
 
 export const defaultBirdSettings: GameSettings = {
-    human: {
+    humanSettings: {
+        initialPositionHorizontalOffset: 0,
+        birdType: BirdTypes.HUMAN,
         enabled: false,
-        texture: constants.spriteSheet.assets.birdYellow.name,
-        key: 'human',
+        texture: gameConstants.spriteSheet.assets.birdYellow.name,
     },
-    neuroEvolutionaty: {
+    neuroEvolutionarySettings: {
+        initialPositionHorizontalOffset: -10,
+        birdType: BirdTypes.NEURO_EVOLUTIONARY,
         enabled: false,
-        texture: constants.spriteSheet.assets.birdGreen.name,
-        key: 'neuroEvolutionaty',
+        texture: gameConstants.spriteSheet.assets.birdGreen.name,
     },
-    simmulatedAnnealing: {
+    simmulatedAnnealingSettings: {
+        initialPositionHorizontalOffset: -20,
+        birdType: BirdTypes.SIMULATED_ANNEALING,
         enabled: false,
-        texture: constants.spriteSheet.assets.birdRed.name,
-        key: 'simmulatedAnnealing',
+        texture: gameConstants.spriteSheet.assets.birdRed.name,
     },
-    qTable: {
-        enabled: true,
-        texture: constants.spriteSheet.assets.birdBlue.name,
-        key: 'qTable',
-        learningRate: 0.35,
-        discountFactor: 0.8,
-        gridSpatialAbstraction: {
-            horizontal: 20,
-            vertical: constants.obstacles.verticalOffset.total * 2,
-        },
-        timeGridInMs: 200,
-        reward: {
-            die: -100000,
-            stayAlive: 10
-        }
-    },
-};
+    qTableSettings: qBirdDefaultSettings,
+}

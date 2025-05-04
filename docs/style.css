@@ -1,0 +1,26 @@
+:root {
+    --flappy-bird-font: "Jersey 25", sans-serif;
+
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #000000; 
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100svw;
+    height: 100svh;
+    touch-action: pan-y;
+    overflow: hidden;
+    user-select: none;
+}
+
+#root {
+    width: 100svw;
+    height: 100svh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    background-color: #000000;
+}
