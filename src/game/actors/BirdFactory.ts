@@ -24,7 +24,7 @@ export class BirdFactory {
                 })
             )
         }
-        const qTableSettings = options.qTableSettings
+        const qTableSettings = options.qLearningSettings
         if (qTableSettings.enabled) {
             birds.push(
                 ...qTableSettings.birds.map(qTableBirdSettings => {

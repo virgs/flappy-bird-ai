@@ -19,7 +19,7 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
             game.current = startGame('game-container')
         }
 
-        EventBus.on('current-scene-ready', (sceneInstance: Phaser.Scene) => onSceneChange(sceneInstance))
+        EventBus.on('update-current-scene', (sceneInstance: Phaser.Scene) => onSceneChange(sceneInstance))
 
         return () => {
             if (game.current) {
@@ -28,7 +28,7 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
                     game.current = null
                 }
             }
-            EventBus.removeListener('current-scene-ready')
+            EventBus.removeListener('update-current-scene')
         }
     }, [])
 

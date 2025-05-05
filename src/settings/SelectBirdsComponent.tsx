@@ -64,14 +64,14 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             },
         },
         {
-            label: 'Q Table',
+            label: 'Q-Learning',
             color: 'info',
             icon: faTableList,
             body: <>adasdasdsa</>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qTableSettings,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
-                newGameSettings.qTableSettings.enabled = value
+                newGameSettings.qLearningSettings.enabled = value
                 return newGameSettings
             },
         },
@@ -79,7 +79,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
 
     return (
         <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
-            <p className="header fs-1 text-center">Select players</p>
+            <p className="header fs-1 text-center">Select birds</p>
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {
                     const birdSettings = item.getBirdsSettings(gameSettings)

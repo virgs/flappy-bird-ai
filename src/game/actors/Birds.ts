@@ -41,6 +41,7 @@ export abstract class Bird {
 
     protected abstract childProcessInput(data: {
         verticalPosition: number
+        verticalSpeed: number
         closestPipeGapVerticalPosition: number
         horizontalDistanceToClosestPipe: number
         delta: number
@@ -127,6 +128,7 @@ export abstract class Bird {
 
             if (
                 this.childProcessInput({
+                    verticalSpeed: this.verticalSpeed,
                     verticalPosition: this.hitBoxSprite.getCenter().y,
                     closestPipeGapVerticalPosition: closestObstacleGapVerticalPosition,
                     horizontalDistanceToClosestPipe,
@@ -170,8 +172,12 @@ export abstract class Bird {
         this.hitBoxSprite.destroy()
     }
 
-    protected onBirdDeath(): any {
-        return null
+    protected onBirdDeath(): void {
+        /* hook method */
+    }
+
+    public passedPipe(): void {
+        /* hook method */
     }
 
     private applyGravity(options: { delta: number }): void {

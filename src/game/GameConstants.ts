@@ -91,6 +91,6 @@ export const gameConstants = {
             total: 5,
         },
         verticalGapInPixels: 100,
-        horizontalGapInPixels: 400,
+        horizontalGapInPixels: 450,
     },
 }

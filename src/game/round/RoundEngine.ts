@@ -1,46 +1,37 @@
 import { Scene } from 'phaser'
 import { GameSettings } from '../../settings/GameSettings'
-import { sleep } from '../../time/sleep'
 import { BirdFactory } from '../actors/BirdFactory'
 import { Bird } from '../actors/Birds'
 import { Obstacle } from '../actors/Obstacle'
 import { Platform } from '../actors/Platform'
-import { EventBus } from '../EventBus'
 import { gameConstants } from '../GameConstants'
+import { RoundResult } from './RoundResult'
 
-export type RoundResult = {
-    gameSettings: GameSettings
-    aborted: boolean
-    birdPerformances: {
-        bird: Bird
-        timeAlive: number
-    }[]
-}
-
-export class GameScene extends Scene {
+export class RoundEngine {
     private readonly obstacleIntervalsInSeconds: number =
         gameConstants.obstacles.horizontalGapInPixels / gameConstants.physics.horizontalVelocityInPixelsPerSecond
+    private readonly platform: Platform
+    private readonly results: RoundResult
+    private readonly scene: Scene
     private gameOver: boolean = false
     private obstacles: Obstacle[] = []
     private birds: Bird[] = []
     private sceneDuration: number = 0
-    private platform: Platform
     private secondsSinceLastObstacleCreation: number = 0
     private closestObstacleIndex: number = 0
-    private output: RoundResult
-    private gameSettings: GameSettings
 
-    constructor() {
-        super('GameScene')
-    }
-
-    public create(gameSettings: GameSettings) {
-        EventBus.emit('current-scene-ready', this)
-        this.gameSettings = gameSettings
-        this.output = {
+    public constructor(gameSettings: GameSettings, scene: Scene) {
+        this.scene = scene
+        this.results = {
             aborted: false,
             gameSettings: gameSettings,
-            birdPerformances: [],
+            birdResults: [],
+        }
+        this.platform = new Platform({ scene: scene })
+        this.results = {
+            aborted: false,
+            gameSettings: gameSettings,
+            birdResults: [],
         }
         this.obstacles = []
         this.birds = []
@@ -48,18 +39,18 @@ export class GameScene extends Scene {
         this.secondsSinceLastObstacleCreation = 0
         this.sceneDuration = 0
         this.closestObstacleIndex = 0
-        this.platform = new Platform({ scene: this })
+        this.platform = new Platform({ scene: scene })
 
         this.obstacles.push(
             new Obstacle({
-                scene: this,
+                scene: scene,
             })
         )
 
-        this.birds = BirdFactory.createBirds(this, gameSettings)
+        this.birds = BirdFactory.createBirds(scene, gameSettings)
     }
 
-    public update(_time: number, delta: number): void {
+    public update(delta: number): void {
         if (this.gameOver) {
             return
         }
@@ -72,50 +63,20 @@ export class GameScene extends Scene {
         this.checkGameOver()
     }
 
-    private async checkGameOver() {
-        if (this.birds.length === 0) {
-            if (this.gameSettings.humanSettings.enabled) {
-                await sleep(2000)
-            }
-            this.gameOver = true
-            this.scene.start('EvaluationScene', this.output)
-        }
-    }
-
-    private updateBirds(delta: number) {
-        this.birds.forEach(bird => {
-            const wasAlive = bird.isAlive()
-            bird.update({
-                delta: delta,
-                closestObstacle: this.obstacles[this.closestObstacleIndex],
-            })
-            if (wasAlive && !bird.isAlive()) {
-                this.output.birdPerformances.push({
-                    bird: bird,
-                    timeAlive: this.sceneDuration,
-                })
-            }
-        })
-        this.birds = this.birds.filter(bird => {
-            if (bird.isOutOfScreen()) {
-                bird.destroy()
-                return false
-            }
-            return true
-        })
-    }
-
     public abort() {
-        this.destroy()
-        const output: RoundResult = {
-            aborted: true,
-            birdPerformances: [],
-            gameSettings: this.gameSettings,
-        }
-        this.scene.start('EvaluationScene', output)
+        this.gameOver = true
+        this.results.aborted = true
     }
 
-    private destroy() {
+    public isGameOver(): boolean {
+        return this.gameOver
+    }
+
+    public getResults(): RoundResult {
+        return this.results
+    }
+
+    public destroy() {
         this.obstacles.forEach(pipe => pipe.destroy())
         this.platform.destroy()
         this.birds.forEach(bird => bird.destroy())
@@ -123,8 +84,14 @@ export class GameScene extends Scene {
 
     private updateObstacles(delta: number) {
         // Check if the bird has passed the pipes
+        if (this.closestObstacleIndex >= this.obstacles.length || this.closestObstacleIndex < 0) {
+            return
+        }
         const closestObstacleHitBoxes = this.obstacles[this.closestObstacleIndex].getHitBoxes()
         if (this.birds.every(bird => closestObstacleHitBoxes.every(pipe => bird.getHitBox().left > pipe.right))) {
+            this.birds.forEach(bird => {
+                bird.passedPipe()
+            })
             this.closestObstacleIndex++
         }
 
@@ -137,9 +104,6 @@ export class GameScene extends Scene {
             if (pipe.isOutOfScreen()) {
                 // Remove out-of-screen pipes from the beginning of the array
                 --this.closestObstacleIndex
-                if (this.closestObstacleIndex < 0) {
-                    this.closestObstacleIndex = 0
-                }
                 pipe.destroy()
                 return false
             }
@@ -153,9 +117,38 @@ export class GameScene extends Scene {
             this.secondsSinceLastObstacleCreation = 0
             this.obstacles.push(
                 new Obstacle({
-                    scene: this,
+                    scene: this.scene,
                 })
             )
         }
+    }
+
+    private checkGameOver() {
+        if (this.birds.length === 0) {
+            this.gameOver = true
+        }
+    }
+
+    private updateBirds(delta: number) {
+        this.birds.forEach(bird => {
+            const wasAlive = bird.isAlive()
+            bird.update({
+                delta: delta,
+                closestObstacle: this.obstacles[this.closestObstacleIndex],
+            })
+            if (wasAlive && !bird.isAlive()) {
+                this.results.birdResults.push({
+                    bird: bird,
+                    timeAlive: this.sceneDuration,
+                })
+            }
+        })
+        this.birds = this.birds.filter(bird => {
+            if (bird.isOutOfScreen()) {
+                bird.destroy()
+                return false
+            }
+            return true
+        })
     }
 }

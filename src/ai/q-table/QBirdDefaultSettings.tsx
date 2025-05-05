@@ -1,7 +1,7 @@
 import { gameConstants } from '../../game/GameConstants'
-import { BirdTypes, QTableSettings } from '../../settings/BirdSettings'
+import { BirdTypes, QLearningSettings } from '../../settings/BirdSettings'
 
-export const qBirdDefaultSettings: QTableSettings = {
+export const qBirdDefaultSettings: QLearningSettings = {
     initialPositionHorizontalOffset: -30,
     birdType: BirdTypes.Q_TABLE,
     enabled: true,

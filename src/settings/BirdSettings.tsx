@@ -21,7 +21,8 @@ export type BirdSettings = {
     birdType: BirdTypes
 }
 
-export type QTableBirdSettings = {
+export type QLearningSettings = {
+    birdType: BirdTypes.Q_TABLE
     //The learning rate controls how quickly the model is adapted to the problem, and is often in the range between 0.0 and 1.0.
     learningRate: Range
 
@@ -44,9 +45,4 @@ export type QTableBirdSettings = {
     }
     // The Q-table is a dictionary that maps states to action values.
     qTable?: QTable
-}
-
-export type QTableSettings = {
-    birdType: BirdTypes.Q_TABLE
-    birds: QTableBirdSettings[]
 } & BirdSettings

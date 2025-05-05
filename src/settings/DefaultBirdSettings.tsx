@@ -22,5 +22,5 @@ export const defaultBirdSettings: GameSettings = {
         enabled: false,
         texture: gameConstants.spriteSheet.assets.birdRed.name,
     },
-    qTableSettings: qBirdDefaultSettings,
+    qLearningSettings: qBirdDefaultSettings,
 }

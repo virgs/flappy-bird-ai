@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import { PhaserGameComponent } from './PhaserGameComponent'
-import { GameScene } from './game/scenes/GameScene'
+import { RoundScene } from './game/scenes/RoundScene'
 import { EvaluationScene } from './game/scenes/EvaluationScene'
 import { GameSettings } from './settings/GameSettings'
 import { defaultBirdSettings } from './settings/DefaultBirdSettings'
@@ -14,23 +14,23 @@ import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 
 function App() {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
-    const [scene, setGameScene] = useState<Phaser.Scene | undefined>(undefined)
+    const [currentScene, setCurrentScene] = useState<Phaser.Scene | undefined>(undefined)
     const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultBirdSettings)
 
     const startGame = (settings: GameSettings) => {
-        if (scene) {
+        if (currentScene) {
             setPlayerSettings(settings)
             setGameRunning(true)
-            const evaluationScene = scene as EvaluationScene
+            const evaluationScene = currentScene as EvaluationScene
             evaluationScene.startGame(settings)
         }
     }
 
     const abortGame = () => {
-        if (scene) {
+        if (currentScene) {
             setGameRunning(false)
-            const gameScene = scene as GameScene
-            gameScene.abort()
+            const roundScene = currentScene as RoundScene
+            roundScene.abort()
         }
     }
 
@@ -60,7 +60,7 @@ function App() {
                         <FontAwesomeIcon icon={faStop} className="mx-3 fs-2" />
                     </Button>
                     <div className="h-75 mt-auto">
-                        <PhaserGameComponent onSceneChange={scene => setGameScene(scene)} />
+                        <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
                     </div>
                 </Col>
                 {/* <Col xs={12} sm={8} lg={12} className='h-75'>
