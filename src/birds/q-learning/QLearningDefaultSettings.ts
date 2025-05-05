@@ -4,7 +4,7 @@ import { BirdTypes, QLearningSettings } from '../../settings/BirdSettings'
 export const qLearningDefaultSettings: QLearningSettings = {
     initialPositionHorizontalOffset: -15,
     birdType: BirdTypes.Q_LEARNING,
-    enabled: false,
+    enabled: true,
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
     totalPopulation: 100,
     learningRate: {

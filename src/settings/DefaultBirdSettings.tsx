@@ -8,7 +8,7 @@ export const defaultGameSettings: GameSettings = {
         initialPositionHorizontalOffset: 0,
         totalPopulation: 1,
         birdType: BirdTypes.HUMAN,
-        enabled: true,
+        enabled: false,
         texture: gameConstants.spriteSheet.assets.birdYellow.name,
     },
     neuroEvolutionarySettings: {

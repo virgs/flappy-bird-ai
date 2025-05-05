@@ -18,6 +18,7 @@ export class EvaluationScene extends Scene {
         // hence the check for result.aborted === false
         if (result.aborted === false) {
             this.iterations++
+            console.log('EvaluationScene init', this.iterations)
             this.scene.start('RoundScene', this.roundInitializer.createSubsequentRoundsSettings(result))
         }
     }

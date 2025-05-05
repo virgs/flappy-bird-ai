@@ -31,7 +31,11 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             label: 'Human',
             color: 'warning',
             icon: faGamepad,
-            body: <></>,
+            body: <>
+                <span className='fs-5'>
+                    Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
+                </span>
+            </>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.humanSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -67,7 +71,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             label: 'Q-Learning',
             color: 'info',
             icon: faTableList,
-            body: <>adasdasdsa</>,
+            body: <></>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -115,7 +119,11 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                     id={item.label + '-switch'}
                                 />
                             </Accordion.Header>
-                            <Accordion.Body>{item.body}</Accordion.Body>
+                            <Accordion.Body className='py-2'>
+                                <div className="fs-5">
+                                    {item.body}
+                                </div>
+                            </Accordion.Body>
                         </Accordion.Item>
                     )
                 })}

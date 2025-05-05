@@ -1,6 +1,6 @@
 import { Geom } from 'phaser'
 import { BirdSoul } from '../../game/actors/BirdSoul'
-import { HumanControlledBird } from '../../game/actors/HumanControlledBird'
+import { HumanControlledBird } from './HumanControlledBird'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'

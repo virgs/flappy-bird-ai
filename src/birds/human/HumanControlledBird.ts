@@ -1,6 +1,6 @@
 import { Input } from 'phaser'
-import { EventBus } from '../EventBus'
-import { BirdSoul, BirdSoulProps, Commands, UpdateData } from './BirdSoul'
+import { EventBus } from '../../game/EventBus'
+import { BirdSoul, BirdSoulProps, Commands, UpdateData } from '../../game/actors/BirdSoul'
 
 export class HumanControlledBird extends BirdSoul {
     private keys: (Input.Keyboard.Key | undefined)[] = []

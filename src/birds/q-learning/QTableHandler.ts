@@ -17,6 +17,7 @@ export type State = {
         vertical: number
     }
     distanceToCeiling: number
+    verticalSpeed: number
 }
 
 export type QTable = { [state: string]: ActionValues }
@@ -33,6 +34,7 @@ export class QTableHandler {
     public getState(data: UpdateData): State {
         const state: State = {
             distanceToCeiling: Math.floor(data.verticalPosition / this.settings.gridSpatialAbstraction.vertical.value),
+            verticalSpeed: Math.floor(data.verticalSpeed / this.settings.gridSpatialAbstraction.vertical.value),
         }
         if (data.closestPipeGapVerticalPosition !== undefined && data.horizontalDistanceToClosestPipe !== undefined) {
             // Calculate the distance to the closest obstacle
@@ -81,7 +83,8 @@ export class QTableHandler {
     }
 
     public getStateHash(state: State) {
-        return `${state.distanceToClosestObstacle?.horizontal ?? '-'}|${state.distanceToClosestObstacle?.vertical ?? '-'}|${state.distanceToCeiling}`
+        const distanceToClosestObstacle = `${state.distanceToClosestObstacle?.horizontal ?? '-'}|${state.distanceToClosestObstacle?.vertical ?? '-'}|`
+        return distanceToClosestObstacle + `${state.distanceToCeiling}|${Math.round(state.verticalSpeed * 100)}`
     }
 
     private createIndexesCloseToState(state: State) {
