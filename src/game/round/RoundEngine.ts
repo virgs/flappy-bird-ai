@@ -1,10 +1,9 @@
 import { Scene } from 'phaser'
-import { GameSettings } from '../../settings/GameSettings'
-import { BirdFactory } from '../actors/BirdFactory'
-import { Bird } from '../actors/Birds'
+import { Bird } from '../actors/Bird'
 import { Obstacle } from '../actors/Obstacle'
 import { Platform } from '../actors/Platform'
 import { gameConstants } from '../GameConstants'
+import { RoundSettings } from './RoundSettings'
 import { RoundResult } from './RoundResult'
 
 export class RoundEngine {
@@ -16,29 +15,18 @@ export class RoundEngine {
     private gameOver: boolean = false
     private obstacles: Obstacle[] = []
     private birds: Bird[] = []
-    private sceneDuration: number = 0
+    private roundDuration: number = 0
     private secondsSinceLastObstacleCreation: number = 0
     private closestObstacleIndex: number = 0
 
-    public constructor(gameSettings: GameSettings, scene: Scene) {
+    public constructor(scene: Scene, roundSettings: RoundSettings) {
         this.scene = scene
         this.results = {
             aborted: false,
-            gameSettings: gameSettings,
             birdResults: [],
         }
         this.platform = new Platform({ scene: scene })
-        this.results = {
-            aborted: false,
-            gameSettings: gameSettings,
-            birdResults: [],
-        }
-        this.obstacles = []
-        this.birds = []
-        this.gameOver = false
-        this.secondsSinceLastObstacleCreation = 0
-        this.sceneDuration = 0
-        this.closestObstacleIndex = 0
+        this.birds = roundSettings.birdSouls.map(birdSoul => new Bird(birdSoul, scene))
         this.platform = new Platform({ scene: scene })
 
         this.obstacles.push(
@@ -46,15 +34,13 @@ export class RoundEngine {
                 scene: scene,
             })
         )
-
-        this.birds = BirdFactory.createBirds(scene, gameSettings)
     }
 
     public update(delta: number): void {
         if (this.gameOver) {
             return
         }
-        this.sceneDuration += delta
+        this.roundDuration += delta
         this.platform.update({
             delta: delta,
         })
@@ -138,8 +124,8 @@ export class RoundEngine {
             })
             if (wasAlive && !bird.isAlive()) {
                 this.results.birdResults.push({
-                    bird: bird,
-                    timeAlive: this.sceneDuration,
+                    bird: bird.getSoul(),
+                    timeAlive: this.roundDuration,
                 })
             }
         })

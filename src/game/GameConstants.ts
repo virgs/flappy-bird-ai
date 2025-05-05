@@ -93,4 +93,7 @@ export const gameConstants = {
         verticalGapInPixels: 100,
         horizontalGapInPixels: 450,
     },
+    scene: {
+        humanGameOverDelayInMs: 2000,
+    },
 }

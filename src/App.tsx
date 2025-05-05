@@ -9,13 +9,13 @@ import { PhaserGameComponent } from './PhaserGameComponent'
 import { RoundScene } from './game/scenes/RoundScene'
 import { EvaluationScene } from './game/scenes/EvaluationScene'
 import { GameSettings } from './settings/GameSettings'
-import { defaultBirdSettings } from './settings/DefaultBirdSettings'
+import { defaultGameSettings } from './settings/DefaultBirdSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 
 function App() {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
     const [currentScene, setCurrentScene] = useState<Phaser.Scene | undefined>(undefined)
-    const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultBirdSettings)
+    const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultGameSettings)
 
     const startGame = (settings: GameSettings) => {
         if (currentScene) {

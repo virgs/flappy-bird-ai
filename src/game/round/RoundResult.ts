@@ -1,11 +1,9 @@
-import { GameSettings } from '../../settings/GameSettings'
-import { Bird } from '../actors/Birds'
+import { BirdSoul } from '../actors/BirdSoul'
 
 export type RoundResult = {
-    gameSettings: GameSettings
     aborted: boolean
     birdResults: {
-        bird: Bird
+        bird: BirdSoul
         timeAlive: number
     }[]
 }

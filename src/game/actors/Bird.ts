@@ -1,25 +1,14 @@
-import { Geom } from 'phaser'
+import { Geom, Scene } from 'phaser'
 import { gameConstants } from '../GameConstants'
+import { BirdSoul, Commands } from './BirdSoul'
 import { Obstacle } from './Obstacle'
-import { BirdTypes } from '../../settings/BirdSettings'
-
-export enum Commands {
-    FLAP_WING,
-}
-
-export type BirdProps = {
-    type: BirdTypes
-    texture: string
-    initialPosition: Phaser.Geom.Point
-    scene: Phaser.Scene
-}
 
 type UpdateProps = {
     delta: number
     closestObstacle?: Obstacle
 }
 
-export abstract class Bird {
+export class Bird {
     private readonly birdSprite: Phaser.GameObjects.Sprite
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite
 
@@ -28,63 +17,58 @@ export abstract class Bird {
     protected alive: boolean = true
     protected inputTimeCounterMs: number = 0
     protected commands: Commands[] = []
-    protected options: BirdProps
+    protected soul: BirdSoul
 
-    protected constructor(options: BirdProps) {
-        this.options = options
-        ;[this.birdSprite, this.hitBoxSprite] = this.createSprite(options)
+    public constructor(soul: BirdSoul, scene: Scene) {
+        this.soul = soul
+        ;[this.birdSprite, this.hitBoxSprite] = this.createSprites(scene)
     }
 
-    public getType(): BirdTypes {
-        return this.options.type
+    public getSoul(): BirdSoul {
+        return this.soul
     }
 
-    protected abstract childProcessInput(data: {
-        verticalPosition: number
-        verticalSpeed: number
-        closestPipeGapVerticalPosition: number
-        horizontalDistanceToClosestPipe: number
-        delta: number
-    }): boolean
-
-    private createSprite(options: {
-        initialPosition: Phaser.Geom.Point
-        scene: Phaser.Scene
-    }): Phaser.GameObjects.Sprite[] {
+    private createSprites(scene: Scene): Phaser.GameObjects.Sprite[] {
         const scale = gameConstants.spriteSheet.scale
-        const textureKey = this.options.texture
-        const birdSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, textureKey)
+        const textureKey = this.soul.props.textureKey
+        const birdSprite = scene.add.sprite(
+            this.soul.props.initialPosition.x,
+            this.soul.props.initialPosition.y,
+            textureKey
+        )
         birdSprite.setScale(scale)
         birdSprite.setDepth(10)
-        if (!options.scene.anims.get(textureKey)) {
-            options.scene.anims.create({
+        if (!scene.anims.get(textureKey)) {
+            scene.anims.create({
                 key: textureKey,
-                frames: options.scene.anims.generateFrameNumbers(textureKey, gameConstants.spriteSheet.frameNumbers),
+                frames: scene.anims.generateFrameNumbers(textureKey, gameConstants.spriteSheet.frameNumbers),
                 repeat: gameConstants.spriteSheet.animation.repeat,
                 frameRate: gameConstants.spriteSheet.animation.frameRate,
             })
         }
         birdSprite.anims.play(textureKey)
 
-        const hitBoxSprite = options.scene.add.sprite(options.initialPosition.x, options.initialPosition.y, textureKey)
+        const hitBoxSprite = scene.add.sprite(
+            this.soul.props.initialPosition.x,
+            this.soul.props.initialPosition.y,
+            textureKey
+        )
         hitBoxSprite.setScale(scale * gameConstants.spriteSheet.hitBoxScale)
         hitBoxSprite.setAlpha(0)
         return [birdSprite, hitBoxSprite]
     }
 
-    public update(options: UpdateProps): void {
+    public update(updateProps: UpdateProps): void {
         if (this.alive) {
-            this.timeAlive += options.delta
+            this.timeAlive += updateProps.delta
+            this.updateSoul(updateProps)
             this.handleCommands()
-            this.handleInput(options)
             this.handleFloorCollision()
             this.handleCeilingCollision()
-            this.handleObstacleCollision(options)
-            this.adjustSprite()
-        } else {
-            this.moveBackwards(options)
+            this.handleObstacleCollision(updateProps)
         }
-        this.applyGravity(options)
+        this.adjustSprite(updateProps.delta)
+        this.applyGravity(updateProps)
     }
 
     public isAlive(): boolean {
@@ -95,12 +79,11 @@ export abstract class Bird {
         return this.hitBoxSprite.getBounds()
     }
 
-    private moveBackwards(options: UpdateProps) {
-        this.birdSprite.x -= options.delta * gameConstants.physics.horizontalVelocityInPixelsPerSecond
-        this.hitBoxSprite.x -= options.delta * gameConstants.physics.horizontalVelocityInPixelsPerSecond
+    public passedPipe() {
+        this.soul.passedPipe()
     }
 
-    private adjustSprite() {
+    private adjustSprite(delta: number) {
         if (this.alive) {
             this.birdSprite.setAngle(
                 (this.verticalSpeed / gameConstants.birdAttributes.maxBirdVerticalSpeed) *
@@ -113,28 +96,31 @@ export abstract class Bird {
             if (this.verticalSpeed > 0) {
                 this.birdSprite.anims.stop()
             } else if (!this.birdSprite.anims.isPlaying) {
-                this.birdSprite.anims.play(this.options.texture)
+                this.birdSprite.anims.play(this.soul.props.textureKey)
             }
+        } else {
+            this.birdSprite.x -= delta * gameConstants.physics.horizontalVelocityInPixelsPerSecond
         }
     }
 
-    private handleInput(options: UpdateProps) {
-        this.inputTimeCounterMs += options.delta
-        if (this.inputTimeCounterMs > gameConstants.birdAttributes.flapCoolDownMs) {
-            const closestObstacleGapVerticalPosition = options.closestObstacle?.getVerticalOffset() ?? 0
-            const horizontalDistanceToClosestPipe = options.closestObstacle?.getHorizontalPosition()
-                ? options.closestObstacle.getHorizontalPosition() - this.hitBoxSprite.getCenter().x
-                : 0
+    private updateSoul(updateProps: UpdateProps) {
+        this.inputTimeCounterMs += updateProps.delta
+        const closestObstacleGapVerticalPosition = updateProps.closestObstacle?.getVerticalOffset() ?? 0
+        const horizontalDistanceToClosestPipe = updateProps.closestObstacle?.getHorizontalPosition()
+            ? updateProps.closestObstacle.getHorizontalPosition() - this.hitBoxSprite.getCenter().x
+            : 0
 
-            if (
-                this.childProcessInput({
-                    verticalSpeed: this.verticalSpeed,
-                    verticalPosition: this.hitBoxSprite.getCenter().y,
-                    closestPipeGapVerticalPosition: closestObstacleGapVerticalPosition,
-                    horizontalDistanceToClosestPipe,
-                    delta: options.delta,
-                })
-            ) {
+        this.soul.update({
+            scene: this.birdSprite.scene,
+            verticalSpeed: this.verticalSpeed,
+            verticalPosition: this.hitBoxSprite.getCenter().y,
+            closestPipeGapVerticalPosition: closestObstacleGapVerticalPosition,
+            horizontalDistanceToClosestPipe,
+            delta: updateProps.delta,
+        })
+        if (this.inputTimeCounterMs > gameConstants.birdAttributes.flapCoolDownMs) {
+            if (this.soul.shouldFlap()) {
+                this.commands.push(Commands.FLAP_WING)
                 this.inputTimeCounterMs = 0
             }
         }
@@ -163,21 +149,13 @@ export abstract class Bird {
             this.alive = false
             this.birdSprite.anims.pause()
             this.birdSprite.setAlpha(0.4)
-            this.onBirdDeath()
+            this.soul.onDeath()
         }
     }
 
     public destroy(): void {
         this.birdSprite.destroy()
         this.hitBoxSprite.destroy()
-    }
-
-    protected onBirdDeath(): void {
-        /* hook method */
-    }
-
-    public passedPipe(): void {
-        /* hook method */
     }
 
     private applyGravity(options: { delta: number }): void {
@@ -210,7 +188,7 @@ export abstract class Bird {
     }
 
     private handleCommands(): void {
-        ;[...new Set(this.commands)].forEach(command => {
+        this.commands.forEach(command => {
             switch (command) {
                 case Commands.FLAP_WING:
                     this.verticalSpeed = -gameConstants.birdAttributes.flapImpulse

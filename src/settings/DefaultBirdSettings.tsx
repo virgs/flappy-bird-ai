@@ -1,26 +1,29 @@
 import { gameConstants } from '../game/GameConstants'
 import { BirdTypes } from './BirdSettings'
 import { GameSettings } from './GameSettings'
-import { qBirdDefaultSettings } from '../ai/q-table/QBirdDefaultSettings'
+import { qLearningDefaultSettings } from '../birds/q-learning/QLearningDefaultSettings'
 
-export const defaultBirdSettings: GameSettings = {
+export const defaultGameSettings: GameSettings = {
     humanSettings: {
         initialPositionHorizontalOffset: 0,
+        totalPopulation: 1,
         birdType: BirdTypes.HUMAN,
-        enabled: false,
+        enabled: true,
         texture: gameConstants.spriteSheet.assets.birdYellow.name,
     },
     neuroEvolutionarySettings: {
-        initialPositionHorizontalOffset: -10,
+        initialPositionHorizontalOffset: -5,
+        totalPopulation: 100,
         birdType: BirdTypes.NEURO_EVOLUTIONARY,
         enabled: false,
         texture: gameConstants.spriteSheet.assets.birdGreen.name,
     },
     simmulatedAnnealingSettings: {
-        initialPositionHorizontalOffset: -20,
+        initialPositionHorizontalOffset: -10,
+        totalPopulation: 100,
         birdType: BirdTypes.SIMULATED_ANNEALING,
         enabled: false,
         texture: gameConstants.spriteSheet.assets.birdRed.name,
     },
-    qLearningSettings: qBirdDefaultSettings,
+    qLearningSettings: qLearningDefaultSettings,
 }

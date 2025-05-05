@@ -1,36 +1,24 @@
 import { Scene } from 'phaser'
 
-import { BirdTypes } from '../../settings/BirdSettings'
 import { GameSettings } from '../../settings/GameSettings'
-import { sleep } from '../../time/sleep'
-import { BirdQTable } from '../actors/BirdQTable'
 import { EventBus } from '../EventBus'
+import { RoundHandler } from '../round/RoundHandler'
 import { RoundResult } from '../round/RoundResult'
 
 export class EvaluationScene extends Scene {
+    private roundInitializer: RoundHandler
     private iterations: number = 0
 
     public constructor() {
         super('EvaluationScene')
     }
 
-    public async init(output: RoundResult) {
-        if (output.aborted === false) {
-            if (output.birdResults.some(birdResult => birdResult.bird.getType() === BirdTypes.HUMAN)) {
-                await sleep(2000)
-            }
-            const gameSettings: GameSettings = { ...output.gameSettings }
-
-            gameSettings.qLearningSettings.birds = output.birdResults
-                .filter(performance => performance.bird.getType() === BirdTypes.Q_TABLE)
-                .map(performance => (performance.bird as BirdQTable).getQTableBirdSettings())
-
-            gameSettings.qLearningSettings.birds.forEach(bird =>
-                console.log(Object.keys(bird.qTable ?? {}).length, bird.qTable)
-            )
+    public async init(result: RoundResult) {
+        // Result can never be undefined, therefore, there always be a result and result.aborted cand be undefined
+        // hence the check for result.aborted === false
+        if (result.aborted === false) {
             this.iterations++
-            console.log('Iterations', this.iterations)
-            this.scene.start('RoundScene', gameSettings)
+            this.scene.start('RoundScene', this.roundInitializer.createSubsequentRoundsSettings(result))
         }
     }
 
@@ -38,9 +26,10 @@ export class EvaluationScene extends Scene {
         EventBus.emit('update-current-scene', this)
     }
 
-    public startGame(playersSettings: GameSettings) {
+    public async startGame(gameSettings: GameSettings) {
         this.iterations = 0
-        console.log('EvaluationScene startGame', playersSettings)
-        this.scene.start('RoundScene', playersSettings)
+        this.roundInitializer = new RoundHandler(gameSettings)
+        console.log('EvaluationScene startGame')
+        this.scene.start('RoundScene', this.roundInitializer.createFirstRoundSettings())
     }
 }

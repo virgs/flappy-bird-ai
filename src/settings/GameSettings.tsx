@@ -1,7 +1,7 @@
-import { BirdSettings, QLearningSettings } from './BirdSettings'
+import { BirdSettings, HumanSettings, QLearningSettings } from './BirdSettings'
 
 export type GameSettings = {
-    humanSettings: BirdSettings
+    humanSettings: HumanSettings
     neuroEvolutionarySettings: BirdSettings
     simmulatedAnnealingSettings: BirdSettings
     qLearningSettings: QLearningSettings
