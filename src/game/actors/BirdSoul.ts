@@ -14,6 +14,7 @@ export type UpdateData = {
     scene: Phaser.Scene
     verticalPosition: number
     verticalSpeed: number
+    roundIteration: number
     closestPipeGapVerticalPosition?: number
     horizontalDistanceToClosestPipe?: number
     delta: number
@@ -36,11 +37,15 @@ export abstract class BirdSoul {
         /* hook method */
     }
 
-    public onDeath(): void {
+    public onHitFloorOrCeiling(): void {
         /* hook method */
     }
 
-    public passedPipe(): void {
+    public onHitObstacle(): void {
+        /* hook method */
+    }
+
+    public onPassedPipe(): void {
         /* hook method */
     }
 }

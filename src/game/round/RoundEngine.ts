@@ -1,36 +1,38 @@
 import { Scene } from 'phaser'
-import { Bird } from '../actors/Bird'
-import { Obstacle } from '../actors/Obstacle'
-import { Platform } from '../actors/Platform'
+import { BirdActor } from '../actors/BirdActor'
+import { ObstacleActor } from '../actors/ObstacleActor'
+import { PlatformActor } from '../actors/PlatformActor'
 import { gameConstants } from '../GameConstants'
 import { RoundSettings } from './RoundSettings'
 import { RoundResult } from './RoundResult'
 
 export class RoundEngine {
     private readonly obstacleIntervalsInSeconds: number =
-        gameConstants.obstacles.horizontalGapInPixels / gameConstants.physics.horizontalVelocityInPixelsPerSecond
-    private readonly platform: Platform
+        gameConstants.obstacles.horizontalGapInPixels / gameConstants.physics.horizontalVelocityInPixelsPerMs
+    private readonly platform: PlatformActor
     private readonly results: RoundResult
     private readonly scene: Scene
+    private readonly roundIteration: number
     private gameOver: boolean = false
-    private obstacles: Obstacle[] = []
-    private birds: Bird[] = []
+    private obstacles: ObstacleActor[] = []
+    private birds: BirdActor[] = []
     private roundDuration: number = 0
     private secondsSinceLastObstacleCreation: number = 0
     private closestObstacleIndex: number = 0
 
     public constructor(scene: Scene, roundSettings: RoundSettings) {
+        this.roundIteration = roundSettings.iteration
         this.scene = scene
         this.results = {
             aborted: false,
             birdResults: [],
         }
-        this.platform = new Platform({ scene: scene })
-        this.birds = roundSettings.birdSouls.map(birdSoul => new Bird(birdSoul, scene))
-        this.platform = new Platform({ scene: scene })
+        this.platform = new PlatformActor({ scene: scene })
+        this.birds = roundSettings.birdSouls.map(birdSoul => new BirdActor(birdSoul, scene))
+        this.platform = new PlatformActor({ scene: scene })
 
         this.obstacles.push(
-            new Obstacle({
+            new ObstacleActor({
                 scene: scene,
             })
         )
@@ -102,7 +104,7 @@ export class RoundEngine {
         if (this.secondsSinceLastObstacleCreation >= this.obstacleIntervalsInSeconds) {
             this.secondsSinceLastObstacleCreation = 0
             this.obstacles.push(
-                new Obstacle({
+                new ObstacleActor({
                     scene: this.scene,
                 })
             )
@@ -121,6 +123,7 @@ export class RoundEngine {
             bird.update({
                 delta: delta,
                 closestObstacle: this.obstacles[this.closestObstacleIndex],
+                roundIteration: this.roundIteration,
             })
             if (wasAlive && !bird.isAlive()) {
                 this.results.birdResults.push({

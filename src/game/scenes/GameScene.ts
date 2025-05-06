@@ -5,12 +5,12 @@ import { EventBus } from '../EventBus'
 import { RoundHandler } from '../round/RoundHandler'
 import { RoundResult } from '../round/RoundResult'
 
-export class EvaluationScene extends Scene {
+export class GameScene extends Scene {
     private roundInitializer: RoundHandler
     private iterations: number = 0
 
     public constructor() {
-        super('EvaluationScene')
+        super('GameScene')
     }
 
     public async init(result: RoundResult) {
@@ -18,7 +18,7 @@ export class EvaluationScene extends Scene {
         // hence the check for result.aborted === false
         if (result.aborted === false) {
             this.iterations++
-            console.log('EvaluationScene init', this.iterations)
+            console.log('GameScene init', this.iterations)
             this.scene.start('RoundScene', this.roundInitializer.createSubsequentRoundsSettings(result))
         }
     }
@@ -30,7 +30,7 @@ export class EvaluationScene extends Scene {
     public async startGame(gameSettings: GameSettings) {
         this.iterations = 0
         this.roundInitializer = new RoundHandler(gameSettings)
-        console.log('EvaluationScene startGame')
+        console.log('GameScene startGame')
         this.scene.start('RoundScene', this.roundInitializer.createFirstRoundSettings())
     }
 }

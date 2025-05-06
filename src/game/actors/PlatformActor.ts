@@ -1,13 +1,13 @@
 import { gameConstants } from '../GameConstants'
 
-export class Platform {
+export class PlatformActor {
     private readonly assetsWidthDifference = gameConstants.gameDimensions.width / 2
 
     private readonly backgroundSprites: Phaser.GameObjects.Sprite[] = []
     private readonly floorSprites: Phaser.GameObjects.Sprite[] = []
 
-    private readonly dayDurationInSeconds = 60
-    private ellapsedTime: number = 0
+    private readonly dayDurationInMs = 60000 // 60 seconds
+    private ellapsedTime: number = Math.random() * this.dayDurationInMs
     private alpha: number = 0
 
     constructor(options: { scene: Phaser.Scene }) {
@@ -16,19 +16,17 @@ export class Platform {
     }
 
     public update(options: { delta: number }): void {
-        this.floorSprites.forEach(
-            sprite => (sprite.x -= options.delta * gameConstants.physics.horizontalVelocityInPixelsPerSecond)
-        )
+        const horizontalMovementDelta = options.delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
+        this.floorSprites.forEach(sprite => (sprite.x -= horizontalMovementDelta))
         if (this.floorSprites.some(sprite => sprite.x < -this.assetsWidthDifference)) {
             this.floorSprites.forEach(sprite => (sprite.x += this.assetsWidthDifference))
         }
 
-        // Use a sine wave for alpha
-        this.ellapsedTime += options.delta / 1000 // Convert delta to seconds
-        if (this.ellapsedTime > this.dayDurationInSeconds) {
-            this.ellapsedTime -= this.dayDurationInSeconds
+        this.ellapsedTime += options.delta
+        while (this.ellapsedTime > this.dayDurationInMs) {
+            this.ellapsedTime -= this.dayDurationInMs
         }
-        const normalizedTime = (this.ellapsedTime / this.dayDurationInSeconds) * Math.PI * 2 // Full sine wave cycle
+        const normalizedTime = (this.ellapsedTime / this.dayDurationInMs) * Math.PI * 2 // Full sine wave cycle
         this.alpha = (Math.sin(normalizedTime) + 1) / 2 // Scale sine wave to range [0, 1]
 
         this.backgroundSprites
@@ -36,7 +34,7 @@ export class Platform {
             .forEach(sprite => sprite.setAlpha(this.alpha))
     }
 
-    destroy() {
+    public destroy() {
         this.backgroundSprites.concat(this.floorSprites).forEach(sprite => sprite.destroy())
     }
 
@@ -45,6 +43,7 @@ export class Platform {
             const firstSprite = options.scene.add.sprite(0, 0, assetName)
             firstSprite.displayOriginX = 0
             firstSprite.displayOriginY = 0
+            firstSprite.setDepth(-1)
             firstSprite.scaleX = gameConstants.gameDimensions.width / firstSprite.displayWidth
             firstSprite.scaleY = gameConstants.gameDimensions.height / firstSprite.displayHeight
             this.backgroundSprites.push(firstSprite)
@@ -52,6 +51,7 @@ export class Platform {
             const secondSprite = options.scene.add.sprite(gameConstants.gameDimensions.width, 0, assetName)
             secondSprite.displayOriginX = 0
             secondSprite.displayOriginY = 0
+            secondSprite.setDepth(-1)
             secondSprite.scaleX = gameConstants.gameDimensions.width / secondSprite.displayWidth
             secondSprite.scaleY = gameConstants.gameDimensions.height / secondSprite.displayHeight
 
@@ -63,6 +63,7 @@ export class Platform {
         const yPosition = gameConstants.gameDimensions.height * 0.85
         const floorTextureKey = gameConstants.assets.floor.name
         const firstFloorSprite = options.scene.add.sprite(0, yPosition, floorTextureKey)
+        firstFloorSprite.setDepth(0)
         firstFloorSprite.displayOriginX = 0
         firstFloorSprite.displayOriginY = 0
         firstFloorSprite.scaleX = gameConstants.gameDimensions.width / firstFloorSprite.displayWidth
@@ -76,6 +77,7 @@ export class Platform {
         )
         secondFloorSprite.displayOriginX = 0
         secondFloorSprite.displayOriginY = 0
+        secondFloorSprite.setDepth(0)
         secondFloorSprite.scaleX = gameConstants.gameDimensions.width / secondFloorSprite.displayWidth
         secondFloorSprite.scaleY = gameConstants.gameDimensions.floorHeight / secondFloorSprite.displayHeight
         this.floorSprites.push(secondFloorSprite)

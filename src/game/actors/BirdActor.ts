@@ -1,14 +1,15 @@
 import { Geom, Scene } from 'phaser'
 import { gameConstants } from '../GameConstants'
 import { BirdSoul, Commands } from './BirdSoul'
-import { Obstacle } from './Obstacle'
+import { ObstacleActor } from './ObstacleActor'
 
-type UpdateProps = {
+type BirdActorUpdateProps = {
     delta: number
-    closestObstacle?: Obstacle
+    closestObstacle?: ObstacleActor
+    roundIteration: number
 }
 
-export class Bird {
+export class BirdActor {
     private readonly birdSprite: Phaser.GameObjects.Sprite
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite
 
@@ -37,7 +38,7 @@ export class Bird {
             textureKey
         )
         birdSprite.setScale(scale)
-        birdSprite.setDepth(10)
+        birdSprite.setDepth(15)
         if (!scene.anims.get(textureKey)) {
             scene.anims.create({
                 key: textureKey,
@@ -58,13 +59,12 @@ export class Bird {
         return [birdSprite, hitBoxSprite]
     }
 
-    public update(updateProps: UpdateProps): void {
+    public update(updateProps: BirdActorUpdateProps): void {
         if (this.alive) {
             this.timeAlive += updateProps.delta
             this.updateSoul(updateProps)
             this.handleCommands()
-            this.handleFloorCollision()
-            this.handleCeilingCollision()
+            this.handleFloorAndCeilingCollision()
             this.handleObstacleCollision(updateProps)
         }
         this.adjustSprite(updateProps.delta)
@@ -80,7 +80,7 @@ export class Bird {
     }
 
     public passedPipe() {
-        this.soul.passedPipe()
+        this.soul.onPassedPipe()
     }
 
     private adjustSprite(delta: number) {
@@ -99,11 +99,11 @@ export class Bird {
                 this.birdSprite.anims.play(this.soul.props.textureKey)
             }
         } else {
-            this.birdSprite.x -= delta * gameConstants.physics.horizontalVelocityInPixelsPerSecond
+            this.birdSprite.x -= delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
         }
     }
 
-    private updateSoul(updateProps: UpdateProps) {
+    private updateSoul(updateProps: BirdActorUpdateProps) {
         this.inputTimeCounterMs += updateProps.delta
         const closestObstacleGapVerticalPosition = updateProps.closestObstacle?.getVerticalOffset() ?? 0
         const horizontalDistanceToClosestPipe = updateProps.closestObstacle?.getHorizontalPosition()
@@ -115,7 +115,8 @@ export class Bird {
             verticalSpeed: this.verticalSpeed,
             verticalPosition: this.hitBoxSprite.getCenter().y,
             closestPipeGapVerticalPosition: closestObstacleGapVerticalPosition,
-            horizontalDistanceToClosestPipe,
+            horizontalDistanceToClosestPipe: horizontalDistanceToClosestPipe,
+            roundIteration: updateProps.roundIteration,
             delta: updateProps.delta,
         })
         if (this.inputTimeCounterMs > gameConstants.birdAttributes.flapCoolDownMs) {
@@ -126,7 +127,7 @@ export class Bird {
         }
     }
 
-    private handleObstacleCollision(options: UpdateProps): void {
+    private handleObstacleCollision(options: BirdActorUpdateProps): void {
         if (options.closestObstacle) {
             const birdHitboxSprite = this.hitBoxSprite.getBounds()
             if (
@@ -135,6 +136,7 @@ export class Bird {
                     .some(obstacleHitBox => Geom.Intersects.RectangleToRectangle(obstacleHitBox, birdHitboxSprite))
             ) {
                 this.killBird()
+                this.soul.onHitObstacle()
             }
         }
     }
@@ -148,8 +150,8 @@ export class Bird {
             this.verticalSpeed = 0
             this.alive = false
             this.birdSprite.anims.pause()
+            this.birdSprite.setDepth(5)
             this.birdSprite.setAlpha(0.4)
-            this.soul.onDeath()
         }
     }
 
@@ -173,17 +175,15 @@ export class Bird {
         }
     }
 
-    private handleFloorCollision(): void {
+    private handleFloorAndCeilingCollision(): void {
         const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.bottom > gameConstants.gameDimensions.height - gameConstants.gameDimensions.floorHeight) {
             this.killBird()
+            this.soul.onHitFloorOrCeiling()
         }
-    }
-
-    private handleCeilingCollision(): void {
-        const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.top < 0) {
             this.killBird()
+            this.soul.onHitFloorOrCeiling()
         }
     }
 

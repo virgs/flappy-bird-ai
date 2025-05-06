@@ -13,7 +13,7 @@ export const gameConstants = {
         frameWidth: 174, // image.width / 3,
         frameHeight: 124,
         scale: 0.45,
-        hitBoxScale: 0.85,
+        hitBoxScale: 0.8,
         animation: {
             repeat: -1,
             frameRate: 12,
@@ -70,7 +70,9 @@ export const gameConstants = {
     },
     physics: {
         gravity: 0.003,
-        horizontalVelocityInPixelsPerSecond: 0.25,
+        horizontalVelocityInPixelsPerMs: 300 / 1000, // 300 pixels per second
+        frameIntervalInMs: 10,
+        pixelsPerFrame: (300 / 1000) * 10, // horizontalVelocityInPixelsPerMs * frameIntervalInMs
     },
     birdAttributes: {
         initialPosition: {
@@ -79,7 +81,7 @@ export const gameConstants = {
         },
         maxBirdAngle: 85, // degrees
         maxBirdVerticalSpeed: 0.75,
-        flapImpulse: 1 * 0.75, // 1.1 * maxBirdVerticalSpeed
+        flapImpulse: 0.75, // maxBirdVerticalSpeed
         flapCoolDownMs: 200,
     },
     obstacles: {

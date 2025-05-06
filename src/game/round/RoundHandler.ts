@@ -9,17 +9,19 @@ import { RoundResult } from './RoundResult'
 import { RoundSettings } from './RoundSettings'
 
 export type RoundBestResults = {
-    [Key in BirdTypes]: number
+    [Key in BirdTypes]: { best: number; avg: number; counter: number }
 }
 
 export class RoundHandler {
     private readonly roundInitializers: RoundBirdInitializer[]
+    private iterations: number
 
     public constructor(gameSettings: GameSettings) {
         this.roundInitializers = [
             new QLearningBirdsRoundInitializer(gameSettings.qLearningSettings),
             new HumanBirdsRoundInitializer(gameSettings.humanSettings),
         ]
+        this.iterations = 0
     }
 
     public createFirstRoundSettings(): RoundSettings {
@@ -28,6 +30,7 @@ export class RoundHandler {
         }, [] as BirdSoul[])
 
         return {
+            iteration: ++this.iterations,
             birdSouls: birds,
         }
     }
@@ -35,9 +38,19 @@ export class RoundHandler {
     public createSubsequentRoundsSettings(roundResult: RoundResult): RoundSettings {
         const roundBestResults = roundResult.birdResults.reduce((acc, result) => {
             const birdType = result.bird.props.type
-            acc[birdType] ??= Math.max(acc[birdType] ?? 0, result.timeAlive)
+            acc[birdType] =
+                acc[birdType] !== undefined
+                    ? {
+                          best: Math.max(acc[birdType].best, result.timeAlive),
+                          avg: acc[birdType].avg + result.timeAlive,
+                          counter: acc[birdType].counter + 1,
+                      }
+                    : { best: result.timeAlive, avg: result.timeAlive, counter: 1 }
             return acc
         }, {} as RoundBestResults)
+        console.log(Object.keys(roundResult.birdResults[0].bird.qTableHandler.table).length)
+        console.log(roundResult.birdResults[0].bird.qTableHandler.table)
+        console.log('Round best results', JSON.stringify(roundBestResults))
         EventBus.emit('emit-round-best-results', roundBestResults)
 
         const birds = this.roundInitializers.reduce((acc, initializer) => {
@@ -45,6 +58,7 @@ export class RoundHandler {
         }, [] as BirdSoul[])
 
         return {
+            iteration: ++this.iterations,
             birdSouls: birds,
         }
     }

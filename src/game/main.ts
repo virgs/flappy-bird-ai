@@ -1,5 +1,5 @@
 import { RoundScene } from './scenes/RoundScene'
-import { EvaluationScene } from './scenes/EvaluationScene'
+import { GameScene } from './scenes/GameScene'
 import { AUTO, Game } from 'phaser'
 import { PreloaderScene } from './scenes/PreloaderScene'
 import { gameConstants } from './GameConstants'
@@ -16,7 +16,7 @@ const exportGameConfig: Phaser.Types.Core.GameConfig = {
     },
     parent: 'game-container',
     backgroundColor: '#028af8',
-    scene: [PreloaderScene, EvaluationScene, RoundScene],
+    scene: [PreloaderScene, GameScene, RoundScene],
 }
 
 const startGame = (parent: string) => {
