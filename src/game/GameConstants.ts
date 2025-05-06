@@ -13,7 +13,7 @@ export const gameConstants = {
         frameWidth: 174, // image.width / 3,
         frameHeight: 124,
         scale: 0.45,
-        hitBoxScale: 0.8,
+        hitBoxScale: 0.85,
         animation: {
             repeat: -1,
             frameRate: 12,
@@ -79,7 +79,7 @@ export const gameConstants = {
             x: 275,
             y: 150,
         },
-        maxBirdAngle: 85, // degrees
+        maxBirdAngle: 75, // degrees
         maxBirdVerticalSpeed: 0.75,
         flapImpulse: 0.75, // maxBirdVerticalSpeed
         flapCoolDownMs: 200,

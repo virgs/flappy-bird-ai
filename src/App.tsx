@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import { PhaserGameComponent } from './PhaserGameComponent'
 import { RoundScene } from './game/scenes/RoundScene'
-import { EvaluationScene } from './game/scenes/EvaluationScene'
+import { GameScene } from './game/scenes/GameScene'
 import { GameSettings } from './settings/GameSettings'
 import { defaultGameSettings } from './settings/DefaultBirdSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
@@ -21,8 +21,8 @@ function App() {
         if (currentScene) {
             setPlayerSettings(settings)
             setGameRunning(true)
-            const evaluationScene = currentScene as EvaluationScene
-            evaluationScene.startGame(settings)
+            const gameScene = currentScene as GameScene
+            gameScene.startGame(settings)
         }
     }
 

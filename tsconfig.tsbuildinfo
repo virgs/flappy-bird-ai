@@ -1,1 +1,35 @@
-{"root":["./src/app.tsx","./src/phasergamecomponent.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/birds/human/humanbirdsroundinitializer.ts","./src/birds/q-learning/qlearningbird.ts","./src/birds/q-learning/qlearningbirdsroundinitializer.ts","./src/birds/q-learning/qlearningdefaultsettings.ts","./src/birds/q-learning/qtablehandler.ts","./src/game/eventbus.ts","./src/game/gameconstants.ts","./src/game/main.ts","./src/game/actors/bird.ts","./src/game/actors/birdfactory.ts","./src/game/actors/birdsoul.ts","./src/game/actors/humancontrolledbird.ts","./src/game/actors/obstacle.ts","./src/game/actors/platform.ts","./src/game/round/roundbirdinitializer.ts","./src/game/round/roundengine.ts","./src/game/round/roundresult.ts","./src/game/round/roundsettings.ts","./src/game/scenes/evaluationscene.ts","./src/game/scenes/preloaderscene.ts","./src/game/scenes/roundscene.ts","./src/settings/birdsettings.tsx","./src/settings/defaultbirdsettings.tsx","./src/settings/gamesettings.tsx","./src/settings/selectbirdscomponent.tsx","./src/time/sleep.ts"],"version":"5.7.3"}
+{
+    "root": [
+        "./src/app.tsx",
+        "./src/phasergamecomponent.tsx",
+        "./src/main.tsx",
+        "./src/vite-env.d.ts",
+        "./src/birds/human/humanbirdsroundinitializer.ts",
+        "./src/birds/q-learning/qlearningbird.ts",
+        "./src/birds/q-learning/qlearningbirdsroundinitializer.ts",
+        "./src/birds/q-learning/qlearningdefaultsettings.ts",
+        "./src/birds/q-learning/qtablehandler.ts",
+        "./src/game/eventbus.ts",
+        "./src/game/gameconstants.ts",
+        "./src/game/main.ts",
+        "./src/game/actors/bird.ts",
+        "./src/game/actors/birdfactory.ts",
+        "./src/game/actors/birdsoul.ts",
+        "./src/game/actors/humancontrolledbird.ts",
+        "./src/game/actors/obstacle.ts",
+        "./src/game/actors/platform.ts",
+        "./src/game/round/roundbirdinitializer.ts",
+        "./src/game/round/roundengine.ts",
+        "./src/game/round/roundresult.ts",
+        "./src/game/round/roundsettings.ts",
+        "./src/game/scenes/evaluationscene.ts",
+        "./src/game/scenes/preloaderscene.ts",
+        "./src/game/scenes/roundscene.ts",
+        "./src/settings/birdsettings.tsx",
+        "./src/settings/defaultbirdsettings.tsx",
+        "./src/settings/gamesettings.tsx",
+        "./src/settings/selectbirdscomponent.tsx",
+        "./src/time/sleep.ts"
+    ],
+    "version": "5.7.3"
+}

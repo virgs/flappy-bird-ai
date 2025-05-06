@@ -85,15 +85,12 @@ export class BirdActor {
 
     private adjustSprite(delta: number) {
         if (this.alive) {
-            this.birdSprite.setAngle(
+            const angle =
                 (this.verticalSpeed / gameConstants.birdAttributes.maxBirdVerticalSpeed) *
-                    gameConstants.birdAttributes.maxBirdAngle
-            )
-            this.hitBoxSprite.setAngle(
-                (this.verticalSpeed / gameConstants.birdAttributes.maxBirdVerticalSpeed) *
-                    gameConstants.birdAttributes.maxBirdAngle
-            )
-            if (this.verticalSpeed > 0) {
+                gameConstants.birdAttributes.maxBirdAngle
+            this.birdSprite.setAngle(angle)
+            this.hitBoxSprite.setAngle(angle)
+            if (angle >= gameConstants.birdAttributes.maxBirdAngle) {
                 this.birdSprite.anims.stop()
             } else if (!this.birdSprite.anims.isPlaying) {
                 this.birdSprite.anims.play(this.soul.props.textureKey)
