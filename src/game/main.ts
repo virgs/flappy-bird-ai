@@ -1,8 +1,8 @@
-import { RoundScene } from './scenes/RoundScene'
-import { GameScene } from './scenes/GameScene'
 import { AUTO, Game } from 'phaser'
-import { PreloaderScene } from './scenes/PreloaderScene'
 import { gameConstants } from './GameConstants'
+import { GameScene } from './scenes/GameScene'
+import { PreloaderScene } from './scenes/PreloaderScene'
+import { RoundScene } from './scenes/RoundScene'
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig

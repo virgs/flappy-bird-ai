@@ -9,7 +9,12 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
     birdType: BirdTypes.SIMULATED_ANNEALING,
     enabled: true,
     texture: gameConstants.spriteSheet.assets.birdRed.name,
-    totalPopulation: 100,
+    totalPopulation: {
+        min: 1,
+        max: 100,
+        value: 50,
+        step: 1,
+    },
     artificialNeuralNetwork: {
         inputs: {
             bias: true,
@@ -18,13 +23,11 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
         hiddenLayers: [
             {
                 bias: true,
-                neurons: { min: 0, max: 10, value: 5, step: 1 },
-                activationFunction: (x: number) => 1 / (1 + Math.exp(-x)),
+                neurons: { min: 1, max: 10, value: 5, step: 1 },
             },
         ],
         outputs: {
             neurons: 1,
-            activationFunction: (x: number) => 1 / (1 + Math.exp(-x)),
         },
     },
     simulatedAnnealing: {
@@ -38,7 +41,7 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
             min: 0,
             max: 1,
             value: 0.975,
-            step: 0.01,
+            step: 0.005,
         },
         topCandidatesRatio: {
             min: 0,
@@ -46,7 +49,7 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
             value: 0.2,
             step: 0.01,
         },
-        successToCooldown: {
+        straightSuccessesToCooldown: {
             min: 1,
             max: 100,
             value: 20,

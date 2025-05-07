@@ -1,7 +1,6 @@
 export type ArtificialNeuralNetworkLayerConfig = {
     bias: boolean
     neurons: number
-    activationFunction: (x: number) => number
 }
 
 export type ArtificialNeuralNetworkInput = {
@@ -50,7 +49,7 @@ export class ArtificialNeuralNetwork {
                 weightIndex + prevLayerSize * currentLayer.neurons
             )
 
-            const outputs = this.processLayer(activations, currentWeights, currentLayer.activationFunction)
+            const outputs = this.processLayer(activations, currentWeights)
             weightIndex += prevLayerSize * currentLayer.neurons
 
             activations = [...outputs]
@@ -62,7 +61,7 @@ export class ArtificialNeuralNetwork {
         return activations
     }
 
-    private processLayer(input: number[], weights: number[], activationFn: (x: number) => number): number[] {
+    private processLayer(input: number[], weights: number[]): number[] {
         const outputNeurons = weights.length / input.length
         const result = new Array(outputNeurons).fill(0)
 
@@ -70,7 +69,7 @@ export class ArtificialNeuralNetwork {
             for (let j = 0; j < input.length; j++) {
                 result[i] += input[j] * weights[i * input.length + j]
             }
-            result[i] = activationFn(result[i])
+            result[i] = (x: number) => 1 / (1 + Math.exp(-result[i])) // Sigmoid activation function
         }
 
         return result

@@ -9,8 +9,12 @@ export const qLearningDefaultSettings: QLearningSettings = {
     birdType: BirdTypes.Q_LEARNING,
     enabled: false,
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
-    // totalPopulation: 100,
-    totalPopulation: 1,
+    totalPopulation: {
+        min: 1,
+        max: 1,
+        value: 1,
+        step: 1,
+    },
     learningRate: {
         min: 0.0,
         max: 1.0,
@@ -36,12 +40,6 @@ export const qLearningDefaultSettings: QLearningSettings = {
             value: 20, //gameConstants.obstacles.verticalOffset.total,
             step: 1,
         },
-    },
-    timeGridInMs: {
-        min: 0,
-        max: 200,
-        value: 50,
-        step: 10,
     },
     rewards: {
         hitFloorOrCeiling: {

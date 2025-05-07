@@ -8,7 +8,12 @@ export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
     cssColor: 'var(--bs-success)',
     birdType: BirdTypes.NEURO_EVOLUTIONARY,
     enabled: false,
-    totalPopulation: 100,
+    totalPopulation: {
+        min: 1,
+        max: 100,
+        value: 50,
+        step: 1,
+    },
     texture: gameConstants.spriteSheet.assets.birdGreen.name,
     artificialNeuralNetwork: {
         inputs: {
@@ -18,13 +23,11 @@ export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
         hiddenLayers: [
             {
                 bias: true,
-                neurons: { min: 0, max: 10, value: 5, step: 1 },
-                activationFunction: (x: number) => 1 / (1 + Math.exp(-x)),
+                neurons: { min: 1, max: 10, value: 5, step: 1 },
             },
         ],
         outputs: {
             neurons: 1,
-            activationFunction: (x: number) => 1 / (1 + Math.exp(-x)),
         },
     },
     geneticAlgorithm: {

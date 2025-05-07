@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form'
 import { BirdSettings } from './BirdSettings'
 import { GameSettings } from './GameSettings'
 import './SelectBirdsComponent.scss'
+import { SimulatedAnnealingComponent } from './SimulatedAnnealingComponent'
 
 type AccordionForm = {
     icon: IconDefinition
@@ -29,6 +30,9 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             icon: faGamepad,
             body: <>
                 <span className='fs-5'>
+                    <p>
+                        Trillions and trillions of real neurons made of flesh and blood combined into a single human being controlling a pixelated bird.
+                    </p>
                     Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
                 </span>
             </>,
@@ -40,8 +44,35 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             },
         },
         {
+            icon: faTableList,
+            body: <>
+                <span className='fs-5'>
+                    <p>
+                        <strong>Q-Learning</strong> is a type of reinforcement learning algorithm that learns the value of actions in a given state.
+                        It uses a table to store the values of actions for each state, and updates these values based on the rewards received from the environment.
+                        The algorithm uses a discount factor to balance the importance of immediate and future rewards.
+                        Read more about it <a href="https://en.wikipedia.org/wiki/Q-learning" target="_blank" rel="noreferrer">here</a>.
+                    </p>
+
+                </span></>,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
+            setEnabled: (value: boolean, gameSettings: GameSettings) => {
+                const newGameSettings = { ...gameSettings }
+                newGameSettings.qLearningSettings.enabled = value
+                return newGameSettings
+            },
+        },
+        {
             icon: faDna,
-            body: <></>,
+            body: <>
+                <span className='fs-5'>
+                    <p>
+                        <strong>Neuro-Evolutionary</strong> is a type of evolutionary algorithm that uses neural networks trained by genetic algorithms to represent the individuals in the population and solve problems.
+                        The algorithm uses a fitness function to evaluate the performance of each individual, and selects the best individuals to create the next generation.
+                        Read more about it <a href="https://en.wikipedia.org/wiki/Neuroevolution" target="_blank" rel="noreferrer">here</a>.
+                    </p>
+                </span>
+            </>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.neuroEvolutionarySettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -51,7 +82,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faTemperatureLow,
-            body: <></>,
+            body: <SimulatedAnnealingComponent value={gameSettings.simulatedAnnealingSettings} onChange={() => ({})} />,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simulatedAnnealingSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -59,16 +90,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                 return newGameSettings
             },
         },
-        {
-            icon: faTableList,
-            body: <></>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
-            setEnabled: (value: boolean, gameSettings: GameSettings) => {
-                const newGameSettings = { ...gameSettings }
-                newGameSettings.qLearningSettings.enabled = value
-                return newGameSettings
-            },
-        },
+
     ]
 
     return (
@@ -91,7 +113,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                 />
                                 <div className="label fs-4">{birdSettings.label}</div>
                                 <Form.Check
-                                    className="ms-auto fs-2"
+                                    className="ms-auto fs-2 enable-bird-switch"
                                     type="switch"
                                     onPointerDown={e => {
                                         e.preventDefault()
@@ -110,9 +132,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                 />
                             </Accordion.Header>
                             <Accordion.Body className='py-2'>
-                                <div className="fs-5">
-                                    {item.body}
-                                </div>
+                                {item.body}
                             </Accordion.Body>
                         </Accordion.Item>
                     )

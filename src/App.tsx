@@ -1,9 +1,9 @@
 import { faStop } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
+import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import { PhaserGameComponent } from './PhaserGameComponent'
 import { RoundScene } from './game/scenes/RoundScene'
@@ -11,8 +11,9 @@ import { GameScene } from './game/scenes/GameScene'
 import { GameSettings } from './settings/GameSettings'
 import { defaultGameSettings } from './settings/DefaultBirdSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
+import './App.css'
 
-function App() {
+export const App = (): ReactNode => {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
     const [currentScene, setCurrentScene] = useState<Phaser.Scene | undefined>(undefined)
     const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultGameSettings)
@@ -35,7 +36,7 @@ function App() {
     }
 
     return (
-        <Container fluid={'lg'} id="app" className="p-0 m-0 h-100">
+        <Container fluid={'md'} id="app" className="p-0 m-0 h-100">
             <Row className="h-100 g-0 justify-content-center align-items-center">
                 {!gameRunning && (
                     <Col xs={12} sm={8} lg={12} className="h-100">
@@ -59,7 +60,7 @@ function App() {
                         <span className="align-self-center fs-2">Abort</span>
                         <FontAwesomeIcon icon={faStop} className="mx-3 fs-2" />
                     </Button>
-                    <div className="h-75 mt-auto">
+                    <div className="h-75 mt-auto w-100">
                         <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
                     </div>
                 </Col>
@@ -72,5 +73,3 @@ function App() {
         </Container>
     )
 }
-
-export default App

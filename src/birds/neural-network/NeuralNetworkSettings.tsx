@@ -9,10 +9,8 @@ export type NeuralNetworkSettings = {
     hiddenLayers: {
         bias: boolean;
         neurons: Range;
-        activationFunction: (x: number) => number;
     }[];
     outputs: {
         neurons: number;
-        activationFunction: (x: number) => number;
     };
 };

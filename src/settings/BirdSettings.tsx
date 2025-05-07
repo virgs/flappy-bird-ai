@@ -27,7 +27,7 @@ export type BirdSettings = {
     // The initial position of the bird is used to determine where the bird will spawn in the game.
     initialPositionHorizontalOffset: number
     // The total population of birds is used to determine how many birds will be spawned in the game.
-    totalPopulation: number
+    totalPopulation: Range
 }
 
 export type HumanSettings = BirdSettings

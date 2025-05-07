@@ -4,7 +4,12 @@ import { BirdTypes } from '../../settings/BirdSettings';
 
 export const humanControlledDefaultSettings = {
     initialPositionHorizontalOffset: 0,
-    totalPopulation: 1,
+    totalPopulation: {
+        min: 1,
+        max: 1,
+        value: 1,
+        step: 1,
+    },
     label: 'Human',
     cssColor: 'var(--bs-warning)',
     birdType: BirdTypes.HUMAN,

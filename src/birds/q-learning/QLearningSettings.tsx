@@ -25,11 +25,7 @@ export type QLearningSettings = {
         vertical: Range;
     };
 
-    // The time grid in milliseconds is used to reduce the number of states in the Q-table.
-    timeGridInMs: Range;
-
     rewards: QLearningRewards;
-
 
     // The qTable shared between all birds
     qTableHandler?: QTableHandler;

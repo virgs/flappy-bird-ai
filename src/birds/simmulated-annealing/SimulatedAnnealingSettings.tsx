@@ -9,7 +9,7 @@ export type SimulatedAnnealingSettings = {
         initialTemperature: Range
         temperatureDecreaseRate: Range
         topCandidatesRatio: Range
-        successToCooldown: Range
+        straightSuccessesToCooldown: Range
     }
 } & BirdSettings;
 
