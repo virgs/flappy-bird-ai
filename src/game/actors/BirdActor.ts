@@ -60,6 +60,8 @@ export class BirdActor {
     }
 
     public update(updateProps: BirdActorUpdateProps): void {
+        this.adjustSprite(updateProps.delta)
+        this.applyGravity(updateProps)
         if (this.alive) {
             this.timeAlive += updateProps.delta
             this.updateSoul(updateProps)
@@ -67,8 +69,6 @@ export class BirdActor {
             this.handleFloorAndCeilingCollision()
             this.handleObstacleCollision(updateProps)
         }
-        this.adjustSprite(updateProps.delta)
-        this.applyGravity(updateProps)
     }
 
     public isAlive(): boolean {

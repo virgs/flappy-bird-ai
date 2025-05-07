@@ -40,7 +40,13 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
             value: 0.975,
             step: 0.01,
         },
-        maxSuccessPerIteration: {
+        topCandidatesRatio: {
+            min: 0,
+            max: 1,
+            value: 0.2,
+            step: 0.01,
+        },
+        successToCooldown: {
             min: 1,
             max: 100,
             value: 20,

@@ -8,6 +8,8 @@ export type SimulatedAnnealingSettings = {
         // restartThreshold: 4000,
         initialTemperature: Range
         temperatureDecreaseRate: Range
-        maxSuccessPerIteration: Range
+        topCandidatesRatio: Range
+        successToCooldown: Range
     }
 } & BirdSettings;
+

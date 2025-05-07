@@ -84,6 +84,9 @@ export class RoundEngine {
             this.birds.forEach(bird => {
                 bird.passedPipe()
             })
+            if (this.birds.some(bird => bird.isAlive())) {
+                console.log('Passed pipe')
+            }
             this.closestObstacleIndex++
         }
 

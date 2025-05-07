@@ -33,8 +33,9 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
         this.simulatedAnnealing = new SimulatedAnnealing({
             population: settings.totalPopulation,
             initialTemperature: settings.simulatedAnnealing.initialTemperature.value,
+            topCandidatesRatio: settings.simulatedAnnealing.topCandidatesRatio.value,
             temperatureDecreaseRate: settings.simulatedAnnealing.temperatureDecreaseRate.value,
-            maxSuccessPerIteration: settings.simulatedAnnealing.maxSuccessPerIteration.value,
+            successToCooldown: settings.simulatedAnnealing.successToCooldown.value,
             numberOfWeights: this.weightsAmount,
         })
     }
