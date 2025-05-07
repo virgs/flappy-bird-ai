@@ -19,7 +19,7 @@ export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
         return roundResult.birdResults
-            .filter(result => result.bird.props.type === BirdTypes.HUMAN)
+            .filter(result => result.bird.getSoulProperties().type === BirdTypes.HUMAN)
             .map(() => this.createBird())
     }
 

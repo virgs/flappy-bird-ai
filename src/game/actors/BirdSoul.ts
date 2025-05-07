@@ -21,17 +21,9 @@ export type UpdateData = {
 }
 
 export abstract class BirdSoul {
-    private readonly _props: BirdSoulProps
-
-    public constructor(props: BirdSoulProps) {
-        this._props = props
-    }
-
     public abstract shouldFlap(): boolean
 
-    public get props(): BirdSoulProps {
-        return this._props
-    }
+    public abstract getSoulProperties(): BirdSoulProps
 
     public update(_data: UpdateData): void {
         /* hook method */

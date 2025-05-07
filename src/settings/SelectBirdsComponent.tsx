@@ -10,8 +10,6 @@ import { GameSettings } from './GameSettings'
 import './SelectBirdsComponent.scss'
 
 type AccordionForm = {
-    label: string
-    color: string
     icon: IconDefinition
     body: JSX.Element
     getBirdsSettings: (gameSettings: GameSettings) => BirdSettings
@@ -28,8 +26,6 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
 
     const accordionSructure: AccordionForm[] = [
         {
-            label: 'Human',
-            color: 'warning',
             icon: faGamepad,
             body: <>
                 <span className='fs-5'>
@@ -44,8 +40,6 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             },
         },
         {
-            label: 'Neuro Evolutionary',
-            color: 'success',
             icon: faDna,
             body: <></>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.neuroEvolutionarySettings,
@@ -56,8 +50,6 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             },
         },
         {
-            label: 'Simulated Annealing',
-            color: 'danger',
             icon: faTemperatureLow,
             body: <></>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simmulatedAnnealingSettings,
@@ -68,8 +60,6 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             },
         },
         {
-            label: 'Q-Learning',
-            color: 'info',
             icon: faTableList,
             body: <></>,
             getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
@@ -87,11 +77,11 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {
                     const birdSettings = item.getBirdsSettings(gameSettings)
-                    const backgroundColor = birdSettings.enabled ? `var(--bs-${item.color})` : 'var(--bs-light)'
+                    const backgroundColor = birdSettings.enabled ? birdSettings.cssColor : 'var(--bs-light)'
                     return (
                         <Accordion.Item
                             eventKey={index.toString()}
-                            key={item.label}
+                            key={birdSettings.label}
                             style={{ backgroundColor: backgroundColor }}>
                             <Accordion.Header>
                                 <FontAwesomeIcon
@@ -99,7 +89,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                     style={{ width: '10%' }}
                                     icon={item.icon}
                                 />
-                                <div className="label fs-4">{item.label}</div>
+                                <div className="label fs-4">{birdSettings.label}</div>
                                 <Form.Check
                                     className="ms-auto fs-2"
                                     type="switch"
@@ -116,7 +106,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                         setGameSettings(newGameSettings)
                                     }}
                                     checked={birdSettings.enabled}
-                                    id={item.label + '-switch'}
+                                    id={birdSettings.label + '-switch'}
                                 />
                             </Accordion.Header>
                             <Accordion.Body className='py-2'>

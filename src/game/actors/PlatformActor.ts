@@ -6,8 +6,8 @@ export class PlatformActor {
     private readonly backgroundSprites: Phaser.GameObjects.Sprite[] = []
     private readonly floorSprites: Phaser.GameObjects.Sprite[] = []
 
-    private readonly dayDurationInMs = 60000 // 60 seconds
-    private ellapsedTime: number = Math.random() * this.dayDurationInMs
+    private static readonly dayDurationInMs = 60000 // 60 seconds
+    private static ellapsedTime: number = Math.random() * PlatformActor.dayDurationInMs
     private alpha: number = 0
 
     constructor(options: { scene: Phaser.Scene }) {
@@ -22,11 +22,11 @@ export class PlatformActor {
             this.floorSprites.forEach(sprite => (sprite.x += this.assetsWidthDifference))
         }
 
-        this.ellapsedTime += options.delta
-        while (this.ellapsedTime > this.dayDurationInMs) {
-            this.ellapsedTime -= this.dayDurationInMs
+        PlatformActor.ellapsedTime += options.delta
+        while (PlatformActor.ellapsedTime > PlatformActor.dayDurationInMs) {
+            PlatformActor.ellapsedTime -= PlatformActor.dayDurationInMs
         }
-        const normalizedTime = (this.ellapsedTime / this.dayDurationInMs) * Math.PI * 2 // Full sine wave cycle
+        const normalizedTime = (PlatformActor.ellapsedTime / PlatformActor.dayDurationInMs) * Math.PI * 2 // Full sine wave cycle
         this.alpha = (Math.sin(normalizedTime) + 1) / 2 // Scale sine wave to range [0, 1]
 
         this.backgroundSprites

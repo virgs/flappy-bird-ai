@@ -11,6 +11,7 @@ export type QLearningRewards = {
 
 export type QLearningSettings = {
     birdType: BirdTypes.Q_LEARNING;
+
     // The learning rate controls how quickly the model is adapted to the problem, and is often in the range between 0.0 and 1.0.
     learningRate: Range;
 

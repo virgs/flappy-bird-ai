@@ -4,8 +4,10 @@ import { QLearningSettings } from './QLearningSettings'
 
 export const qLearningDefaultSettings: QLearningSettings = {
     initialPositionHorizontalOffset: -15,
+    label: 'Q-Learning',
+    cssColor: 'var(--bs-info)',
     birdType: BirdTypes.Q_LEARNING,
-    enabled: true,
+    enabled: false,
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
     // totalPopulation: 100,
     totalPopulation: 1,

@@ -23,7 +23,7 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
         return roundResult.birdResults
-            .filter(birdResult => birdResult.bird.props.type === BirdTypes.Q_LEARNING)
+            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.Q_LEARNING)
             .map(() => this.createQLearningBird())
     }
 

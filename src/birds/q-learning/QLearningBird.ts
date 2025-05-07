@@ -2,8 +2,14 @@ import { Actions, QTableHandler, State } from './QTableHandler'
 import { BirdSoul, BirdSoulProps, UpdateData } from '../../game/actors/BirdSoul'
 import { QLearningRewards } from './QLearningSettings'
 
+type QLearningBirdProps = BirdSoulProps & {
+    rewards: QLearningRewards
+    qTableHandler: QTableHandler
+}
+
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
 export class QLearningBird extends BirdSoul {
+    private readonly _props: QLearningBirdProps
     private readonly qTableHandler: QTableHandler
     private readonly rewards: QLearningRewards
     // private epsilon = 0.1 // Adjust dynamically over time
@@ -12,10 +18,15 @@ export class QLearningBird extends BirdSoul {
     private lastAction: Actions = Actions.DO_NOT_FLAP
     // private ellapsedTime: number = 0
 
-    public constructor(options: BirdSoulProps & { rewards: QLearningRewards; qTableHandler: QTableHandler }) {
-        super(options)
+    public constructor(options: QLearningBirdProps) {
+        super()
+        this._props = options
         this.rewards = options.rewards
         this.qTableHandler = options.qTableHandler
+    }
+
+    public getSoulProperties(): QLearningBirdProps {
+        return this._props
     }
 
     public update(data: UpdateData): void {

@@ -31,14 +31,14 @@ export class BirdActor {
 
     private createSprites(scene: Scene): Phaser.GameObjects.Sprite[] {
         const scale = gameConstants.spriteSheet.scale
-        const textureKey = this.soul.props.textureKey
+        const textureKey = this.soul.getSoulProperties().textureKey
         const birdSprite = scene.add.sprite(
-            this.soul.props.initialPosition.x,
-            this.soul.props.initialPosition.y,
+            this.soul.getSoulProperties().initialPosition.x,
+            this.soul.getSoulProperties().initialPosition.y,
             textureKey
         )
         birdSprite.setScale(scale)
-        birdSprite.setDepth(15)
+        birdSprite.setDepth(5)
         if (!scene.anims.get(textureKey)) {
             scene.anims.create({
                 key: textureKey,
@@ -50,8 +50,8 @@ export class BirdActor {
         birdSprite.anims.play(textureKey)
 
         const hitBoxSprite = scene.add.sprite(
-            this.soul.props.initialPosition.x,
-            this.soul.props.initialPosition.y,
+            this.soul.getSoulProperties().initialPosition.x,
+            this.soul.getSoulProperties().initialPosition.y,
             textureKey
         )
         hitBoxSprite.setScale(scale * gameConstants.spriteSheet.hitBoxScale)
@@ -93,7 +93,7 @@ export class BirdActor {
             if (angle >= gameConstants.birdAttributes.maxBirdAngle) {
                 this.birdSprite.anims.stop()
             } else if (!this.birdSprite.anims.isPlaying) {
-                this.birdSprite.anims.play(this.soul.props.textureKey)
+                this.birdSprite.anims.play(this.soul.getSoulProperties().textureKey)
             }
         } else {
             this.birdSprite.x -= delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
@@ -147,7 +147,6 @@ export class BirdActor {
             this.verticalSpeed = 0
             this.alive = false
             this.birdSprite.anims.pause()
-            this.birdSprite.setDepth(5)
             this.birdSprite.setAlpha(0.4)
         }
     }
