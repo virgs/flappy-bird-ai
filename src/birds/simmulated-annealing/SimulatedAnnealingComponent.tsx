@@ -2,25 +2,19 @@ import { useEffect, useState } from 'react';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { SimulatedAnnealingSettings } from '../birds/simmulated-annealing/SimulatedAnnealingSettings';
-import { ArtificialNeuralNetworkComponent } from './ArtificialNeuralNetworkComponent';
+import { ArtificialNeuralNetworkComponent } from '../neural-network/ArtificialNeuralNetworkComponent';
+import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings';
 
 
 export const SimulatedAnnealingComponent = (props: { value: SimulatedAnnealingSettings; onChange: (data: SimulatedAnnealingSettings) => void; }) => {
     const [settings, setSettings] = useState<SimulatedAnnealingSettings>(props.value);
 
     useEffect(() => {
-        console.log('SimulatedAnnealingComponent', props.value);
-    }, []);
-
-    useEffect(() => {
-        console.log('SimulatedAnnealingComponent', settings.artificialNeuralNetwork.hiddenLayers);
         props.onChange(settings);
     }, [settings]);
 
-
     return <>
-        <div className='fs-6 mx-2 my-3'>
+        <div className='fs-5 mx-2 my-3'>
             <strong>Simulated Annealing</strong> is a probabilistic optimization algorithm that searches for the global minimum of a function.
             It uses a temperature parameter to control the probability of accepting worse solutions as the algorithm progresses.
             This game uses it to train artificial neural networks by simulating the annealing process of metals.

@@ -1,12 +1,12 @@
 import { gameConstants } from '../../game/GameConstants'
 import { BirdTypes } from '../../settings/BirdSettings'
-import { NeuroEvolutionarySettings } from './NeuroEvolutionarySettings'
+import { GeneticAlgorithmSettings } from './GeneticAlgorithmSettings'
 
-export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
+export const geneticAlgorithmDefaultSettings: GeneticAlgorithmSettings = {
     initialPositionHorizontalOffset: -25,
-    label: 'Neuro Evolutionary',
+    label: 'Genetic Algorithm',
     cssColor: 'var(--bs-success)',
-    birdType: BirdTypes.NEURO_EVOLUTIONARY,
+    birdType: BirdTypes.GENETIC_ALGORITHM,
     enabled: false,
     totalPopulation: {
         min: 1,
@@ -37,16 +37,16 @@ export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
             value: 0.01,
             step: 0.01,
         },
-        crossovers: {
+        crossoversCuts: {
             min: 0,
             max: 3,
             value: 1,
             step: 1,
         },
-        elitism: {
+        elitismRatio: {
             min: 0,
             max: 100,
-            value: 1,
+            value: 5,
             step: 1,
         },
     },

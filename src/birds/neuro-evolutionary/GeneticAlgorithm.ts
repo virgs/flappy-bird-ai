@@ -5,8 +5,8 @@ export interface Chromosome {
 export type GeneticAlgorithmOptions = {
     mutationRate: number
     population: number
-    elitism: number
-    crossovers: number
+    elitismRatio: number
+    crossoversCuts: number
 }
 
 export type CitizenResult = {
@@ -24,7 +24,7 @@ export class GeneticAlgorithm {
     public createNextGeneration(oldGenerationResults: CitizenResult[]): Chromosome[] {
         // Sort the results by duration (fitness) in descending order
         const sortedResults = [...oldGenerationResults].sort((a, b) => b.duration - a.duration)
-        const elit = sortedResults.filter((_, index) => index < this.options.elitism)
+        const elit = sortedResults.filter((_, index) => index < this.options.elitismRatio)
         const outcome = elit.map(citizen => citizen.chromosome)
         while (outcome.length < this.options.population) {
             outcome.push(this.createNewCitizen(sortedResults))
@@ -36,17 +36,28 @@ export class GeneticAlgorithm {
     private createNewCitizen(generation: CitizenResult[]): Chromosome {
         const firstParent = this.pickOne(generation)
         const secondParent = this.pickOne(generation)
-        const crossOverCutIndex = Math.floor(Math.random() * firstParent.chromosome.genes.length)
+
+        // Generate multiple crossover cut indices
+        const geneLength = firstParent.chromosome.genes.length
+        const crossoverCuts = Array.from({ length: this.options.crossoversCuts }, () =>
+            Math.floor(Math.random() * geneLength)
+        ).sort((a, b) => a - b) // Sort the cuts in ascending order
+
         const genes = firstParent.chromosome.genes.map((_, index) => {
-            let geneValue = firstParent.chromosome.genes[index]
-            if (index > crossOverCutIndex) {
-                geneValue = secondParent.chromosome.genes[index]
-            }
+            // Determine which parent to take the gene from based on crossover cuts
+            const isFromSecondParent = crossoverCuts.filter(cut => index >= cut).length % 2 !== 0
+            let geneValue = isFromSecondParent
+                ? secondParent.chromosome.genes[index]
+                : firstParent.chromosome.genes[index]
+
+            // Apply mutation
             if (Math.random() < this.options.mutationRate) {
                 geneValue += (Math.random() - 0.5) * 2 // Small random adjustment
             }
+
             return geneValue
         })
+
         return { genes }
     }
 

@@ -8,7 +8,8 @@ import Form from 'react-bootstrap/Form'
 import { BirdSettings } from './BirdSettings'
 import { GameSettings } from './GameSettings'
 import './SelectBirdsComponent.scss'
-import { SimulatedAnnealingComponent } from './SimulatedAnnealingComponent'
+import { SimulatedAnnealingComponent } from '../birds/simmulated-annealing/SimulatedAnnealingComponent'
+import { GeneticAlgorithm } from '../birds/neuro-evolutionary/GeneticAlgorithmComponent'
 
 type AccordionForm = {
     icon: IconDefinition
@@ -31,7 +32,8 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
             body: <>
                 <span className='fs-5'>
                     <p>
-                        Trillions and trillions of real neurons made of flesh and blood combined into a single human being controlling a pixelated bird.
+                        Approximately 86 billion real neurons – depending on the human brain we are talking about – made of flesh and blood are in charge of performing advanced tasks such as deciding whether
+                        to flap the bird or not.
                     </p>
                     Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
                 </span>
@@ -64,19 +66,11 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faDna,
-            body: <>
-                <span className='fs-5'>
-                    <p>
-                        <strong>Neuro-Evolutionary</strong> is a type of evolutionary algorithm that uses neural networks trained by genetic algorithms to represent the individuals in the population and solve problems.
-                        The algorithm uses a fitness function to evaluate the performance of each individual, and selects the best individuals to create the next generation.
-                        Read more about it <a href="https://en.wikipedia.org/wiki/Neuroevolution" target="_blank" rel="noreferrer">here</a>.
-                    </p>
-                </span>
-            </>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.neuroEvolutionarySettings,
+            body: <GeneticAlgorithm value={gameSettings.geneticAlgorithmSettings} onChange={() => ({})} />,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.geneticAlgorithmSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
-                newGameSettings.neuroEvolutionarySettings.enabled = value
+                newGameSettings.geneticAlgorithmSettings.enabled = value
                 return newGameSettings
             },
         },

@@ -4,13 +4,13 @@ import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
 import { BirdTypes } from '../../settings/BirdSettings'
-import { CitizenResult, GeneticAlgorithm } from './GeneticAlgorithm'
-import { NeuralNetworkBird, NeuralNetworkBirdProps } from '../neural-network/NeuralNetworkBird'
-import { NeuroEvolutionarySettings } from './NeuroEvolutionarySettings'
 import { ArtificialNeuralNetwork } from '../neural-network/ArtificialNeuralNetwork'
+import { NeuralNetworkBird, NeuralNetworkBirdProps } from '../neural-network/NeuralNetworkBird'
+import { CitizenResult, GeneticAlgorithm } from './GeneticAlgorithm'
+import { GeneticAlgorithmSettings } from './GeneticAlgorithmSettings'
 
-export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitializer {
-    private readonly settings: NeuroEvolutionarySettings
+export class GeneticAlgorithmBirdsRoundInitializer implements RoundBirdInitializer {
+    private readonly settings: GeneticAlgorithmSettings
     private readonly geneticAlgorithm: GeneticAlgorithm
     private readonly weightsAmount: number
     private readonly birdsInitialPosition = new Geom.Point(
@@ -18,13 +18,13 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
         gameConstants.birdAttributes.initialPosition.y
     )
 
-    public constructor(settings: NeuroEvolutionarySettings) {
+    public constructor(settings: GeneticAlgorithmSettings) {
         this.settings = settings
         this.geneticAlgorithm = new GeneticAlgorithm({
             mutationRate: settings.geneticAlgorithm.mutationRate.value,
-            crossovers: settings.geneticAlgorithm.crossovers.value,
-            elitism: settings.geneticAlgorithm.elitism.value,
-            population: settings.totalPopulation,
+            crossoversCuts: settings.geneticAlgorithm.crossoversCuts.value,
+            elitismRatio: settings.geneticAlgorithm.elitismRatio.value,
+            population: settings.totalPopulation.value,
         })
 
         const ann = this.settings.artificialNeuralNetwork
@@ -41,7 +41,7 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
         const neuroEvolutionaryBirds: CitizenResult[] = roundResult.birdResults
-            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.NEURO_EVOLUTIONARY)
+            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.GENETIC_ALGORITHM)
             .map(birdResult => {
                 const neuroEvolutionProps = birdResult.bird.getSoulProperties() as NeuralNetworkBirdProps
                 return {
@@ -59,7 +59,7 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
 
     public createFirstRoundSettings(): BirdSoul[] {
         if (this.settings.enabled) {
-            return Array.from({ length: this.settings.totalPopulation }).map(() => {
+            return Array.from({ length: this.settings.totalPopulation.value }).map(() => {
                 const weights = Array.from(Array(this.weightsAmount)).map(() => Math.random() * 2 - 1)
                 return this.createNeuralNetworkBird(weights)
             })
@@ -74,7 +74,7 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
         )
         const ann = this.settings.artificialNeuralNetwork
         return new NeuralNetworkBird({
-            type: BirdTypes.NEURO_EVOLUTIONARY,
+            type: BirdTypes.GENETIC_ALGORITHM,
             textureKey: this.settings.texture,
             initialPosition: position,
             annSettings: {

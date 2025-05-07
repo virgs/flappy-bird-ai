@@ -1,5 +1,5 @@
 import { HumanBirdsRoundInitializer } from '../../birds/human/HumanBirdsRoundInitializer'
-import { NeuroEvolutionaryBirdsRoundInitializer } from '../../birds/neuro-evolutionary/NeuroEvolutionaryBirdsRoundInitializer'
+import { GeneticAlgorithmBirdsRoundInitializer } from '../../birds/neuro-evolutionary/GeneticAlgorithmBirdsRoundInitializer'
 import { QLearningBirdsRoundInitializer } from '../../birds/q-learning/QLearningBirdsRoundInitializer'
 import { SimulatedAnnealingBirdsRoundInitializer } from '../../birds/simmulated-annealing/SimulatedAnnealingBirdsRoundInitializer'
 import { BirdTypes } from '../../settings/BirdSettings'
@@ -21,7 +21,7 @@ export class RoundHandler {
     public constructor(gameSettings: GameSettings) {
         this.roundInitializers = [
             new SimulatedAnnealingBirdsRoundInitializer(gameSettings.simulatedAnnealingSettings),
-            new NeuroEvolutionaryBirdsRoundInitializer(gameSettings.neuroEvolutionarySettings),
+            new GeneticAlgorithmBirdsRoundInitializer(gameSettings.geneticAlgorithmSettings),
             new QLearningBirdsRoundInitializer(gameSettings.qLearningSettings),
             new HumanBirdsRoundInitializer(gameSettings.humanSettings),
         ]

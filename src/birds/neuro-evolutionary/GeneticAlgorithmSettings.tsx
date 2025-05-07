@@ -1,12 +1,12 @@
 import { BirdSettings, BirdTypes, Range } from '../../settings/BirdSettings';
 import { NeuralNetworkSettings } from '../neural-network/NeuralNetworkSettings';
 
-export type NeuroEvolutionarySettings = {
-    birdType: BirdTypes.NEURO_EVOLUTIONARY;
+export type GeneticAlgorithmSettings = {
+    birdType: BirdTypes.GENETIC_ALGORITHM;
     artificialNeuralNetwork: NeuralNetworkSettings
     geneticAlgorithm: {
         mutationRate: Range;
-        crossovers: Range;
-        elitism: Range;
+        crossoversCuts: Range;
+        elitismRatio: Range;
     }
 } & BirdSettings;
