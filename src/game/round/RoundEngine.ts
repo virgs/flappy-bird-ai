@@ -51,9 +51,13 @@ export class RoundEngine {
         this.checkGameOver()
     }
 
-    public abort() {
+    public abortGame() {
         this.gameOver = true
         this.results.aborted = true
+    }
+
+    public abortRound() {
+        this.gameOver = true
     }
 
     public isGameOver(): boolean {

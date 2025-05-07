@@ -37,7 +37,11 @@ export class QTableHandler {
             gameConstants.gameDimensions.width / this.settings.gridSpatialAbstraction.horizontal.value
         const verticalPartition =
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
-        const distanceToCeiling = Math.floor(data.verticalPosition / verticalPartition)
+        const distanceToCeiling = Math.floor(data.position.y / verticalPartition)
+        let verticalSpeedState = 0
+        if (Math.abs(data.verticalSpeed) > gameConstants.birdAttributes.maxBirdVerticalSpeed / 2) {
+            verticalSpeedState = data.verticalSpeed > 0 ? 1 : -1
+        }
         const state: State = {
             distanceToCeiling:
                 distanceToCeiling < 2
@@ -45,18 +49,18 @@ export class QTableHandler {
                     : distanceToCeiling > this.settings.gridSpatialAbstraction.horizontal.value - 2
                       ? 'low'
                       : '-',
-            verticalSpeed: data.verticalSpeed > 0 ? 1 : -1,
+            verticalSpeed: verticalSpeedState,
         }
-        if (data.closestPipeGapVerticalPosition !== undefined && data.horizontalDistanceToClosestPipe !== undefined) {
-            const horizontalValue = Math.floor(data.horizontalDistanceToClosestPipe / horizontalPartition)
+        if (data.closestObstacleGapPosition !== undefined) {
+            const horizontalValue = Math.floor(
+                (data.closestObstacleGapPosition.x - data.position.x) / horizontalPartition
+            )
             // Check if the bird is close to the obstacle, otherwise ignore it
             if (horizontalValue < this.settings.gridSpatialAbstraction.horizontal.value / 2) {
                 // Calculate the distance to the closest obstacle
                 state.distanceToClosestObstacle = {
                     horizontal: horizontalValue,
-                    vertical: Math.floor(
-                        (data.closestPipeGapVerticalPosition - data.verticalPosition) / verticalPartition
-                    ),
+                    vertical: Math.floor((data.closestObstacleGapPosition.y - data.position.y) / verticalPartition),
                 }
             }
         }

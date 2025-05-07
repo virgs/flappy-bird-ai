@@ -32,14 +32,14 @@ export class RoundScene extends Scene {
         //https://gafferongames.com/game-physics/fix-your-timestep
         this.milisecondsElapsed += delta
         // max frame time to avoid spiral of death
-        const maxFrameTime = gameConstants.physics.frameIntervalInMs * 2
+        const maxFrameTime = gameConstants.physics.fixedFrameIntervalInMs * 2
         if (this.milisecondsElapsed > maxFrameTime) {
             this.milisecondsElapsed = maxFrameTime
         }
 
-        while (this.milisecondsElapsed >= gameConstants.physics.frameIntervalInMs) {
-            this.milisecondsElapsed -= gameConstants.physics.frameIntervalInMs
-            this.updateFrame(gameConstants.physics.frameIntervalInMs)
+        while (this.milisecondsElapsed >= gameConstants.physics.fixedFrameIntervalInMs) {
+            this.milisecondsElapsed -= gameConstants.physics.fixedFrameIntervalInMs
+            this.updateFrame(gameConstants.physics.fixedFrameIntervalInMs)
         }
     }
     public async updateFrame(delta: number) {
@@ -57,9 +57,15 @@ export class RoundScene extends Scene {
         }
     }
 
-    public abort() {
+    public abortGame() {
         this.roundEngine.destroy()
-        this.roundEngine.abort()
+        this.roundEngine.abortGame()
+        this.scene.start('GameScene', this.roundEngine.getResults())
+    }
+
+    public abortRound() {
+        this.roundEngine.destroy()
+        this.roundEngine.abortRound()
         this.scene.start('GameScene', this.roundEngine.getResults())
     }
 }

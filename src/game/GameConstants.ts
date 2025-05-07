@@ -71,7 +71,7 @@ export const gameConstants = {
     physics: {
         gravity: 0.003,
         horizontalVelocityInPixelsPerMs: 300 / 1000, // 300 pixels per second
-        frameIntervalInMs: 10,
+        fixedFrameIntervalInMs: 10, // Every game iteration will be "10ms" apart
         pixelsPerFrame: (300 / 1000) * 10, // horizontalVelocityInPixelsPerMs * frameIntervalInMs
     },
     birdAttributes: {

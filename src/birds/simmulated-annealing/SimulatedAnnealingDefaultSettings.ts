@@ -1,15 +1,15 @@
 import { gameConstants } from '../../game/GameConstants'
 import { BirdTypes } from '../../settings/BirdSettings'
-import { NeuroEvolutionarySettings } from './NeuroEvolutionarySettings'
+import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings'
 
-export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
-    initialPositionHorizontalOffset: -25,
-    label: 'Neuro Evolutionary',
-    cssColor: 'var(--bs-success)',
-    birdType: BirdTypes.NEURO_EVOLUTIONARY,
-    enabled: false,
+export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
+    initialPositionHorizontalOffset: -35,
+    label: 'Simulated Annealing',
+    cssColor: 'var(--bs-danger)',
+    birdType: BirdTypes.SIMULATED_ANNEALING,
+    enabled: true,
+    texture: gameConstants.spriteSheet.assets.birdRed.name,
     totalPopulation: 100,
-    texture: gameConstants.spriteSheet.assets.birdGreen.name,
     artificialNeuralNetwork: {
         inputs: {
             bias: true,
@@ -27,23 +27,23 @@ export const neuroEvolutionaryDefaultSettings: NeuroEvolutionarySettings = {
             activationFunction: (x: number) => 1 / (1 + Math.exp(-x)),
         },
     },
-    geneticAlgorithm: {
-        mutationRate: {
+    simulatedAnnealing: {
+        initialTemperature: {
             min: 0,
             max: 1,
-            value: 0.01,
+            value: 0.5,
             step: 0.01,
         },
-        crossovers: {
+        temperatureDecreaseRate: {
             min: 0,
-            max: 3,
-            value: 1,
-            step: 1,
+            max: 1,
+            value: 0.975,
+            step: 0.01,
         },
-        elitism: {
-            min: 0,
+        maxSuccessPerIteration: {
+            min: 1,
             max: 100,
-            value: 1,
+            value: 20,
             step: 1,
         },
     },

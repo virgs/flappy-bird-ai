@@ -4,29 +4,22 @@ import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
 import { BirdTypes } from '../../settings/BirdSettings'
-import { CitizenResult, GeneticAlgorithm } from './GeneticAlgorithm'
-import { NeuralNetworkBird, NeuralNetworkBirdProps } from '../neural-network/NeuralNetworkBird'
-import { NeuroEvolutionarySettings } from './NeuroEvolutionarySettings'
 import { ArtificialNeuralNetwork } from '../neural-network/ArtificialNeuralNetwork'
+import { NeuralNetworkBird, NeuralNetworkBirdProps } from '../neural-network/NeuralNetworkBird'
+import { Candidate, SimulatedAnnealing } from './SimulatedAnnealing'
+import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings'
 
-export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitializer {
-    private readonly settings: NeuroEvolutionarySettings
-    private readonly geneticAlgorithm: GeneticAlgorithm
+export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitializer {
+    private readonly settings: SimulatedAnnealingSettings
+    private readonly simulatedAnnealing: SimulatedAnnealing
     private readonly weightsAmount: number
     private readonly birdsInitialPosition = new Geom.Point(
         gameConstants.birdAttributes.initialPosition.x,
         gameConstants.birdAttributes.initialPosition.y
     )
 
-    public constructor(settings: NeuroEvolutionarySettings) {
+    public constructor(settings: SimulatedAnnealingSettings) {
         this.settings = settings
-        this.geneticAlgorithm = new GeneticAlgorithm({
-            mutationRate: settings.geneticAlgorithm.mutationRate.value,
-            crossovers: settings.geneticAlgorithm.crossovers.value,
-            elitism: settings.geneticAlgorithm.elitism.value,
-            population: settings.totalPopulation,
-        })
-
         const ann = this.settings.artificialNeuralNetwork
 
         this.weightsAmount = ArtificialNeuralNetwork.calculateExpectedWeights({
@@ -37,22 +30,29 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
             })),
             outputs: ann.outputs,
         })
+        this.simulatedAnnealing = new SimulatedAnnealing({
+            population: settings.totalPopulation,
+            initialTemperature: settings.simulatedAnnealing.initialTemperature.value,
+            temperatureDecreaseRate: settings.simulatedAnnealing.temperatureDecreaseRate.value,
+            maxSuccessPerIteration: settings.simulatedAnnealing.maxSuccessPerIteration.value,
+            numberOfWeights: this.weightsAmount,
+        })
     }
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
-        const neuroEvolutionaryBirds: CitizenResult[] = roundResult.birdResults
-            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.NEURO_EVOLUTIONARY)
+        const simulatedAnnealingBirds: Candidate[] = roundResult.birdResults
+            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.SIMULATED_ANNEALING)
             .map(birdResult => {
-                const neuroEvolutionProps = birdResult.bird.getSoulProperties() as NeuralNetworkBirdProps
+                const propsEvolutionProps = birdResult.bird.getSoulProperties() as NeuralNetworkBirdProps
                 return {
-                    chromosome: { genes: neuroEvolutionProps.annSettings.weights },
-                    duration: birdResult.timeAlive,
+                    weights: propsEvolutionProps.annSettings.weights,
+                    score: birdResult.timeAlive,
                 }
             })
-        if (neuroEvolutionaryBirds.length > 0) {
-            return this.geneticAlgorithm
-                .createNextGeneration(neuroEvolutionaryBirds)
-                .map(chromosome => this.createNeuralNetworkBird(chromosome.genes))
+        if (simulatedAnnealingBirds.length > 0) {
+            return this.simulatedAnnealing
+                .iterate(simulatedAnnealingBirds)
+                .map(candidate => this.createNeuralNetworkBird(candidate.weights))
         }
         return []
     }
@@ -74,7 +74,7 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
         )
         const ann = this.settings.artificialNeuralNetwork
         return new NeuralNetworkBird({
-            type: BirdTypes.NEURO_EVOLUTIONARY,
+            type: BirdTypes.SIMULATED_ANNEALING,
             textureKey: this.settings.texture,
             initialPosition: position,
             annSettings: {

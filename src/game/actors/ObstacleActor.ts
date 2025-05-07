@@ -6,12 +6,7 @@ type ObstacleActorProps = {
 }
 
 export class ObstacleActor {
-    public getHitBoxes() {
-        return this.pipesSprites.map(sprite => {
-            const bounds = sprite.getBounds()
-            return new Geom.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height)
-        })
-    }
+    private readonly position: Geom.Point
     private readonly verticalOffset: number
     private readonly pipesSprites: Phaser.GameObjects.Sprite[] = []
     private outOfScreen: boolean = false
@@ -26,8 +21,8 @@ export class ObstacleActor {
         )
         const randomIndex = Math.floor(Math.random() * verticalOffsetOptions.length)
         this.verticalOffset = verticalOffsetOptions[randomIndex] * gameConstants.gameDimensions.height
-        const position = new Geom.Point(gameConstants.gameDimensions.width, this.verticalOffset)
-        this.createSprites(options, position)
+        this.position = new Geom.Point(gameConstants.gameDimensions.width, this.verticalOffset)
+        this.createSprites(options)
     }
 
     public update(options: { delta: number }): void {
@@ -39,25 +34,32 @@ export class ObstacleActor {
         }
     }
 
-    public getVerticalOffset() {
-        return this.verticalOffset
-    }
-
     public destroy(): void {
         this.pipesSprites.forEach(sprite => sprite.destroy())
     }
 
-    public getHorizontalPosition(): number {
-        return this.pipesSprites[0].x
+    public getHitBoxes() {
+        return this.pipesSprites.map(sprite => {
+            const bounds = sprite.getBounds()
+            return new Geom.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height)
+        })
+    }
+
+    public getPosition(): Geom.Point {
+        return this.position
     }
 
     public isOutOfScreen(): boolean {
         return this.outOfScreen
     }
 
-    private createSprites(options: ObstacleActorProps, position: Phaser.Geom.Point) {
+    private createSprites(options: ObstacleActorProps): void {
         const scale = gameConstants.obstacles.scale
-        const topPipeSprite = options.scene.add.sprite(position.x, position.y, gameConstants.assets.topPipe.name)
+        const topPipeSprite = options.scene.add.sprite(
+            this.position.x,
+            this.position.y,
+            gameConstants.assets.topPipe.name
+        )
         topPipeSprite.displayOriginX = 0
         topPipeSprite.displayOriginY = 0
         topPipeSprite.setScale(scale)
@@ -66,8 +68,8 @@ export class ObstacleActor {
         this.pipesSprites.push(topPipeSprite)
 
         const bottomPipeSprite = options.scene.add.sprite(
-            position.x,
-            position.y + topPipeSprite.height + gameConstants.obstacles.verticalGapInPixels,
+            this.position.x,
+            this.position.y + topPipeSprite.height + gameConstants.obstacles.verticalGapInPixels,
             gameConstants.assets.bottomPipe.name
         )
         bottomPipeSprite.displayOriginX = 0

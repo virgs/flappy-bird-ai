@@ -12,12 +12,18 @@ export type BirdSoulProps = {
 
 export type UpdateData = {
     scene: Phaser.Scene
-    verticalPosition: number
+    position: {
+        x: number
+        y: number
+    }
     verticalSpeed: number
     roundIteration: number
-    closestPipeGapVerticalPosition?: number
-    horizontalDistanceToClosestPipe?: number
+    closestObstacleGapPosition?: {
+        x: number
+        y: number
+    }
     delta: number
+    cooldownCounter: number
 }
 
 export abstract class BirdSoul {

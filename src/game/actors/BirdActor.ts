@@ -1,6 +1,6 @@
 import { Geom, Scene } from 'phaser'
 import { gameConstants } from '../GameConstants'
-import { BirdSoul, Commands } from './BirdSoul'
+import { BirdSoul, Commands, UpdateData } from './BirdSoul'
 import { ObstacleActor } from './ObstacleActor'
 
 type BirdActorUpdateProps = {
@@ -16,7 +16,7 @@ export class BirdActor {
     private timeAlive: number = 0
     private verticalSpeed: number = 0
     protected alive: boolean = true
-    protected inputTimeCounterMs: number = 0
+    protected cooldownCounter: number = 0
     protected commands: Commands[] = []
     protected soul: BirdSoul
 
@@ -101,25 +101,24 @@ export class BirdActor {
     }
 
     private updateSoul(updateProps: BirdActorUpdateProps) {
-        this.inputTimeCounterMs += updateProps.delta
-        const closestObstacleGapVerticalPosition = updateProps.closestObstacle?.getVerticalOffset() ?? 0
-        const horizontalDistanceToClosestPipe = updateProps.closestObstacle?.getHorizontalPosition()
-            ? updateProps.closestObstacle.getHorizontalPosition() - this.hitBoxSprite.getCenter().x
-            : 0
-
-        this.soul.update({
+        this.cooldownCounter -= updateProps.delta
+        const props: UpdateData = {
             scene: this.birdSprite.scene,
             verticalSpeed: this.verticalSpeed,
-            verticalPosition: this.hitBoxSprite.getCenter().y,
-            closestPipeGapVerticalPosition: closestObstacleGapVerticalPosition,
-            horizontalDistanceToClosestPipe: horizontalDistanceToClosestPipe,
+            position: {
+                x: this.birdSprite.x,
+                y: this.birdSprite.y,
+            },
+            closestObstacleGapPosition: updateProps.closestObstacle?.getPosition(),
             roundIteration: updateProps.roundIteration,
             delta: updateProps.delta,
-        })
-        if (this.inputTimeCounterMs > gameConstants.birdAttributes.flapCoolDownMs) {
+            cooldownCounter: this.cooldownCounter,
+        }
+        this.soul.update(props)
+        if (this.cooldownCounter <= 0) {
             if (this.soul.shouldFlap()) {
                 this.commands.push(Commands.FLAP_WING)
-                this.inputTimeCounterMs = 0
+                this.cooldownCounter = gameConstants.birdAttributes.flapCoolDownMs
             }
         }
     }

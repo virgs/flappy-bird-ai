@@ -1,20 +1,5 @@
 import { BirdSettings, BirdTypes, Range } from '../../settings/BirdSettings';
-
-export type NeuralNetworkSettings = {
-    inputs: {
-        bias: boolean;
-        neurons: number;
-    }
-    hiddenLayers: {
-        bias: boolean;
-        neurons: Range;
-        activationFunction: (x: number) => number
-    }[];
-    outputs: {
-        neurons: number;
-        activationFunction: (x: number) => number
-    };
-}
+import { NeuralNetworkSettings } from '../neural-network/NeuralNetworkSettings';
 
 export type NeuroEvolutionarySettings = {
     birdType: BirdTypes.NEURO_EVOLUTIONARY;

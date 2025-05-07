@@ -4,7 +4,7 @@ export type ArtificialNeuralNetworkLayerConfig = {
     activationFunction: (x: number) => number
 }
 
-export type ArtificialNeuralNetworkConfig = {
+export type ArtificialNeuralNetworkInput = {
     inputs: {
         bias: boolean
         neurons: number
@@ -15,17 +15,11 @@ export type ArtificialNeuralNetworkConfig = {
 }
 
 export class ArtificialNeuralNetwork {
-    private readonly config: ArtificialNeuralNetworkConfig
-    private readonly layers: ArtificialNeuralNetworkLayerConfig[]
+    private readonly config: ArtificialNeuralNetworkInput
 
-    constructor(config: ArtificialNeuralNetworkConfig) {
+    constructor(config: ArtificialNeuralNetworkInput) {
         this.config = config
-        this.layers = [
-            { ...this.config.inputs, activationFunction: x => x },
-            ...this.config.hiddenLayers,
-            { ...this.config.outputs, bias: false },
-        ]
-        const expected = this.calculateExpectedWeights()
+        const expected = ArtificialNeuralNetwork.calculateExpectedWeights(config)
         if (config.weights.length !== expected) {
             throw new Error(`Expected ${expected} weights, but got ${config.weights.length}.`)
         }
@@ -82,15 +76,19 @@ export class ArtificialNeuralNetwork {
         return result
     }
 
-    private calculateExpectedWeights(): number {
-        let totalWeights = 0
-
-        for (let i = 0; i < this.layers.length - 1; i++) {
-            const inputNeurons = this.layers[i].neurons + (this.layers[i].bias ? 1 : 0)
-            const outputNeurons = this.layers[i + 1].neurons
-            totalWeights += inputNeurons * outputNeurons
-        }
-
-        return totalWeights
+    public static calculateExpectedWeights(ann: Omit<ArtificialNeuralNetworkInput, 'weights'>): number {
+        const layers = [
+            ann.inputs,
+            ...ann.hiddenLayers.map(hiddenLayer => ({ bias: hiddenLayer.bias, neurons: hiddenLayer.neurons })),
+            { ...ann.outputs, bias: false }, // Outputs layer do not have bias
+        ]
+        return layers.reduce((totalWeights, layer, i) => {
+            if (i === layers.length - 1) {
+                return totalWeights // Skip last layer
+            }
+            const inputNeurons = layer.neurons + (layer.bias ? 1 : 0)
+            const outputNeurons = layers[i + 1].neurons
+            return totalWeights + inputNeurons * outputNeurons
+        }, 0)
     }
 }

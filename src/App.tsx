@@ -30,7 +30,7 @@ function App() {
         if (currentScene) {
             setGameRunning(false)
             const roundScene = currentScene as RoundScene
-            roundScene.abort()
+            roundScene.abortGame()
         }
     }
 

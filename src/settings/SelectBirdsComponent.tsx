@@ -52,10 +52,10 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         {
             icon: faTemperatureLow,
             body: <></>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simmulatedAnnealingSettings,
+            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simulatedAnnealingSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
-                newGameSettings.simmulatedAnnealingSettings.enabled = value
+                newGameSettings.simulatedAnnealingSettings.enabled = value
                 return newGameSettings
             },
         },
