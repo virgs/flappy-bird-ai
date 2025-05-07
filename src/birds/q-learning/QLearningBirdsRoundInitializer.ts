@@ -36,7 +36,7 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     private createQLearningBird(): BirdSoul {
         const position = new Geom.Point(
-            this.birdsInitialPosition.x + this.qLearningSettings.initialPositionHorizontalOffset,
+            this.birdsInitialPosition.x + this.qLearningSettings.initialPositionHorizontalOffset + Math.random() * 10,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5
         )
         return new QLearningBird({

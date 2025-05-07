@@ -36,6 +36,8 @@ export class GeneticAlgorithm {
     private createNewCitizen(generation: CitizenResult[]): Chromosome {
         const firstParent = this.pickOne(generation)
         const secondParent = this.pickOne(generation)
+        console.log('firstParent', firstParent)
+        console.log('secondParent', secondParent)
         const crossOverCutIndex = Math.floor(Math.random() * firstParent.chromosome.genes.length)
         const genes = firstParent.chromosome.genes.map((_, index) => {
             let geneValue = firstParent.chromosome.genes[index]

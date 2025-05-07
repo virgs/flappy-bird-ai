@@ -57,9 +57,12 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
                     duration: birdResult.timeAlive,
                 }
             })
-        return this.geneticAlgorithm
-            .createNextGeneration(neuroEvolutionaryBirds)
-            .map(chromosome => this.createNeuroEvolutionaryBird(chromosome.genes))
+        if (neuroEvolutionaryBirds.length > 0) {
+            return this.geneticAlgorithm
+                .createNextGeneration(neuroEvolutionaryBirds)
+                .map(chromosome => this.createNeuroEvolutionaryBird(chromosome.genes))
+        }
+        return []
     }
 
     public createFirstRoundSettings(): BirdSoul[] {
@@ -74,7 +77,7 @@ export class NeuroEvolutionaryBirdsRoundInitializer implements RoundBirdInitiali
 
     private createNeuroEvolutionaryBird(weights: number[]): BirdSoul {
         const position = new Geom.Point(
-            this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset,
+            this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset + Math.random() * 10,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5
         )
         const ann = this.settings.artificialNeuralNetwork
