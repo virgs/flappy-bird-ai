@@ -46,4 +46,8 @@ export abstract class BirdSoul {
     public onPassedPipe(): void {
         /* hook method */
     }
+
+    public onDestroy(): void {
+        /* hook method */
+    }
 }

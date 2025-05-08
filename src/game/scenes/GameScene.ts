@@ -1,7 +1,7 @@
 import { Scene } from 'phaser'
 
 import { GameSettings } from '../../settings/GameSettings'
-import { EventBus } from '../EventBus'
+import { EventBus, GameEvents } from '../EventBus'
 import { RoundHandler } from '../round/RoundHandler'
 import { RoundResult } from '../round/RoundResult'
 
@@ -24,7 +24,7 @@ export class GameScene extends Scene {
     }
 
     public create() {
-        EventBus.emit('update-current-scene', this)
+        EventBus.emit(GameEvents.UPDATE_GAME_SCENE, this)
     }
 
     public async startGame(gameSettings: GameSettings) {

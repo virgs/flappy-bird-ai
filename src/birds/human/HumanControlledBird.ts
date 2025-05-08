@@ -1,5 +1,5 @@
 import { Input } from 'phaser'
-import { EventBus } from '../../game/EventBus'
+import { EventBus, GameEvents } from '../../game/EventBus'
 import { BirdSoul, BirdSoulProps, Commands, UpdateData } from '../../game/actors/BirdSoul'
 
 export class HumanControlledBird extends BirdSoul {
@@ -11,7 +11,11 @@ export class HumanControlledBird extends BirdSoul {
     public constructor(options: BirdSoulProps) {
         super()
         this._props = options
-        EventBus.on('game-container-pointer-down', () => this.commands.push(Commands.FLAP_WING))
+        EventBus.on(GameEvents.GAME_CONTAINER_POINTER_DOWN, () => this.commands.push(Commands.FLAP_WING))
+    }
+
+    public onDestroy(): void {
+        EventBus.removeListener(GameEvents.GAME_CONTAINER_POINTER_DOWN)
     }
 
     public getSoulProperties(): BirdSoulProps {

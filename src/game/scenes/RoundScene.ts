@@ -1,5 +1,5 @@
 import { Scene } from 'phaser'
-import { EventBus } from '../EventBus'
+import { EventBus, GameEvents } from '../EventBus'
 import { RoundEngine } from '../round/RoundEngine'
 import { RoundSettings } from '../round/RoundSettings'
 import { BirdTypes } from '../../settings/BirdSettings'
@@ -17,7 +17,7 @@ export class RoundScene extends Scene {
     }
 
     public create(roundSettings: RoundSettings) {
-        EventBus.emit('update-current-scene', this)
+        EventBus.emit(GameEvents.UPDATE_GAME_SCENE, this)
 
         this.milisecondsElapsed = 0
         this.gameIsOver = false

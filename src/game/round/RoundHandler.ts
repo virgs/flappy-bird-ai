@@ -5,7 +5,7 @@ import { SimulatedAnnealingBirdsRoundInitializer } from '../../birds/simmulated-
 import { BirdTypes } from '../../settings/BirdSettings'
 import { GameSettings } from '../../settings/GameSettings'
 import { BirdSoul } from '../actors/BirdSoul'
-import { EventBus } from '../EventBus'
+import { EventBus, GameEvents } from '../EventBus'
 import { RoundBirdInitializer } from './RoundBirdInitializer'
 import { RoundResult } from './RoundResult'
 import { RoundSettings } from './RoundSettings'
@@ -55,7 +55,7 @@ export class RoundHandler {
         // console.log(Object.keys(roundResult.birdResults[0].bird.qTableHandler.table).length)
         // console.log(roundResult.birdResults[0].bird.qTableHandler.table)
         console.log('Round best results', JSON.stringify(roundBestResults))
-        EventBus.emit('emit-round-best-results', roundBestResults)
+        EventBus.emit(GameEvents.ROUND_BEST_RESULTS, roundBestResults)
 
         const birds = this.roundInitializers.reduce((acc, initializer) => {
             return acc.concat(initializer.createSubsequentRoundsSettings(roundResult))

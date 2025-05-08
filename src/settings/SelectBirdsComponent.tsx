@@ -139,9 +139,9 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
     return (
         <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
             <p className="header text-center my-2">
-                <FontAwesomeIcon className="mx-5" icon={faTrophy} />
+                <FontAwesomeIcon className="mx-5 d-none d-lg-inline" icon={faTrophy} />
                 Select Competitors
-                <FontAwesomeIcon className="mx-5" icon={faTrophy} />
+                <FontAwesomeIcon className="mx-5 d-none d-lg-inline" icon={faTrophy} />
             </p>
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {

@@ -131,7 +131,7 @@ export class BirdActor {
                     .getHitBoxes()
                     .some(obstacleHitBox => Geom.Intersects.RectangleToRectangle(obstacleHitBox, birdHitboxSprite))
             ) {
-                this.killBird()
+                this.kill()
                 this.soul.onHitObstacle()
             }
         }
@@ -141,7 +141,7 @@ export class BirdActor {
         return this.birdSprite.x + this.birdSprite.displayWidth < 0
     }
 
-    private killBird(): void {
+    public kill(): void {
         if (this.alive) {
             this.verticalSpeed = 0
             this.alive = false
@@ -151,6 +151,7 @@ export class BirdActor {
     }
 
     public destroy(): void {
+        this.soul.onDestroy()
         this.birdSprite.destroy()
         this.hitBoxSprite.destroy()
     }
@@ -173,11 +174,11 @@ export class BirdActor {
     private handleFloorAndCeilingCollision(): void {
         const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.bottom > gameConstants.gameDimensions.height - gameConstants.gameDimensions.floorHeight) {
-            this.killBird()
+            this.kill()
             this.soul.onHitFloorOrCeiling()
         }
         if (birdBounds.top < 0) {
-            this.killBird()
+            this.kill()
             this.soul.onHitFloorOrCeiling()
         }
     }

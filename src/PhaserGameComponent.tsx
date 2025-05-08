@@ -1,5 +1,5 @@
 import startGame from './game/main'
-import { EventBus } from './game/EventBus'
+import { EventBus, GameEvents } from './game/EventBus'
 import { ReactNode, useRef, useEffect } from 'react'
 
 export interface IRefPhaserGame {
@@ -19,7 +19,7 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
             game.current = startGame('game-container')
         }
 
-        EventBus.on('update-current-scene', (sceneInstance: Phaser.Scene) => onSceneChange(sceneInstance))
+        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => onSceneChange(sceneInstance))
 
         return () => {
             if (game.current) {
@@ -28,9 +28,10 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
                     game.current = null
                 }
             }
-            EventBus.removeListener('update-current-scene')
+            EventBus.removeListener(GameEvents.UPDATE_GAME_SCENE)
         }
     }, [])
 
-    return <div id="game-container" onPointerDown={() => EventBus.emit('game-container-pointer-down', this)}></div>
+    return <div id="game-container"
+        onPointerDown={() => EventBus.emit(GameEvents.GAME_CONTAINER_POINTER_DOWN, this)} />
 }

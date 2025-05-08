@@ -2,9 +2,10 @@ import { Scene } from 'phaser'
 import { BirdActor } from '../actors/BirdActor'
 import { ObstacleActor } from '../actors/ObstacleActor'
 import { PlatformActor } from '../actors/PlatformActor'
+import { EventBus, GameEvents } from '../EventBus'
 import { gameConstants } from '../GameConstants'
-import { RoundSettings } from './RoundSettings'
 import { RoundResult } from './RoundResult'
+import { RoundSettings } from './RoundSettings'
 
 export class RoundEngine {
     private readonly obstacleIntervalsInSeconds: number =
@@ -36,6 +37,13 @@ export class RoundEngine {
                 scene: scene,
             })
         )
+
+        EventBus.on(GameEvents.NEXT_ITERATION, () => {
+            console.log('Next iteration')
+            this.birds.forEach(bird => {
+                this.killBird(bird)
+            })
+        })
     }
 
     public update(delta: number): void {
@@ -133,10 +141,7 @@ export class RoundEngine {
                 roundIteration: this.roundIteration,
             })
             if (wasAlive && !bird.isAlive()) {
-                this.results.birdResults.push({
-                    bird: bird.getSoul(),
-                    timeAlive: this.roundDuration,
-                })
+                this.killBird(bird)
             }
         })
         this.birds = this.birds.filter(bird => {
@@ -145,6 +150,14 @@ export class RoundEngine {
                 return false
             }
             return true
+        })
+    }
+
+    private killBird(bird: BirdActor) {
+        bird.kill()
+        this.results.birdResults.push({
+            bird: bird.getSoul(),
+            timeAlive: this.roundDuration,
         })
     }
 }
