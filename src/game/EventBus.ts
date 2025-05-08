@@ -5,6 +5,7 @@ export enum GameEvents {
     ROUND_BEST_RESULTS = 'round-best-results',
     UPDATE_GAME_SCENE = 'update-game-scene',
     NEXT_ITERATION = 'next-iteration',
+    NEW_GAME_STARTED = 'new-game-started',
 }
 
 // Used to emit events between components, HTML and Phaser scenes

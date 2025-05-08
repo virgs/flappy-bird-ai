@@ -5,6 +5,7 @@ export type RoundResult = {
     birdResults: {
         id: string
         bird: BirdProps
+        pipesPassed: number
         timeAlive: number
     }[]
 }

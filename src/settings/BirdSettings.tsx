@@ -1,9 +1,4 @@
-export enum BirdTypes {
-    HUMAN = 'HUMAN',
-    GENETIC_ALGORITHM = 'GENETIC_ALGORITHM',
-    SIMULATED_ANNEALING = 'SIMULATED_ANNEALING',
-    Q_LEARNING = 'Q_LEARNING',
-}
+import { BirdTypes } from "./BirdTypes"
 
 export type Range = {
     min: number

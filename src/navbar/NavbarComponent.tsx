@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import { EventBus, GameEvents } from '../game/EventBus';
 import "./NavbarComponent.scss";
 
@@ -13,7 +15,10 @@ type NavbarComponentProps = {
     onGameAbort: () => void
 }
 
+const initialNavbarHeight = 72;
+
 export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
+    const [historyChartVisible, setHistoryChartVisible] = useState<boolean>(false);
     const [roundIsRunning, setRoundIsRunning] = useState<boolean>(false);
     const navbarRef = useRef<HTMLDivElement>(null)
 
@@ -26,24 +31,20 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
         EventBus.emit(GameEvents.NEXT_ITERATION)
     }
 
-    EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => setRoundIsRunning(sceneInstance.scene.key === 'RoundScene'))
 
     useEffect(() => {
-        props.onHeightChange(navbarRef.current?.offsetHeight ?? 60);
+        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => setRoundIsRunning(sceneInstance.scene.key === 'RoundScene'))
 
-        const observer = new ResizeObserver(entries => {
-            const { height } = entries[0].contentRect;
-            props.onHeightChange(height);
+        props.onHeightChange(navbarRef.current?.offsetHeight ?? initialNavbarHeight);
+        const observer = new ResizeObserver(() => {
+            props.onHeightChange(navbarRef.current?.offsetHeight ?? initialNavbarHeight);
         });
 
         if (navbarRef.current) {
             observer.observe(navbarRef.current);
         }
-
         return () => {
-            if (navbarRef.current) {
-                observer.unobserve(navbarRef.current);
-            }
+            navbarRef.current && observer.unobserve(navbarRef.current);
         };
     }, []);
 
@@ -57,17 +58,17 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         <Nav className="me-auto">
                             <Button
                                 onPointerDown={abortGame}
-                                variant="outline-secondary"
+                                variant="danger"
                                 size="sm"
                                 className="fs-4 text-tertiary">
                                 <span className="d-none d-lg-inline mx-2">Abort Game</span>
                                 <FontAwesomeIcon icon={faCancel} />
                             </Button>
                             <Button
-                                variant="outline-secondary"
+                                variant="warning"
                                 size="sm"
                                 onPointerDown={goToNextIteration}
-                                className="fs-4 text-tertiary">
+                                className="fs-4 text-tertiary ms-2">
                                 <span className="d-none d-lg-inline mx-2">Next Iteration</span>
                                 <FontAwesomeIcon icon={faForwardStep} />
                             </Button>
@@ -80,24 +81,30 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 />
                             </Navbar.Text> */}
                         </Nav>
-                        <Nav className="ms-auto">
-                            <Button
-                                variant="outline-secondary"
-                                size="sm"
-                                className="fs-4 text-tertiary">
-                                <FontAwesomeIcon icon={faChartLine} />
-                            </Button>
+                        <Nav className="ms-auto me-2">
+                            <ToggleButtonGroup type="checkbox" defaultValue={[]}>
+                                <ToggleButton
+                                    variant="info"
+                                    className="fs-4 text-tertiary"
+                                    id={'chart-togle'}
+                                    size='sm'
+                                    checked={historyChartVisible}
+                                    value={1}
+                                    onChange={(e) => setHistoryChartVisible(e.currentTarget.checked)}
+                                >
+                                    <FontAwesomeIcon icon={faChartLine} />
+                                </ToggleButton>
+                            </ToggleButtonGroup>
                         </Nav>
                     </>}
                     <Nav className={!roundIsRunning ? "ms-auto" : ''}>
                         <Button
-                            variant="outline-secondary"
+                            variant="primary"
                             size="sm"
                             className="fs-4 text-tertiary">
                             <FontAwesomeIcon icon={faVolumeMute} />
                         </Button>
                     </Nav>
-                    {/* </Navbar.Collapse> */}
                 </Container>
             </Navbar>
         </>

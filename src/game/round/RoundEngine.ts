@@ -162,6 +162,7 @@ export class RoundEngine {
                 id: bird.getId(),
                 bird: bird.getProps(),
                 timeAlive: this.roundDuration,
+                pipesPassed: bird.getPipesPassed(),
             })
         }
     }

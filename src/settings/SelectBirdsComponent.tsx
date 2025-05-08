@@ -138,7 +138,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
 
     return (
         <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
-            <p className="header text-center my-2">
+            <p className="header text-center">
                 <FontAwesomeIcon className="mx-5 d-none d-lg-inline" icon={faTrophy} />
                 Select Competitors
                 <FontAwesomeIcon className="mx-5 d-none d-lg-inline" icon={faTrophy} />

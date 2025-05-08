@@ -1,4 +1,5 @@
-import { BirdSettings, BirdTypes, Range } from '../../settings/BirdSettings'
+import { BirdSettings, Range } from '../../settings/BirdSettings'
+import { BirdTypes } from "../../settings/BirdTypes"
 import { NeuralNetworkSettings } from '../neural-network/NeuralNetworkSettings'
 
 export type SimulatedAnnealingSettings = {

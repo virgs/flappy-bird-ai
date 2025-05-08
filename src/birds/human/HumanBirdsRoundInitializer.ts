@@ -4,7 +4,8 @@ import { HumanControlledBird } from './HumanControlledBird'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
-import { BirdTypes, HumanSettings } from '../../settings/BirdSettings'
+import { HumanSettings } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 
 export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
     private readonly birdsInitialPosition = new Geom.Point(

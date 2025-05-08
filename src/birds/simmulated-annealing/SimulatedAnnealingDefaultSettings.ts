@@ -1,5 +1,5 @@
 import { gameConstants } from '../../game/GameConstants'
-import { BirdTypes } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings'
 
 export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {

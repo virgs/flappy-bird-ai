@@ -1,4 +1,4 @@
-import { BirdTypes } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 
 export enum Commands {
     FLAP_WING,

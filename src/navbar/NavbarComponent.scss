@@ -1,3 +1,7 @@
 nav {
     font-family: var(--flappy-bird-font);
+
+    input:focus-visible {
+        // outline-offset: unset !important;
+    }
 }

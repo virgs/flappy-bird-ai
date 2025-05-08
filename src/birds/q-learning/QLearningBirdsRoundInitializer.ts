@@ -3,7 +3,7 @@ import { BirdProps } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
-import { BirdTypes } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 import { QLearningSettings } from './QLearningSettings'
 import { QLearningBird } from './QLearningBird'
 import { QTableHandler } from './QTableHandler'
@@ -24,7 +24,15 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         return roundResult.birdResults
             .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
-            .map(() => this.createQLearningBird())
+            .map((birdResult, index) => {
+                if (index === 0) {
+                    // //@ts-expect-error
+                    // const table = birdResult.bird.qTableHandler.table
+                    // console.log(Object.keys(table).length)
+                    // console.log(table)
+                }
+                return this.createQLearningBird()
+            })
     }
 
     public createFirstRoundSettings(): BirdProps[] {

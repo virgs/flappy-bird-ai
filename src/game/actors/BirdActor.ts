@@ -20,6 +20,7 @@ export class BirdActor {
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite
     private readonly id: string
 
+    private pipesPassed: number = 0
     private timeAlive: number = 0
     private verticalSpeed: number = 0
     protected alive: boolean = true
@@ -91,7 +92,12 @@ export class BirdActor {
         return this.hitBoxSprite.getBounds()
     }
 
+    public getPipesPassed(): number {
+        return this.pipesPassed
+    }
+
     public passedPipe() {
+        this.pipesPassed++
         this.props.onPassedPipe()
     }
 

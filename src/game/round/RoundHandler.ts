@@ -2,7 +2,7 @@ import { HumanBirdsRoundInitializer } from '../../birds/human/HumanBirdsRoundIni
 import { GeneticAlgorithmBirdsRoundInitializer } from '../../birds/neuro-evolutionary/GeneticAlgorithmBirdsRoundInitializer'
 import { QLearningBirdsRoundInitializer } from '../../birds/q-learning/QLearningBirdsRoundInitializer'
 import { SimulatedAnnealingBirdsRoundInitializer } from '../../birds/simmulated-annealing/SimulatedAnnealingBirdsRoundInitializer'
-import { BirdTypes } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 import { GameSettings } from '../../settings/GameSettings'
 import { BirdProps } from '../actors/BirdProps'
 import { EventBus, GameEvents } from '../EventBus'
@@ -10,9 +10,13 @@ import { RoundBirdInitializer } from './RoundBirdInitializer'
 import { RoundResult } from './RoundResult'
 import { RoundSettings } from './RoundSettings'
 
-export type RoundBestResults = {
-    [Key in BirdTypes]: { best: number; avg: number; counter: number }
-}
+export type RoundBirdTypeResult = Record<
+    BirdTypes,
+    {
+        best: number
+        sum: number
+    }
+>
 
 export class RoundHandler {
     private readonly roundInitializers: RoundBirdInitializer[]
@@ -40,22 +44,18 @@ export class RoundHandler {
     }
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): RoundSettings {
-        const roundBestResults = roundResult.birdResults.reduce((acc, result) => {
+        const roundBirdTypeResult = roundResult.birdResults.reduce((acc, result) => {
             const birdType = result.bird.getFixture().type
             acc[birdType] =
                 acc[birdType] !== undefined
                     ? {
-                          best: Math.max(acc[birdType].best, result.timeAlive),
-                          avg: acc[birdType].avg + result.timeAlive,
-                          counter: acc[birdType].counter + 1,
+                          best: Math.max(acc[birdType].best, result.pipesPassed),
+                          sum: acc[birdType].sum + result.pipesPassed,
                       }
-                    : { best: result.timeAlive, avg: result.timeAlive, counter: 1 }
+                    : { best: result.pipesPassed, sum: result.pipesPassed }
             return acc
-        }, {} as RoundBestResults)
-        // console.log(Object.keys(roundResult.birdResults[0].bird.qTableHandler.table).length)
-        // console.log(roundResult.birdResults[0].bird.qTableHandler.table)
-        console.log('Round best results', JSON.stringify(roundBestResults))
-        EventBus.emit(GameEvents.ROUND_BEST_RESULTS, roundBestResults)
+        }, {} as RoundBirdTypeResult)
+        EventBus.emit(GameEvents.ROUND_BEST_RESULTS, roundBirdTypeResult)
 
         const birds = this.roundInitializers.reduce((acc, initializer) => {
             return acc.concat(initializer.createSubsequentRoundsSettings(roundResult))

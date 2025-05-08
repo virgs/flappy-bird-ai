@@ -1,5 +1,6 @@
 import { QTableHandler } from './QTableHandler'
-import { BirdTypes, Range, BirdSettings } from '../../settings/BirdSettings'
+import { Range, BirdSettings } from '../../settings/BirdSettings'
+import { BirdTypes } from "../../settings/BirdTypes"
 
 export type QLearningRewards = {
     hitFloorOrCeiling: Range

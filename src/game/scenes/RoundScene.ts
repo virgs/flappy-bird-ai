@@ -2,7 +2,7 @@ import { Scene } from 'phaser'
 import { EventBus, GameEvents } from '../EventBus'
 import { RoundEngine } from '../round/RoundEngine'
 import { RoundSettings } from '../round/RoundSettings'
-import { BirdTypes } from '../../settings/BirdSettings'
+import { BirdTypes } from '../../settings/BirdTypes'
 import { sleep } from '../../time/sleep'
 import { gameConstants } from '../GameConstants'
 

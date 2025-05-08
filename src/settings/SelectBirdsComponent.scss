@@ -25,6 +25,10 @@
         background-color: transparent !important;
     }
 
+    .form-check-input {
+        cursor: pointer;
+    }
+
     .enable-bird-switch .form-check-input:checked {
         background-position: right center;
         background-color: unset !important;

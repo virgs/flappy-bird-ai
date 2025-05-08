@@ -1,7 +1,4 @@
-import { faStop } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ReactNode, useState } from 'react'
-import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -12,15 +9,7 @@ import { RoundScene } from './game/scenes/RoundScene'
 import { NavbarComponent } from './navbar/NavbarComponent'
 import { GameSettings } from './settings/GameSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
-
-export const HistoryChartComponent = () => {
-    return (
-        <div className="history-chart">
-            <h2>History Chart</h2>
-            {/* Chart implementation goes here */}
-        </div>
-    )
-}
+import { HistoryChartComponent } from './chart/HistoryChartComponent'
 
 export const App = (): ReactNode => {
     const [navbarHeight, setNavbarHeight] = useState<number>(60)
@@ -59,27 +48,23 @@ export const App = (): ReactNode => {
                 )}
                 <Col
                     xs={12}
-                    sm={8}
-                    lg={12}
-                    className="h-100 d-flex flex-column justify-content-center align-items-center"
+                    className="d-flex flex-column justify-content-center align-items-center"
                     style={{
                         display: 'flex',
                         flexWrap: 'wrap',
                         justifyContent: 'center',
                     }}>
-                    <div className="h-25 w-100">
-                        <HistoryChartComponent />
-                    </div>
+                    <Row className="w-100 h-100 d-flex justify-content-center align-items-between"
+                        ref={(el: HTMLElement) => el && el.style.setProperty("height", `calc(100svh - ${navbarHeight}px)`, "important")}>
+                        <Col xs={12} sm={6} lg={12}>
+                            <HistoryChartComponent />
+                        </Col>
+                        <Col xs={12} sm={6} lg={12}>
+                            <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
+                        </Col>
+                    </Row>
 
-                    <div className="mt-auto w-100">
-                        <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
-                    </div>
                 </Col>
-                {/* <Col xs={12} sm={8} lg={12} className='h-75'>
-                    {renderMainComponent()}
-                </Col>
-                <Col xs={12} sm={4} lg={12} className='h-25'>
-                </Col> */}
             </Row>
         </Container>
     </>)
