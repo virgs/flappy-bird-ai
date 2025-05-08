@@ -25,7 +25,7 @@ export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createFirstRoundSettings(): BirdSoul[] {
         if (this.settings.enabled) {
-            return Array.from({ length: this.settings.totalPopulation }).map(() => this.createBird())
+            return Array.from({ length: this.settings.totalPopulation.value }).map(() => this.createBird())
         }
         return []
     }

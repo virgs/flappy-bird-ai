@@ -31,7 +31,7 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
             outputs: ann.outputs,
         })
         this.simulatedAnnealing = new SimulatedAnnealing({
-            population: settings.totalPopulation,
+            population: settings.totalPopulation.value,
             initialTemperature: settings.simulatedAnnealing.initialTemperature.value,
             topCandidatesRatio: settings.simulatedAnnealing.topCandidatesRatio.value,
             temperatureDecreaseRate: settings.simulatedAnnealing.temperatureDecreaseRate.value,
@@ -60,7 +60,7 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
 
     public createFirstRoundSettings(): BirdSoul[] {
         if (this.settings.enabled) {
-            return Array.from({ length: this.settings.totalPopulation }).map(() => {
+            return Array.from({ length: this.settings.totalPopulation.value }).map(() => {
                 const weights = Array.from(Array(this.weightsAmount)).map(() => Math.random() * 2 - 1)
                 return this.createNeuralNetworkBird(weights)
             })

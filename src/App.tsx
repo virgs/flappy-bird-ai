@@ -9,18 +9,16 @@ import { PhaserGameComponent } from './PhaserGameComponent'
 import { RoundScene } from './game/scenes/RoundScene'
 import { GameScene } from './game/scenes/GameScene'
 import { GameSettings } from './settings/GameSettings'
-import { defaultGameSettings } from './settings/DefaultBirdSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 import './App.css'
 
 export const App = (): ReactNode => {
     const [gameRunning, setGameRunning] = useState<boolean>(false)
     const [currentScene, setCurrentScene] = useState<Phaser.Scene | undefined>(undefined)
-    const [playerSettings, setPlayerSettings] = useState<GameSettings>(defaultGameSettings)
 
     const startGame = (settings: GameSettings) => {
         if (currentScene) {
-            setPlayerSettings(settings)
+            console.log('Starting game with settings:', settings)
             setGameRunning(true)
             const gameScene = currentScene as GameScene
             gameScene.startGame(settings)
@@ -41,7 +39,6 @@ export const App = (): ReactNode => {
                 {!gameRunning && (
                     <Col xs={12} sm={8} lg={12} className="h-100">
                         <SelectGameSettingsComponent
-                            value={playerSettings}
                             onPlayersSelected={settings => startGame(settings)}
                         />
                     </Col>

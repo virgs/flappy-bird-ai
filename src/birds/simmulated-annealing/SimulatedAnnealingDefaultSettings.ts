@@ -7,7 +7,7 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
     label: 'Simulated Annealing',
     cssColor: 'var(--bs-danger)',
     birdType: BirdTypes.SIMULATED_ANNEALING,
-    enabled: true,
+    enabled: false,
     texture: gameConstants.spriteSheet.assets.birdRed.name,
     totalPopulation: {
         min: 1,

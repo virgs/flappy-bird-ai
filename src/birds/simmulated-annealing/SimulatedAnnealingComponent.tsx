@@ -6,7 +6,12 @@ import { ArtificialNeuralNetworkComponent } from '../neural-network/ArtificialNe
 import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings';
 
 
-export const SimulatedAnnealingComponent = (props: { value: SimulatedAnnealingSettings; onChange: (data: SimulatedAnnealingSettings) => void; }) => {
+type SimulatedAnnealingComponentProps = {
+    value: SimulatedAnnealingSettings;
+    onChange: (data: SimulatedAnnealingSettings) => void;
+};
+
+export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentProps) => {
     const [settings, setSettings] = useState<SimulatedAnnealingSettings>(props.value);
 
     useEffect(() => {

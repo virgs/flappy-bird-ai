@@ -29,7 +29,9 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createFirstRoundSettings(): BirdSoul[] {
         if (this.qLearningSettings.enabled) {
-            return Array.from({ length: this.qLearningSettings.totalPopulation }).map(() => this.createQLearningBird())
+            return Array.from({ length: this.qLearningSettings.totalPopulation.value }).map(() =>
+                this.createQLearningBird()
+            )
         }
         return []
     }

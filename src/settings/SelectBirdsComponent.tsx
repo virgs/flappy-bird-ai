@@ -1,30 +1,51 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faDna, faGamepad, faPlay, faTableList, faTemperatureLow } from '@fortawesome/free-solid-svg-icons'
+import { faDna, faGamepad, faPlay, faRecycle, faTableList, faTemperatureLow, faTrashRestore, faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useState } from 'react'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
+import { GeneticAlgorithmComponent } from '../birds/neuro-evolutionary/GeneticAlgorithmComponent'
+import { QLearningComponent } from '../birds/q-learning/QLearningComponent'
+import { SimulatedAnnealingComponent } from '../birds/simmulated-annealing/SimulatedAnnealingComponent'
 import { BirdSettings } from './BirdSettings'
 import { GameSettings } from './GameSettings'
 import './SelectBirdsComponent.scss'
-import { SimulatedAnnealingComponent } from '../birds/simmulated-annealing/SimulatedAnnealingComponent'
-import { GeneticAlgorithm } from '../birds/neuro-evolutionary/GeneticAlgorithmComponent'
+import { Repository } from '../repository/Repository'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 type AccordionForm = {
     icon: IconDefinition
     body: JSX.Element
-    getBirdsSettings: (gameSettings: GameSettings) => BirdSettings
+    settings: BirdSettings
     setEnabled: (value: boolean, gameSettings: GameSettings) => GameSettings
 }
 
 export type SelectGameSettings = {
-    value: GameSettings
     onPlayersSelected: (players: GameSettings) => void
 }
 
 export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
-    const [gameSettings, setGameSettings] = useState<GameSettings>(props.value)
+
+    const loadSettings = (): GameSettings => {
+        const settings = Repository.getGameSettings()
+        Repository.saveCompetitorsSettings(settings)
+        return settings
+    }
+
+    const onFactoryReset = () => {
+        const settings = Repository.getFactorySettings()
+        setGameSettings(settings)
+        Repository.saveCompetitorsSettings(settings)
+    }
+
+    const onCompetitorsSelected = (): void => {
+        Repository.saveCompetitorsSettings(gameSettings)
+        props.onPlayersSelected(gameSettings)
+    }
+
+    const [gameSettings, setGameSettings] = useState<GameSettings>(loadSettings())
 
     const accordionSructure: AccordionForm[] = [
         {
@@ -38,26 +59,24 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                     Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
                 </span>
             </>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.humanSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
                 newGameSettings.humanSettings.enabled = value
                 return newGameSettings
             },
+            settings: gameSettings.humanSettings,
         },
         {
             icon: faTableList,
-            body: <>
-                <span className='fs-5'>
-                    <p>
-                        <strong>Q-Learning</strong> is a type of reinforcement learning algorithm that learns the value of actions in a given state.
-                        It uses a table to store the values of actions for each state, and updates these values based on the rewards received from the environment.
-                        The algorithm uses a discount factor to balance the importance of immediate and future rewards.
-                        Read more about it <a href="https://en.wikipedia.org/wiki/Q-learning" target="_blank" rel="noreferrer">here</a>.
-                    </p>
-
-                </span></>,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.qLearningSettings,
+            body: <QLearningComponent
+                value={gameSettings.qLearningSettings}
+                onChange={(data) => {
+                    const newGameSettings = { ...gameSettings }
+                    newGameSettings.qLearningSettings = data
+                    setGameSettings(newGameSettings)
+                }}
+            />,
+            settings: gameSettings.qLearningSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
                 newGameSettings.qLearningSettings.enabled = value
@@ -66,8 +85,15 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faDna,
-            body: <GeneticAlgorithm value={gameSettings.geneticAlgorithmSettings} onChange={() => ({})} />,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.geneticAlgorithmSettings,
+            body: <GeneticAlgorithmComponent
+                value={gameSettings.geneticAlgorithmSettings}
+                onChange={(data) => {
+                    const newGameSettings = { ...gameSettings }
+                    newGameSettings.geneticAlgorithmSettings = data
+                    setGameSettings(newGameSettings)
+                }}
+            />,
+            settings: gameSettings.geneticAlgorithmSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
                 newGameSettings.geneticAlgorithmSettings.enabled = value
@@ -76,30 +102,41 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faTemperatureLow,
-            body: <SimulatedAnnealingComponent value={gameSettings.simulatedAnnealingSettings} onChange={() => ({})} />,
-            getBirdsSettings: (gameSettings: GameSettings) => gameSettings.simulatedAnnealingSettings,
+            body: <SimulatedAnnealingComponent
+                value={gameSettings.simulatedAnnealingSettings}
+                onChange={(data) => {
+                    const newGameSettings = { ...gameSettings }
+                    newGameSettings.simulatedAnnealingSettings = data
+                    setGameSettings(newGameSettings)
+                }}
+            />,
+            settings: gameSettings.simulatedAnnealingSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
                 newGameSettings.simulatedAnnealingSettings.enabled = value
                 return newGameSettings
             },
         },
-
     ]
 
     return (
         <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
-            <p className="header fs-1 text-center">Select birds</p>
+            <p className="header text-center my-2">
+                <FontAwesomeIcon className='mx-5' icon={faTrophy} />
+                Select Competitors
+                <FontAwesomeIcon className='mx-5' icon={faTrophy} />
+            </p>
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {
-                    const birdSettings = item.getBirdsSettings(gameSettings)
+                    const birdSettings = item.settings
                     const backgroundColor = birdSettings.enabled ? birdSettings.cssColor : 'var(--bs-light)'
                     return (
                         <Accordion.Item
                             eventKey={index.toString()}
-                            key={birdSettings.label}
-                            style={{ backgroundColor: backgroundColor }}>
-                            <Accordion.Header>
+                            key={birdSettings.label}>
+                            <Accordion.Header
+                                style={{ backgroundColor: backgroundColor }}
+                            >
                                 <FontAwesomeIcon
                                     className="fs-2 text-tertiary me-2"
                                     style={{ width: '10%' }}
@@ -132,14 +169,27 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                     )
                 })}
             </Accordion>
-            <Button
-                variant="outline-primary"
-                className="play-button mt-auto w-100"
-                disabled={Object.values(gameSettings).every(player => !player.enabled)}
-                onPointerDown={() => props.onPlayersSelected(gameSettings)}>
-                <span className="align-self-center fs-2">Play</span>
-                <FontAwesomeIcon icon={faPlay} className="mx-3 fs-2" />
-            </Button>
+            <Row className="d-flex align-items-center justify-content-between mt-auto"
+            >
+                <Col xs={"auto"}>
+                    <Button
+                        variant="outline-danger"
+                        onPointerDown={() => onFactoryReset()}>
+                        <span className="align-self-center fs-3">Restore</span>
+                        <FontAwesomeIcon icon={faRecycle} className="ms-3 fs-3" />
+                    </Button>
+                </Col>
+                <Col xs>
+                    <Button
+                        className='ms-auto w-100'
+                        variant="outline-primary"
+                        disabled={Object.values(gameSettings).every(player => !player.enabled)}
+                        onPointerDown={() => onCompetitorsSelected()}>
+                        <span className="align-self-center fs-3">Play</span>
+                        <FontAwesomeIcon icon={faPlay} className="ms-3 fs-3" />
+                    </Button>
+                </Col>
+            </Row>
         </div>
     )
 }

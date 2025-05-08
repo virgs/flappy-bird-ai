@@ -13,6 +13,6 @@ export const humanControlledDefaultSettings = {
     label: 'Human',
     cssColor: 'var(--bs-warning)',
     birdType: BirdTypes.HUMAN,
-    enabled: false,
+    enabled: true,
     texture: gameConstants.spriteSheet.assets.birdYellow.name,
 };

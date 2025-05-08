@@ -11,7 +11,7 @@ export const qLearningDefaultSettings: QLearningSettings = {
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
     totalPopulation: {
         min: 1,
-        max: 1,
+        max: 100,
         value: 1,
         step: 1,
     },
@@ -46,13 +46,13 @@ export const qLearningDefaultSettings: QLearningSettings = {
             min: -100,
             max: 0,
             value: -50,
-            step: 10,
+            step: 1,
         },
         hitObstacle: {
             min: -100,
             max: 0,
             value: -15,
-            step: 10,
+            step: 1,
         },
         stayAlive: {
             min: 0,

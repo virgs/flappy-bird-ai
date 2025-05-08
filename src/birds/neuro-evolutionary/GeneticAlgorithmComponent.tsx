@@ -6,7 +6,12 @@ import { ArtificialNeuralNetworkComponent } from '../neural-network/ArtificialNe
 import { GeneticAlgorithmSettings } from './GeneticAlgorithmSettings';
 
 
-export const GeneticAlgorithm = (props: { value: GeneticAlgorithmSettings; onChange: (data: GeneticAlgorithmSettings) => void; }) => {
+type GeneticAlgorithmComponentProps = {
+    value: GeneticAlgorithmSettings;
+    onChange: (data: GeneticAlgorithmSettings) => void;
+};
+
+export const GeneticAlgorithmComponent = (props: GeneticAlgorithmComponentProps) => {
     const [settings, setSettings] = useState<GeneticAlgorithmSettings>(props.value);
 
     useEffect(() => {

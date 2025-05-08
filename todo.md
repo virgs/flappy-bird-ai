@@ -3,7 +3,7 @@
 1. [ ] Fix q-learning bird
 2. [x] Implement Neuroevolutionary bird
 3. [x] Implement simulated annealing bird
-4. [ ] Implement "Select bird view"
+4. [x] Implement "Select bird view"
 5. [ ] Implement Evolution chart
 6. [ ] Implemention Nav bar
    1. [ ] Enable/disable sound
@@ -18,9 +18,9 @@
    1. [ ] For each enabled bird type
 10. [ ] If there is any human controlled bird
     1. [ ] [ ] Implement sounds
-11. [ ] Local storage
-    1. [ ] Current birds configuration
-    2. [ ] Store default configuration in Select birds view
+11. [x] Local storage
+    1. [x] Current birds configuration
+    2. [x] Store default configuration in Select birds view
     3. [ ] Persist current solutions
        1. [ ] Neuro evolutionary...
        2. [ ] Simulated Annealing

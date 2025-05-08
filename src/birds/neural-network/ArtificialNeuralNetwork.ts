@@ -69,7 +69,7 @@ export class ArtificialNeuralNetwork {
             for (let j = 0; j < input.length; j++) {
                 result[i] += input[j] * weights[i * input.length + j]
             }
-            result[i] = (x: number) => 1 / (1 + Math.exp(-result[i])) // Sigmoid activation function
+            result[i] = 1 / (1 + Math.exp(-result[i])) // Sigmoid activation function
         }
 
         return result
