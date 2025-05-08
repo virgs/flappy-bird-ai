@@ -1,6 +1,5 @@
-import { gameConstants } from '../../game/GameConstants';
-import { BirdTypes } from '../../settings/BirdSettings';
-
+import { gameConstants } from '../../game/GameConstants'
+import { BirdTypes } from '../../settings/BirdSettings'
 
 export const humanControlledDefaultSettings = {
     initialPositionHorizontalOffset: 0,
@@ -15,4 +14,4 @@ export const humanControlledDefaultSettings = {
     birdType: BirdTypes.HUMAN,
     enabled: true,
     texture: gameConstants.spriteSheet.assets.birdYellow.name,
-};
+}

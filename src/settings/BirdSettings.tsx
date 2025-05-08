@@ -1,4 +1,3 @@
-
 export enum BirdTypes {
     HUMAN = 'HUMAN',
     GENETIC_ALGORITHM = 'GENETIC_ALGORITHM',
@@ -31,5 +30,3 @@ export type BirdSettings = {
 }
 
 export type HumanSettings = BirdSettings
-
-

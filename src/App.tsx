@@ -38,9 +38,7 @@ export const App = (): ReactNode => {
             <Row className="h-100 g-0 justify-content-center align-items-center">
                 {!gameRunning && (
                     <Col xs={12} sm={8} lg={12} className="h-100">
-                        <SelectGameSettingsComponent
-                            onPlayersSelected={settings => startGame(settings)}
-                        />
+                        <SelectGameSettingsComponent onPlayersSelected={settings => startGame(settings)} />
                     </Col>
                 )}
                 <Col

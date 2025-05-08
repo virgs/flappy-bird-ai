@@ -32,9 +32,5 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
         }
     }, [])
 
-    return <div
-        id="game-container"
-        onPointerDown={() => EventBus.emit('game-container-pointer-down', this)}>
-
-    </div>
+    return <div id="game-container" onPointerDown={() => EventBus.emit('game-container-pointer-down', this)}></div>
 }

@@ -1,5 +1,14 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faDna, faGamepad, faPlay, faRecycle, faTableList, faTemperatureLow, faTrashRestore, faTrophy } from '@fortawesome/free-solid-svg-icons'
+import {
+    faDna,
+    faGamepad,
+    faPlay,
+    faRecycle,
+    faTableList,
+    faTemperatureLow,
+    faTrashRestore,
+    faTrophy,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useState } from 'react'
 import Accordion from 'react-bootstrap/Accordion'
@@ -27,7 +36,6 @@ export type SelectGameSettings = {
 }
 
 export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
-
     const loadSettings = (): GameSettings => {
         const settings = Repository.getGameSettings()
         Repository.saveCompetitorsSettings(settings)
@@ -50,15 +58,18 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
     const accordionSructure: AccordionForm[] = [
         {
             icon: faGamepad,
-            body: <>
-                <span className='fs-5'>
-                    <p>
-                        Approximately 86 billion real neurons – depending on the human brain we are talking about – made of flesh and blood are in charge of performing advanced tasks such as deciding whether
-                        to flap the bird or not.
-                    </p>
-                    Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
-                </span>
-            </>,
+            body: (
+                <>
+                    <span className="fs-5">
+                        <p>
+                            Approximately 86 billion real neurons – depending on the human brain we are talking about –
+                            made of flesh and blood are in charge of performing advanced tasks such as deciding whether
+                            to flap the bird or not.
+                        </p>
+                        Press <strong>SPACE-BAR</strong> or <strong>HIT</strong> the screen to flap the bird.
+                    </span>
+                </>
+            ),
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
                 newGameSettings.humanSettings.enabled = value
@@ -68,14 +79,16 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faTableList,
-            body: <QLearningComponent
-                value={gameSettings.qLearningSettings}
-                onChange={(data) => {
-                    const newGameSettings = { ...gameSettings }
-                    newGameSettings.qLearningSettings = data
-                    setGameSettings(newGameSettings)
-                }}
-            />,
+            body: (
+                <QLearningComponent
+                    value={gameSettings.qLearningSettings}
+                    onChange={data => {
+                        const newGameSettings = { ...gameSettings }
+                        newGameSettings.qLearningSettings = data
+                        setGameSettings(newGameSettings)
+                    }}
+                />
+            ),
             settings: gameSettings.qLearningSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -85,14 +98,16 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faDna,
-            body: <GeneticAlgorithmComponent
-                value={gameSettings.geneticAlgorithmSettings}
-                onChange={(data) => {
-                    const newGameSettings = { ...gameSettings }
-                    newGameSettings.geneticAlgorithmSettings = data
-                    setGameSettings(newGameSettings)
-                }}
-            />,
+            body: (
+                <GeneticAlgorithmComponent
+                    value={gameSettings.geneticAlgorithmSettings}
+                    onChange={data => {
+                        const newGameSettings = { ...gameSettings }
+                        newGameSettings.geneticAlgorithmSettings = data
+                        setGameSettings(newGameSettings)
+                    }}
+                />
+            ),
             settings: gameSettings.geneticAlgorithmSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -102,14 +117,16 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
         {
             icon: faTemperatureLow,
-            body: <SimulatedAnnealingComponent
-                value={gameSettings.simulatedAnnealingSettings}
-                onChange={(data) => {
-                    const newGameSettings = { ...gameSettings }
-                    newGameSettings.simulatedAnnealingSettings = data
-                    setGameSettings(newGameSettings)
-                }}
-            />,
+            body: (
+                <SimulatedAnnealingComponent
+                    value={gameSettings.simulatedAnnealingSettings}
+                    onChange={data => {
+                        const newGameSettings = { ...gameSettings }
+                        newGameSettings.simulatedAnnealingSettings = data
+                        setGameSettings(newGameSettings)
+                    }}
+                />
+            ),
             settings: gameSettings.simulatedAnnealingSettings,
             setEnabled: (value: boolean, gameSettings: GameSettings) => {
                 const newGameSettings = { ...gameSettings }
@@ -122,21 +139,17 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
     return (
         <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
             <p className="header text-center my-2">
-                <FontAwesomeIcon className='mx-5' icon={faTrophy} />
+                <FontAwesomeIcon className="mx-5" icon={faTrophy} />
                 Select Competitors
-                <FontAwesomeIcon className='mx-5' icon={faTrophy} />
+                <FontAwesomeIcon className="mx-5" icon={faTrophy} />
             </p>
             <Accordion flush className="my-2">
                 {accordionSructure.map((item, index) => {
                     const birdSettings = item.settings
                     const backgroundColor = birdSettings.enabled ? birdSettings.cssColor : 'var(--bs-light)'
                     return (
-                        <Accordion.Item
-                            eventKey={index.toString()}
-                            key={birdSettings.label}>
-                            <Accordion.Header
-                                style={{ backgroundColor: backgroundColor }}
-                            >
+                        <Accordion.Item eventKey={index.toString()} key={birdSettings.label}>
+                            <Accordion.Header style={{ backgroundColor: backgroundColor }}>
                                 <FontAwesomeIcon
                                     className="fs-2 text-tertiary me-2"
                                     style={{ width: '10%' }}
@@ -162,26 +175,21 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                     id={birdSettings.label + '-switch'}
                                 />
                             </Accordion.Header>
-                            <Accordion.Body className='py-2'>
-                                {item.body}
-                            </Accordion.Body>
+                            <Accordion.Body className="py-2">{item.body}</Accordion.Body>
                         </Accordion.Item>
                     )
                 })}
             </Accordion>
-            <Row className="d-flex align-items-center justify-content-between mt-auto"
-            >
-                <Col xs={"auto"}>
-                    <Button
-                        variant="outline-danger"
-                        onPointerDown={() => onFactoryReset()}>
+            <Row className="d-flex align-items-center justify-content-between mt-auto">
+                <Col xs={'auto'}>
+                    <Button variant="outline-danger" onPointerDown={() => onFactoryReset()}>
                         <span className="align-self-center fs-3">Restore</span>
                         <FontAwesomeIcon icon={faRecycle} className="ms-3 fs-3" />
                     </Button>
                 </Col>
                 <Col xs>
                     <Button
-                        className='ms-auto w-100'
+                        className="ms-auto w-100"
                         variant="outline-primary"
                         disabled={Object.values(gameSettings).every(player => !player.enabled)}
                         onPointerDown={() => onCompetitorsSelected()}>
