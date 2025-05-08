@@ -1,5 +1,5 @@
 import { Geom } from 'phaser'
-import { BirdSoul } from '../../game/actors/BirdSoul'
+import { BirdProps } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
@@ -40,11 +40,11 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
         })
     }
 
-    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
+    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         const simulatedAnnealingBirds: Candidate[] = roundResult.birdResults
-            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.SIMULATED_ANNEALING)
+            .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.SIMULATED_ANNEALING)
             .map(birdResult => {
-                const propsEvolutionProps = birdResult.bird.getSoulProperties() as NeuralNetworkBirdProps
+                const propsEvolutionProps = birdResult.bird.getFixture() as NeuralNetworkBirdProps
                 return {
                     weights: propsEvolutionProps.annSettings.weights,
                     score: birdResult.timeAlive,
@@ -58,7 +58,7 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
         return []
     }
 
-    public createFirstRoundSettings(): BirdSoul[] {
+    public createFirstRoundSettings(): BirdProps[] {
         if (this.settings.enabled) {
             return Array.from({ length: this.settings.totalPopulation.value }).map(() => {
                 const weights = Array.from(Array(this.weightsAmount)).map(() => Math.random() * 2 - 1)
@@ -68,7 +68,7 @@ export class SimulatedAnnealingBirdsRoundInitializer implements RoundBirdInitial
         return []
     }
 
-    private createNeuralNetworkBird(weights: number[]): BirdSoul {
+    private createNeuralNetworkBird(weights: number[]): BirdProps {
         const position = new Geom.Point(
             this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset + Math.random() * 10,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5

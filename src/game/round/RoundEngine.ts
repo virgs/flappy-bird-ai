@@ -29,7 +29,9 @@ export class RoundEngine {
             birdResults: [],
         }
         this.platform = new PlatformActor({ scene: scene })
-        this.birds = roundSettings.birdSouls.map(birdSoul => new BirdActor(birdSoul, scene))
+        this.birds = roundSettings.birdSouls.map(
+            (birdProps, index) => new BirdActor({ props: birdProps, scene: scene, id: `bird-${index}` })
+        )
         this.platform = new PlatformActor({ scene: scene })
 
         this.obstacles.push(
@@ -39,7 +41,6 @@ export class RoundEngine {
         )
 
         EventBus.on(GameEvents.NEXT_ITERATION, () => {
-            console.log('Next iteration')
             this.birds.forEach(bird => {
                 this.killBird(bird)
             })
@@ -80,6 +81,7 @@ export class RoundEngine {
         this.obstacles.forEach(pipe => pipe.destroy())
         this.platform.destroy()
         this.birds.forEach(bird => bird.destroy())
+        EventBus.removeListener(GameEvents.NEXT_ITERATION)
     }
 
     private updateObstacles(delta: number) {
@@ -155,9 +157,12 @@ export class RoundEngine {
 
     private killBird(bird: BirdActor) {
         bird.kill()
-        this.results.birdResults.push({
-            bird: bird.getSoul(),
-            timeAlive: this.roundDuration,
-        })
+        if (this.results.birdResults.every(b => b.id !== bird.getId())) {
+            this.results.birdResults.push({
+                id: bird.getId(),
+                bird: bird.getProps(),
+                timeAlive: this.roundDuration,
+            })
+        }
     }
 }

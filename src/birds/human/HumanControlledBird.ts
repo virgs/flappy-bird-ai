@@ -1,14 +1,14 @@
 import { Input } from 'phaser'
 import { EventBus, GameEvents } from '../../game/EventBus'
-import { BirdSoul, BirdSoulProps, Commands, UpdateData } from '../../game/actors/BirdSoul'
+import { BirdProps, BirdPropsFixture, Commands, UpdateData } from '../../game/actors/BirdProps'
 
-export class HumanControlledBird extends BirdSoul {
-    private readonly _props: BirdSoulProps
+export class HumanControlledBird extends BirdProps {
+    private readonly _props: BirdPropsFixture
 
     private keys: (Input.Keyboard.Key | undefined)[] = []
     private commands: Commands[] = []
 
-    public constructor(options: BirdSoulProps) {
+    public constructor(options: BirdPropsFixture) {
         super()
         this._props = options
         EventBus.on(GameEvents.GAME_CONTAINER_POINTER_DOWN, () => this.commands.push(Commands.FLAP_WING))
@@ -18,7 +18,7 @@ export class HumanControlledBird extends BirdSoul {
         EventBus.removeListener(GameEvents.GAME_CONTAINER_POINTER_DOWN)
     }
 
-    public getSoulProperties(): BirdSoulProps {
+    public getFixture(): BirdPropsFixture {
         return this._props
     }
 

@@ -1,5 +1,5 @@
 import { Geom } from 'phaser'
-import { BirdSoul } from '../../game/actors/BirdSoul'
+import { BirdProps } from '../../game/actors/BirdProps'
 import { HumanControlledBird } from './HumanControlledBird'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
@@ -17,20 +17,20 @@ export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
         this.settings = settings
     }
 
-    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
+    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         return roundResult.birdResults
-            .filter(result => result.bird.getSoulProperties().type === BirdTypes.HUMAN)
+            .filter(result => result.bird.getFixture().type === BirdTypes.HUMAN)
             .map(() => this.createBird())
     }
 
-    public createFirstRoundSettings(): BirdSoul[] {
+    public createFirstRoundSettings(): BirdProps[] {
         if (this.settings.enabled) {
             return Array.from({ length: this.settings.totalPopulation.value }).map(() => this.createBird())
         }
         return []
     }
 
-    private createBird(): BirdSoul {
+    private createBird(): BirdProps {
         const position = new Geom.Point(
             this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset,
             this.birdsInitialPosition.y

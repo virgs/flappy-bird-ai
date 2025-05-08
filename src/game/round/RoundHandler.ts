@@ -4,7 +4,7 @@ import { QLearningBirdsRoundInitializer } from '../../birds/q-learning/QLearning
 import { SimulatedAnnealingBirdsRoundInitializer } from '../../birds/simmulated-annealing/SimulatedAnnealingBirdsRoundInitializer'
 import { BirdTypes } from '../../settings/BirdSettings'
 import { GameSettings } from '../../settings/GameSettings'
-import { BirdSoul } from '../actors/BirdSoul'
+import { BirdProps } from '../actors/BirdProps'
 import { EventBus, GameEvents } from '../EventBus'
 import { RoundBirdInitializer } from './RoundBirdInitializer'
 import { RoundResult } from './RoundResult'
@@ -31,7 +31,7 @@ export class RoundHandler {
     public createFirstRoundSettings(): RoundSettings {
         const birds = this.roundInitializers.reduce((acc, initializer) => {
             return acc.concat(initializer.createFirstRoundSettings())
-        }, [] as BirdSoul[])
+        }, [] as BirdProps[])
 
         return {
             iteration: ++this.iterations,
@@ -41,7 +41,7 @@ export class RoundHandler {
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): RoundSettings {
         const roundBestResults = roundResult.birdResults.reduce((acc, result) => {
-            const birdType = result.bird.getSoulProperties().type
+            const birdType = result.bird.getFixture().type
             acc[birdType] =
                 acc[birdType] !== undefined
                     ? {
@@ -59,7 +59,7 @@ export class RoundHandler {
 
         const birds = this.roundInitializers.reduce((acc, initializer) => {
             return acc.concat(initializer.createSubsequentRoundsSettings(roundResult))
-        }, [] as BirdSoul[])
+        }, [] as BirdProps[])
 
         return {
             iteration: ++this.iterations,

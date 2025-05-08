@@ -1,14 +1,14 @@
 import { Actions, QTableHandler, State } from './QTableHandler'
-import { BirdSoul, BirdSoulProps, UpdateData } from '../../game/actors/BirdSoul'
+import { BirdProps, BirdPropsFixture, UpdateData } from '../../game/actors/BirdProps'
 import { QLearningRewards } from './QLearningSettings'
 
-type QLearningBirdProps = BirdSoulProps & {
+type QLearningBirdProps = BirdPropsFixture & {
     rewards: QLearningRewards
     qTableHandler: QTableHandler
 }
 
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
-export class QLearningBird extends BirdSoul {
+export class QLearningBird extends BirdProps {
     private readonly _props: QLearningBirdProps
     private readonly qTableHandler: QTableHandler
     private readonly rewards: QLearningRewards
@@ -25,7 +25,7 @@ export class QLearningBird extends BirdSoul {
         this.qTableHandler = options.qTableHandler
     }
 
-    public getSoulProperties(): QLearningBirdProps {
+    public getFixture(): QLearningBirdProps {
         return this._props
     }
 

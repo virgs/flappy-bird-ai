@@ -1,6 +1,6 @@
 import { Geom, Scene } from 'phaser'
 import { gameConstants } from '../GameConstants'
-import { BirdSoul, Commands, UpdateData } from './BirdSoul'
+import { BirdProps, Commands, UpdateData } from './BirdProps'
 import { ObstacleActor } from './ObstacleActor'
 
 type BirdActorUpdateProps = {
@@ -9,32 +9,44 @@ type BirdActorUpdateProps = {
     roundIteration: number
 }
 
+type BirdActorFixture = {
+    props: BirdProps
+    scene: Scene
+    id: string
+}
+
 export class BirdActor {
     private readonly birdSprite: Phaser.GameObjects.Sprite
     private readonly hitBoxSprite: Phaser.GameObjects.Sprite
+    private readonly id: string
 
     private timeAlive: number = 0
     private verticalSpeed: number = 0
     protected alive: boolean = true
     protected cooldownCounter: number = 0
     protected commands: Commands[] = []
-    protected soul: BirdSoul
+    protected props: BirdProps
 
-    public constructor(soul: BirdSoul, scene: Scene) {
-        this.soul = soul
-        ;[this.birdSprite, this.hitBoxSprite] = this.createSprites(scene)
+    public constructor(options: BirdActorFixture) {
+        this.id = options.id
+        this.props = options.props
+        ;[this.birdSprite, this.hitBoxSprite] = this.createSprites(options.scene)
     }
 
-    public getSoul(): BirdSoul {
-        return this.soul
+    public getProps(): BirdProps {
+        return this.props
+    }
+
+    public getId(): string {
+        return this.id
     }
 
     private createSprites(scene: Scene): Phaser.GameObjects.Sprite[] {
         const scale = gameConstants.spriteSheet.scale
-        const textureKey = this.soul.getSoulProperties().textureKey
+        const textureKey = this.props.getFixture().textureKey
         const birdSprite = scene.add.sprite(
-            this.soul.getSoulProperties().initialPosition.x,
-            this.soul.getSoulProperties().initialPosition.y,
+            this.props.getFixture().initialPosition.x,
+            this.props.getFixture().initialPosition.y,
             textureKey
         )
         birdSprite.setScale(scale)
@@ -50,8 +62,8 @@ export class BirdActor {
         birdSprite.anims.play(textureKey)
 
         const hitBoxSprite = scene.add.sprite(
-            this.soul.getSoulProperties().initialPosition.x,
-            this.soul.getSoulProperties().initialPosition.y,
+            this.props.getFixture().initialPosition.x,
+            this.props.getFixture().initialPosition.y,
             textureKey
         )
         hitBoxSprite.setScale(scale * gameConstants.spriteSheet.hitBoxScale)
@@ -80,7 +92,7 @@ export class BirdActor {
     }
 
     public passedPipe() {
-        this.soul.onPassedPipe()
+        this.props.onPassedPipe()
     }
 
     private adjustSprite(delta: number) {
@@ -93,7 +105,7 @@ export class BirdActor {
             if (angle >= gameConstants.birdAttributes.maxBirdAngle) {
                 this.birdSprite.anims.stop()
             } else if (!this.birdSprite.anims.isPlaying) {
-                this.birdSprite.anims.play(this.soul.getSoulProperties().textureKey)
+                this.birdSprite.anims.play(this.props.getFixture().textureKey)
             }
         } else {
             this.birdSprite.x -= delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
@@ -114,9 +126,9 @@ export class BirdActor {
             delta: updateProps.delta,
             cooldownCounter: this.cooldownCounter,
         }
-        this.soul.update(props)
+        this.props.update(props)
         if (this.cooldownCounter <= 0) {
-            if (this.soul.shouldFlap()) {
+            if (this.props.shouldFlap()) {
                 this.commands.push(Commands.FLAP_WING)
                 this.cooldownCounter = gameConstants.birdAttributes.flapCoolDownMs
             }
@@ -132,7 +144,7 @@ export class BirdActor {
                     .some(obstacleHitBox => Geom.Intersects.RectangleToRectangle(obstacleHitBox, birdHitboxSprite))
             ) {
                 this.kill()
-                this.soul.onHitObstacle()
+                this.props.onHitObstacle()
             }
         }
     }
@@ -145,13 +157,13 @@ export class BirdActor {
         if (this.alive) {
             this.verticalSpeed = 0
             this.alive = false
-            this.birdSprite.anims.pause()
+            this.birdSprite.anims && this.birdSprite.anims.pause()
             this.birdSprite.setAlpha(0.4)
         }
     }
 
     public destroy(): void {
-        this.soul.onDestroy()
+        this.props.onDestroy()
         this.birdSprite.destroy()
         this.hitBoxSprite.destroy()
     }
@@ -175,11 +187,11 @@ export class BirdActor {
         const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.bottom > gameConstants.gameDimensions.height - gameConstants.gameDimensions.floorHeight) {
             this.kill()
-            this.soul.onHitFloorOrCeiling()
+            this.props.onHitFloorOrCeiling()
         }
         if (birdBounds.top < 0) {
             this.kill()
-            this.soul.onHitFloorOrCeiling()
+            this.props.onHitFloorOrCeiling()
         }
     }
 

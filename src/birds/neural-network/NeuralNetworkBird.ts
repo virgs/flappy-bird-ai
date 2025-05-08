@@ -1,12 +1,12 @@
-import { BirdSoul, BirdSoulProps, UpdateData } from '../../game/actors/BirdSoul'
+import { BirdProps, BirdPropsFixture, UpdateData } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { ArtificialNeuralNetwork, ArtificialNeuralNetworkInput } from './ArtificialNeuralNetwork'
 
-export type NeuralNetworkBirdProps = BirdSoulProps & {
+export type NeuralNetworkBirdProps = BirdPropsFixture & {
     annSettings: ArtificialNeuralNetworkInput
 }
 
-export class NeuralNetworkBird extends BirdSoul {
+export class NeuralNetworkBird extends BirdProps {
     private readonly _props: NeuralNetworkBirdProps
     private readonly ann: ArtificialNeuralNetwork
     private lastUpdateData: UpdateData
@@ -17,7 +17,7 @@ export class NeuralNetworkBird extends BirdSoul {
         this._props = options
     }
 
-    public getSoulProperties(): NeuralNetworkBirdProps {
+    public getFixture(): NeuralNetworkBirdProps {
         return this._props
     }
 

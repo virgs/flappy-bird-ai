@@ -46,7 +46,7 @@ export class RoundScene extends Scene {
         this.roundEngine.update(delta)
         if (this.roundEngine.isGameOver() && !this.gameIsOver) {
             this.gameIsOver = true
-            if (this.roundSettings.birdSouls.some(bird => bird.getSoulProperties().type === BirdTypes.HUMAN)) {
+            if (this.roundSettings.birdSouls.some(bird => bird.getFixture().type === BirdTypes.HUMAN)) {
                 console.log('Game over, waiting for human game over delay')
                 await sleep(gameConstants.scene.humanGameOverDelayInMs)
             }

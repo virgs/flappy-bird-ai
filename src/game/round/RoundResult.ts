@@ -1,9 +1,10 @@
-import { BirdSoul } from '../actors/BirdSoul'
+import { BirdProps } from '../actors/BirdProps'
 
 export type RoundResult = {
     aborted: boolean
     birdResults: {
-        bird: BirdSoul
+        id: string
+        bird: BirdProps
         timeAlive: number
     }[]
 }

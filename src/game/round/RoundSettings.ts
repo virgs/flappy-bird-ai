@@ -1,6 +1,6 @@
-import { BirdSoul } from '../actors/BirdSoul'
+import { BirdProps } from '../actors/BirdProps'
 
 export type RoundSettings = {
     iteration: number
-    birdSouls: BirdSoul[]
+    birdSouls: BirdProps[]
 }

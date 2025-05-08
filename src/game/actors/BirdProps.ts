@@ -4,7 +4,7 @@ export enum Commands {
     FLAP_WING,
 }
 
-export type BirdSoulProps = {
+export type BirdPropsFixture = {
     type: BirdTypes
     textureKey: string
     initialPosition: Phaser.Geom.Point
@@ -26,10 +26,10 @@ export type UpdateData = {
     cooldownCounter: number
 }
 
-export abstract class BirdSoul {
+export abstract class BirdProps {
     public abstract shouldFlap(): boolean
 
-    public abstract getSoulProperties(): BirdSoulProps
+    public abstract getFixture(): BirdPropsFixture
 
     public update(_data: UpdateData): void {
         /* hook method */

@@ -1,4 +1,4 @@
-import { UpdateData } from '../../game/actors/BirdSoul'
+import { UpdateData } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { QLearningSettings } from './QLearningSettings'
 

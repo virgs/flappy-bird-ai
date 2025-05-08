@@ -1,7 +1,7 @@
-import { BirdSoul } from '../actors/BirdSoul'
+import { BirdProps } from '../actors/BirdProps'
 import { RoundResult } from './RoundResult'
 
 export interface RoundBirdInitializer {
-    createFirstRoundSettings(): BirdSoul[]
-    createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[]
+    createFirstRoundSettings(): BirdProps[]
+    createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[]
 }

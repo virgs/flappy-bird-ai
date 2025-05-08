@@ -1,5 +1,5 @@
 import { Geom } from 'phaser'
-import { BirdSoul } from '../../game/actors/BirdSoul'
+import { BirdProps } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
@@ -21,13 +21,13 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
         this.qTableHandler = new QTableHandler(qLearningSettings)
     }
 
-    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdSoul[] {
+    public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         return roundResult.birdResults
-            .filter(birdResult => birdResult.bird.getSoulProperties().type === BirdTypes.Q_LEARNING)
+            .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
             .map(() => this.createQLearningBird())
     }
 
-    public createFirstRoundSettings(): BirdSoul[] {
+    public createFirstRoundSettings(): BirdProps[] {
         if (this.qLearningSettings.enabled) {
             return Array.from({ length: this.qLearningSettings.totalPopulation.value }).map(() =>
                 this.createQLearningBird()
@@ -36,7 +36,7 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
         return []
     }
 
-    private createQLearningBird(): BirdSoul {
+    private createQLearningBird(): BirdProps {
         const position = new Geom.Point(
             this.birdsInitialPosition.x + this.qLearningSettings.initialPositionHorizontalOffset + Math.random() * 10,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5
