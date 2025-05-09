@@ -13,9 +13,9 @@
    6. [x] Time factor
 6. [x] Implement Evolution chart
 7. [x] Implement Game View
-8. [ ] Implement birds score
-9. [ ] Implement current living birds
-   1. [ ] For each enabled bird type
+8. [x] Implement birds score
+9. [x] Implement current living birds
+   1. [x] For each enabled bird type
 10. [ ] If there is any human controlled bird
     1. [ ] Implement sounds
 11. [x] Local storage

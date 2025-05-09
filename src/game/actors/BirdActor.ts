@@ -2,6 +2,7 @@ import { Geom, Scene } from 'phaser'
 import { gameConstants } from '../GameConstants'
 import { BirdProps, Commands, UpdateData } from './BirdProps'
 import { ObstacleActor } from './ObstacleActor'
+import { EventBus, GameEvents } from '../EventBus'
 
 type BirdActorUpdateProps = {
     delta: number
@@ -161,6 +162,7 @@ export class BirdActor {
 
     public kill(): void {
         if (this.alive) {
+            EventBus.emit(GameEvents.BIRD_DIED, this.getProps())
             this.verticalSpeed = 0
             this.alive = false
             this.birdSprite.anims && this.birdSprite.anims.pause()

@@ -95,7 +95,7 @@ export class RoundEngine {
                 bird.passedPipe()
             })
             if (this.birds.some(bird => bird.isAlive())) {
-                console.log('Passed pipe')
+                EventBus.emit(GameEvents.BIRDS_PASSED_PIPE)
             }
             this.closestObstacleIndex++
         }

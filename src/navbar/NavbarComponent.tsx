@@ -1,4 +1,4 @@
-import { faBoltLightning, faCancel, faForwardStep, faVolumeMute } from '@fortawesome/free-solid-svg-icons'
+import { faBoltLightning, faCancel, faForwardStep, faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
@@ -12,6 +12,8 @@ import { EventBus, GameEvents } from '../game/EventBus'
 import './NavbarComponent.scss'
 import { gameConstants } from '../game/GameConstants'
 import { Repository } from '../repository/Repository'
+import { RoundSettings } from '../game/round/RoundSettings'
+import { BirdTypes } from '../settings/BirdTypes'
 
 type NavbarComponentProps = {
     onHeightChange: (height: number) => void
@@ -21,13 +23,14 @@ type NavbarComponentProps = {
 const initialNavbarHeight = 72
 
 export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
+    const [soundButtonEnabled, setSoundButtonEnabled] = useState<boolean>(true)
     const [soundIsOn, setSoundIsOn] = useState<boolean>(true)
     const [timeFactor, setTimeFactor] = useState<number>(Repository.getTimeFactor())
-    const [roundIsRunning, setRoundIsRunning] = useState<boolean>(false)
+    const [roundSettings, setRoundSettings] = useState<RoundSettings | undefined>()
     const navbarRef = useRef<HTMLDivElement>(null)
 
     const abortGame = () => {
-        setRoundIsRunning(false)
+        setRoundSettings(undefined)
         props.onGameAbort()
     }
 
@@ -37,10 +40,15 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
 
     useEffect(() => {
         EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, timeFactor)
-
-        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) =>
-            setRoundIsRunning(sceneInstance.scene.key === 'RoundScene')
-        )
+        EventBus.on(GameEvents.NEW_ROUND_STARTED, (settings: RoundSettings) => {
+            setRoundSettings(settings)
+            setSoundButtonEnabled(settings.birdSouls.some(bird => bird.getFixture().type === BirdTypes.HUMAN))
+        })
+        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => {
+            if (sceneInstance.scene.key !== 'RoundScene') {
+                setRoundSettings(undefined)
+            }
+        })
 
         props.onHeightChange(navbarRef.current?.offsetHeight ?? initialNavbarHeight)
         const observer = new ResizeObserver(() => {
@@ -59,7 +67,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
         <>
             <Navbar ref={navbarRef} fixed="top" className="bg-body-secondary mx-auto border-start border-end border-2">
                 <Container>
-                    {roundIsRunning && (
+                    {roundSettings && (
                         <>
                             <Nav className="me-auto">
                                 <Button
@@ -106,10 +114,11 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
 
 
 
-                    {roundIsRunning && (
+                    {roundSettings && (
                         <Nav className="">
                             <ToggleButtonGroup type="checkbox" defaultValue={[1]}>
                                 <ToggleButton
+                                    disabled={!soundButtonEnabled}
                                     variant="info"
                                     className="fs-4 text-tertiary"
                                     id={'sound-toggle'}
@@ -117,8 +126,8 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                     checked={soundIsOn}
                                     value={1}
                                     onChange={e => setSoundIsOn(e.currentTarget.checked)}>
-                                    <span className="d-none d-lg-inline mx-2">Toggle Sound</span>
-                                    <FontAwesomeIcon icon={faVolumeMute} />
+                                    <span className="d-none d-lg-inline mx-2">{soundIsOn ? "Sound on" : "Mute"}</span>
+                                    <FontAwesomeIcon icon={!soundIsOn ? faVolumeMute : faVolumeUp} />
                                 </ToggleButton>
                             </ToggleButtonGroup>
                         </Nav>)}

@@ -1,6 +1,7 @@
-import startGame from './game/main'
+import { ReactNode, useEffect, useRef } from 'react'
 import { EventBus, GameEvents } from './game/EventBus'
-import { ReactNode, useRef, useEffect } from 'react'
+import startGame from './game/main'
+import { HUDGameComponent } from './HUDGameComponent'
 
 export interface IRefPhaserGame {
     game: Phaser.Game | null
@@ -35,8 +36,11 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
     return (
         <div
             id="game-container"
+            style={{ position: 'relative' }}
             className="d-flex p-3 px-0"
             onPointerDown={() => EventBus.emit(GameEvents.GAME_CONTAINER_POINTER_DOWN, this)}
-        />
+        >
+            <HUDGameComponent />
+        </div>
     )
 }

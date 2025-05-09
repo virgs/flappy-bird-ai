@@ -126,6 +126,10 @@ export const HistoryChartComponent = () => {
     }
 
     const getSeries = (): Readonly<MakeOptional<LineSeriesType, 'type'>[]> => {
+        if (roundsResults.length === 0) {
+            return []
+        }
+
         const activeTypes = roundsResults.reduce((acc, roundResult) => {
             Object.keys(roundResult).forEach(value => {
                 acc.add(value as BirdTypes)
@@ -155,7 +159,9 @@ export const HistoryChartComponent = () => {
     }
 
     return (
-        <div className="history-chart d-flex justify-content-center align-items-center w-100">
+        <div
+            className={`history-chart d-flex justify-content-center 
+            align-items-center w-100 ${roundsResults.length === 0 ? 'd-none' : 'show'}`}>
             <LineChart
                 slotProps={{
                     legend: {

@@ -20,6 +20,7 @@ export class RoundScene extends Scene {
 
     public create(roundSettings: RoundSettings) {
         EventBus.emit(GameEvents.UPDATE_GAME_SCENE, this)
+        EventBus.emit(GameEvents.NEW_ROUND_STARTED, roundSettings)
 
         this.milisecondsElapsed = 0
         this.gameIsOver = false

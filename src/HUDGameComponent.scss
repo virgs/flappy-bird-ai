@@ -1,0 +1,16 @@
+.hud {
+    .hud-score {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-shadow: 6px 6px 0 var(--bs-dark);
+        font-family: var(--flappy-bird-font);
+        font-size: min(max(5svw, 5svh), 5rem);
+    }
+
+    .hud-bird-counter {
+        text-shadow: 3px 3px 0 var(--bs-dark);
+        font-family: var(--flappy-bird-font);
+        font-size: min(max(3svw, 3svh), 3rem);
+    }
+}
