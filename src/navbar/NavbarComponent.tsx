@@ -18,7 +18,7 @@ type NavbarComponentProps = {
 const initialNavbarHeight = 72;
 
 export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
-    const [historyChartVisible, setHistoryChartVisible] = useState<boolean>(false);
+    const [historyChartVisible, setHistoryChartVisible] = useState<boolean>(true);
     const [roundIsRunning, setRoundIsRunning] = useState<boolean>(false);
     const navbarRef = useRef<HTMLDivElement>(null)
 
@@ -52,7 +52,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
         <>
             <Navbar ref={navbarRef}
                 fixed="top"
-                className="bg-body-secondary border-end-0 border-start-0 border-top-0 mx-auto">
+                className="bg-body-secondary mx-auto border-start border-end border-2">
                 <Container>
                     {roundIsRunning && <>
                         <Nav className="me-auto">
@@ -82,7 +82,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                             </Navbar.Text> */}
                         </Nav>
                         <Nav className="ms-auto me-2">
-                            <ToggleButtonGroup type="checkbox" defaultValue={[]}>
+                            <ToggleButtonGroup type="checkbox" defaultValue={[1]}>
                                 <ToggleButton
                                     variant="info"
                                     className="fs-4 text-tertiary"

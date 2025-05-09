@@ -1,0 +1,42 @@
+#app,
+nav {
+    max-width: 800px;
+}
+
+.history-chart-container {
+    height: 40svh;
+    width: 100%;
+}
+
+.phaser-game-container canvas {
+    margin: 0 !important;
+}
+
+.phaser-game-container {
+    height: 40svh;
+    width: 100%;
+}
+
+/* Example: Hide starting at `min-width: 0`, and then show at the `sm` breakpoint */
+/* @include media-breakpoint-up(sm) { */
+@media (min-width: 576px) {
+    .history-chart-container {
+        height: auto;
+        width: 50%;
+    }
+    .phaser-game-container {
+        height: auto;
+        width: 50%;
+    }
+}
+
+/* @include media-breakpoint-up(lg) { */
+@media (min-width: 992px) {
+    .history-chart-container {
+        height: min(300px, 40svh);
+        width: 100%;
+    }
+    .phaser-game-container {
+        width: 100%;
+    }
+}

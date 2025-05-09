@@ -156,7 +156,7 @@ export const HistoryChartComponent = () => {
 
 
     return (
-        <div className="history-chart d-flex justify-content-center align-items-center">
+        <div className="history-chart d-flex justify-content-center align-items-center w-100">
             <LineChart
                 slotProps={{
                     legend: {

@@ -2,7 +2,6 @@ import { ReactNode, useState } from 'react'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
-import './App.css'
 import { PhaserGameComponent } from './PhaserGameComponent'
 import { GameScene } from './game/scenes/GameScene'
 import { RoundScene } from './game/scenes/RoundScene'
@@ -10,6 +9,7 @@ import { NavbarComponent } from './navbar/NavbarComponent'
 import { GameSettings } from './settings/GameSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 import { HistoryChartComponent } from './chart/HistoryChartComponent'
+import './App.scss'
 
 export const App = (): ReactNode => {
     const [navbarHeight, setNavbarHeight] = useState<number>(60)
@@ -34,7 +34,7 @@ export const App = (): ReactNode => {
     }
 
     return (<>
-        <Container fluid={'md'} id="app" className="p-0 m-0 h-100">
+        <Container fluid={'md'} id="app" className="p-0 m-0 h-100 border-start border-end border-2">
             <NavbarComponent
                 onGameAbort={abortGame}
                 onHeightChange={height => setNavbarHeight(height)}
@@ -56,10 +56,10 @@ export const App = (): ReactNode => {
                     }}>
                     <Row className="w-100 h-100 d-flex justify-content-center align-items-between"
                         ref={(el: HTMLElement) => el && el.style.setProperty("height", `calc(100svh - ${navbarHeight}px)`, "important")}>
-                        <Col xs={12} sm={6} lg={12} className='d-flex justify-content-center align-items-center'>
+                        <Col xs={12} sm={6} lg={12} className='d-flex justify-content-center align-items-center history-chart-container'>
                             <HistoryChartComponent />
                         </Col>
-                        <Col xs={12} sm={6} lg={12}>
+                        <Col xs={12} sm={6} lg={12} className='phaser-game-container'>
                             <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
                         </Col>
                     </Row>

@@ -20,7 +20,13 @@ const exportGameConfig: Phaser.Types.Core.GameConfig = {
 }
 
 const startGame = (parent: string) => {
-    return new Game({ ...exportGameConfig, parent })
+    const game = new Game({ ...exportGameConfig, parent })
+    window.addEventListener('resize', function () {
+        game.scale.refresh()
+    })
+    game.scale.refresh()
+
+    return game
 }
 
 export default startGame

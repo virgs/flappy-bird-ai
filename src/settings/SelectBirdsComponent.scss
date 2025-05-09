@@ -2,6 +2,7 @@
     background-color: var(--bs-secondary);
     font-family: var(--flappy-bird-font);
     overflow-y: auto;
+    overflow-x: hidden;
 
     .header {
         font-size: 3rem;
