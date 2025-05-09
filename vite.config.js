@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { qrcode } from 'vite-plugin-qrcode';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { qrcode } from 'vite-plugin-qrcode'
+
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), qrcode()],
@@ -9,12 +10,28 @@ export default defineConfig({
         exclude: [],
     },
     base: '/flappy-bird-ai',
+    // logLevel: 'warn',
     build: {
         target: 'esnext',
-        rollupOptions: {
-            output: {},
-        },
-        outDir: 'docs',
         assetsDir: '.',
+        outDir: 'docs',
+        emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    phaser: ['phaser'],
+                },
+            },
+        },
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                passes: 2,
+            },
+            mangle: true,
+            format: {
+                comments: false,
+            },
+        },
     },
-});
+})
