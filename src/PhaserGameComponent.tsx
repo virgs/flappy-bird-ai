@@ -38,7 +38,6 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
             id="game-container"
             style={{ position: 'relative' }}
             className="d-flex p-3 px-0"
-            onPointerDown={() => EventBus.emit(GameEvents.GAME_CONTAINER_POINTER_DOWN, this)}
         >
             <HUDGameComponent />
         </div>

@@ -5,7 +5,7 @@
 3. [x] Implement simulated annealing bird
 4. [x] Implement "Select bird view"
 5. [/] Implemention Nav bar
-   1. [/] Enable/disable sound
+   1. [x] Enable/disable sound
    2. [-] Enable/disabe chart
    3. [-] Total game time
    4. [x] Abort round
@@ -16,8 +16,8 @@
 8. [x] Implement birds score
 9. [x] Implement current living birds
    1. [x] For each enabled bird type
-10. [ ] If there is any human controlled bird
-    1. [ ] Implement sounds
+10. [x] If there is any human controlled bird
+    1. [x] Implement sounds
 11. [x] Local storage
     1. [x] Current birds configuration
     2. [x] Store default configuration in Select birds view

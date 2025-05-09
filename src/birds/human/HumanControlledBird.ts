@@ -4,6 +4,7 @@ import { BirdProps, BirdPropsFixture, Commands, UpdateData } from '../../game/ac
 
 export class HumanControlledBird extends BirdProps {
     private readonly _props: BirdPropsFixture
+    private alive = true
 
     private keys: (Input.Keyboard.Key | undefined)[] = []
     private commands: Commands[] = []
@@ -32,8 +33,25 @@ export class HumanControlledBird extends BirdProps {
         const commands = [...this.commands]
         this.commands = []
         if (this.keys?.some(key => key?.isDown) || commands.length > 0) {
+            EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_FLAPPED)
             return true
         }
         return false
+    }
+
+    public onPassedPipe(): void {
+        if (this.alive) {
+            EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_PASSED_PIPE)
+        }
+    }
+
+    public onHitFloorOrCeiling(): void {
+        this.alive = false
+        EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_DIED)
+    }
+
+    public onHitObstacle(): void {
+        this.alive = false
+        EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_DIED)
     }
 }

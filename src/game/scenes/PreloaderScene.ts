@@ -9,8 +9,12 @@ export class PreloaderScene extends Scene {
     }
 
     preload() {
-        Object.keys(gameConstants.assets).forEach(key => {
-            const asset = gameConstants.assets[key as keyof typeof gameConstants.assets]
+        Object.keys(gameConstants.audioAssets).forEach(key => {
+            const asset = gameConstants.audioAssets[key as keyof typeof gameConstants.audioAssets]
+            this.load.audio(asset.key, asset.path)
+        })
+        Object.keys(gameConstants.imageAssets).forEach(key => {
+            const asset = gameConstants.imageAssets[key as keyof typeof gameConstants.imageAssets]
             this.load.image(asset.name, asset.path)
         })
         //  Load the sprite sheet
@@ -23,34 +27,6 @@ export class PreloaderScene extends Scene {
     }
 
     create() {
-        // this.children.removeAll(true)
-
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('GameScene')
     }
-
-    // private createSprite(): Phaser.GameObjects.Sprite {
-    //     const resourceKey = constants.spriteSheet.assets.birdYellow.name
-    //     const birdSprite = this.add.sprite(
-    //         constants.gameDimensions.width / 2,
-    //         constants.gameDimensions.height / 2,
-    //         resourceKey
-    //     )
-    //     // birdSprite.setScale(0.5)
-    //     if (!this.anims.get(resourceKey)) {
-    //         this.anims.create({
-    //             key: resourceKey,
-    //             frames: this.anims.generateFrameNumbers(resourceKey, {
-    //                 start: constants.spriteSheet.frameNumbers.start,
-    //                 end: constants.spriteSheet.frameNumbers.end,
-    //             }),
-    //             frameRate: constants.spriteSheet.animation.frameRate,
-    //             repeat: constants.spriteSheet.animation.repeat,
-    //         })
-    //     }
-    //     birdSprite.anims.play(resourceKey)
-    //     return birdSprite
-    // }
 }

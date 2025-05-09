@@ -39,29 +39,31 @@ export class PlatformActor {
     }
 
     private createBackgroundSprites(options: { scene: Phaser.Scene }) {
-        ;[gameConstants.assets.backgroundNight.name, gameConstants.assets.backgroundDay.name].forEach(assetName => {
-            const firstSprite = options.scene.add.sprite(0, 0, assetName)
-            firstSprite.displayOriginX = 0
-            firstSprite.displayOriginY = 0
-            firstSprite.setDepth(-1)
-            firstSprite.scaleX = gameConstants.gameDimensions.width / firstSprite.displayWidth
-            firstSprite.scaleY = gameConstants.gameDimensions.height / firstSprite.displayHeight
-            this.backgroundSprites.push(firstSprite)
+        ;[gameConstants.imageAssets.backgroundNight.name, gameConstants.imageAssets.backgroundDay.name].forEach(
+            assetName => {
+                const firstSprite = options.scene.add.sprite(0, 0, assetName)
+                firstSprite.displayOriginX = 0
+                firstSprite.displayOriginY = 0
+                firstSprite.setDepth(-1)
+                firstSprite.scaleX = gameConstants.gameDimensions.width / firstSprite.displayWidth
+                firstSprite.scaleY = gameConstants.gameDimensions.height / firstSprite.displayHeight
+                this.backgroundSprites.push(firstSprite)
 
-            const secondSprite = options.scene.add.sprite(gameConstants.gameDimensions.width, 0, assetName)
-            secondSprite.displayOriginX = 0
-            secondSprite.displayOriginY = 0
-            secondSprite.setDepth(-1)
-            secondSprite.scaleX = gameConstants.gameDimensions.width / secondSprite.displayWidth
-            secondSprite.scaleY = gameConstants.gameDimensions.height / secondSprite.displayHeight
+                const secondSprite = options.scene.add.sprite(gameConstants.gameDimensions.width, 0, assetName)
+                secondSprite.displayOriginX = 0
+                secondSprite.displayOriginY = 0
+                secondSprite.setDepth(-1)
+                secondSprite.scaleX = gameConstants.gameDimensions.width / secondSprite.displayWidth
+                secondSprite.scaleY = gameConstants.gameDimensions.height / secondSprite.displayHeight
 
-            this.backgroundSprites.push(secondSprite)
-        })
+                this.backgroundSprites.push(secondSprite)
+            }
+        )
     }
 
     private createFloorSprites(options: { scene: Phaser.Scene }) {
         const yPosition = gameConstants.gameDimensions.height * 0.85
-        const floorTextureKey = gameConstants.assets.floor.name
+        const floorTextureKey = gameConstants.imageAssets.floor.name
         const firstFloorSprite = options.scene.add.sprite(0, yPosition, floorTextureKey)
         firstFloorSprite.setDepth(0)
         firstFloorSprite.displayOriginX = 0

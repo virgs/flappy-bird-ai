@@ -58,7 +58,7 @@ export class ObstacleActor {
         const topPipeSprite = options.scene.add.sprite(
             this.position.x,
             this.position.y,
-            gameConstants.assets.topPipe.name
+            gameConstants.imageAssets.topPipe.name
         )
         topPipeSprite.displayOriginX = 0
         topPipeSprite.displayOriginY = 0
@@ -70,7 +70,7 @@ export class ObstacleActor {
         const bottomPipeSprite = options.scene.add.sprite(
             this.position.x,
             this.position.y + topPipeSprite.height + gameConstants.obstacles.verticalGapInPixels,
-            gameConstants.assets.bottomPipe.name
+            gameConstants.imageAssets.bottomPipe.name
         )
         bottomPipeSprite.displayOriginX = 0
         bottomPipeSprite.displayOriginY = 0

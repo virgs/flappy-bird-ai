@@ -8,6 +8,10 @@ import bottomPipe from '../assets/images/bottom-pipe.png?url'
 import floor from '../assets/images/floor.png?url'
 import topPipe from '../assets/images/top-pipe.png?url'
 
+import wingFlap from '../assets/sfx/wing-flap.mp3?url'
+import coin from '../assets/sfx/retro-coin.mp3?url'
+import dropSound from '../assets/sfx/drop-sound.mp3?url'
+
 export const gameConstants = {
     spriteSheet: {
         frameWidth: 174, // image.width / 3,
@@ -41,7 +45,7 @@ export const gameConstants = {
             },
         },
     },
-    assets: {
+    imageAssets: {
         backgroundDay: {
             name: 'backgroundDay',
             path: backgroundDay,
@@ -78,6 +82,20 @@ export const gameConstants = {
             max: 10,
             default: 1,
             step: 0.1,
+        },
+    },
+    audioAssets: {
+        flap: {
+            key: 'flap',
+            path: wingFlap,
+        },
+        coin: {
+            key: 'coin',
+            path: coin,
+        },
+        drop: {
+            key: 'dropSound',
+            path: dropSound,
         },
     },
     birdAttributes: {

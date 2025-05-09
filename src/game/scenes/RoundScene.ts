@@ -1,13 +1,17 @@
 import { Scene } from 'phaser'
 import { EventBus, GameEvents } from '../EventBus'
 import { RoundEngine } from '../round/RoundEngine'
+import { AudioController } from '../audio/AudioController'
 import { RoundSettings } from '../round/RoundSettings'
 import { BirdTypes } from '../../settings/BirdTypes'
 import { sleep } from '../../time/sleep'
 import { gameConstants } from '../GameConstants'
+import { Repository } from '../../repository/Repository'
 
 export class RoundScene extends Scene {
-    private currentTimeFactor: number = 1
+    private audioController?: AudioController
+
+    private currentTimeFactor: number = Repository.getTimeFactor()
     private roundEngine: RoundEngine
     private gameIsOver: boolean
     private roundSettings: RoundSettings
@@ -19,6 +23,7 @@ export class RoundScene extends Scene {
     }
 
     public create(roundSettings: RoundSettings) {
+        this.audioController = new AudioController(this)
         EventBus.emit(GameEvents.UPDATE_GAME_SCENE, this)
         EventBus.emit(GameEvents.NEW_ROUND_STARTED, roundSettings)
 
@@ -62,12 +67,14 @@ export class RoundScene extends Scene {
     }
 
     public abortGame() {
+        this.audioController?.destroy()
         this.roundEngine.destroy()
         this.roundEngine.abortGame()
         this.scene.start('GameScene', this.roundEngine.getResults())
     }
 
     public abortRound() {
+        this.audioController?.destroy()
         this.roundEngine.destroy()
         this.roundEngine.abortRound()
         this.scene.start('GameScene', this.roundEngine.getResults())

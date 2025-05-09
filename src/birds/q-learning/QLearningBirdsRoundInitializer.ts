@@ -26,10 +26,10 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
             .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
             .map((birdResult, index) => {
                 if (index === 0) {
-                    // //@ts-expect-error
-                    // const table = birdResult.bird.qTableHandler.table
-                    // console.log(Object.keys(table).length)
-                    // console.log(table)
+                    //@ts-expect-error
+                    const table = birdResult.bird.qTableHandler.table
+                    console.log(Object.keys(table).length)
+                    console.log(table)
                 }
                 return this.createQLearningBird()
             })

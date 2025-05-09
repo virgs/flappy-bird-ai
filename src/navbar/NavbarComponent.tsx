@@ -24,7 +24,7 @@ const initialNavbarHeight = 72
 
 export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     const [soundButtonEnabled, setSoundButtonEnabled] = useState<boolean>(true)
-    const [soundIsOn, setSoundIsOn] = useState<boolean>(true)
+    const [soundMuted, setSoundMuted] = useState<boolean>(Repository.isMuted())
     const [timeFactor, setTimeFactor] = useState<number>(Repository.getTimeFactor())
     const [roundSettings, setRoundSettings] = useState<RoundSettings | undefined>()
     const navbarRef = useRef<HTMLDivElement>(null)
@@ -104,6 +104,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                             onChange={e => {
                                 const newValue = parseFloat(e.currentTarget.value)
                                 setTimeFactor(newValue)
+                                Repository.saveTimeFactor(newValue)
                                 EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
                             }}
                         >
@@ -116,18 +117,23 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
 
                     {roundSettings && (
                         <Nav className="">
-                            <ToggleButtonGroup type="checkbox" defaultValue={[1]}>
+                            <ToggleButtonGroup type="checkbox" defaultValue={soundButtonEnabled ? [1] : []} className="d-flex flex-row">
                                 <ToggleButton
                                     disabled={!soundButtonEnabled}
                                     variant="info"
                                     className="fs-4 text-tertiary"
                                     id={'sound-toggle'}
                                     size="sm"
-                                    checked={soundIsOn}
+                                    checked={!soundMuted}
                                     value={1}
-                                    onChange={e => setSoundIsOn(e.currentTarget.checked)}>
-                                    <span className="d-none d-lg-inline mx-2">{soundIsOn ? "Sound on" : "Mute"}</span>
-                                    <FontAwesomeIcon icon={!soundIsOn ? faVolumeMute : faVolumeUp} />
+                                    onChange={e => {
+                                        const muted = e.currentTarget.checked
+                                        EventBus.emit(GameEvents.TOGGLE_SOUND, muted)
+                                        Repository.saveMute(muted)
+                                        setSoundMuted(muted)
+                                    }}>
+                                    <span className="d-none d-lg-inline mx-2">{soundMuted ? "Mute" : "Sound on"}</span>
+                                    <FontAwesomeIcon icon={soundMuted ? faVolumeMute : faVolumeUp} />
                                 </ToggleButton>
                             </ToggleButtonGroup>
                         </Nav>)}
