@@ -33,39 +33,45 @@ export const App = (): ReactNode => {
         }
     }
 
-    return (<>
-        <Container fluid={'md'} id="app" className="p-0 m-0 h-100 border-start border-end border-2">
-            <NavbarComponent
-                onGameAbort={abortGame}
-                onHeightChange={height => setNavbarHeight(height)}
-            />
-            <Row className="h-100 g-0 justify-content-center align-items-center"
-                style={{ paddingTop: navbarHeight + 'px' }}>
-                {!gameRunning && (
-                    <Col xs={12} sm={8} lg={12} className="h-100 w-100">
-                        <SelectGameSettingsComponent onPlayersSelected={settings => startGame(settings)} />
+    return (
+        <>
+            <Container fluid={'md'} id="app" className="p-0 m-0 h-100 border-start border-end border-2">
+                <NavbarComponent onGameAbort={abortGame} onHeightChange={height => setNavbarHeight(height)} />
+                <Row
+                    className="h-100 g-0 justify-content-center align-items-center"
+                    style={{ paddingTop: navbarHeight + 'px' }}>
+                    {!gameRunning && (
+                        <Col xs={12} sm={8} lg={12} className="h-100 w-100">
+                            <SelectGameSettingsComponent onPlayersSelected={settings => startGame(settings)} />
+                        </Col>
+                    )}
+                    <Col
+                        xs={12}
+                        className="d-flex flex-column justify-content-center align-items-center"
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
+                        }}>
+                        <Row
+                            className="w-100 h-100 d-flex justify-content-center align-items-between"
+                            ref={(el: HTMLElement) =>
+                                el && el.style.setProperty('height', `calc(100svh - ${navbarHeight}px)`, 'important')
+                            }>
+                            <Col
+                                xs={12}
+                                sm={6}
+                                lg={12}
+                                className="d-flex justify-content-center align-items-center history-chart-container">
+                                <HistoryChartComponent />
+                            </Col>
+                            <Col xs={12} sm={6} lg={12} className="phaser-game-container">
+                                <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
+                            </Col>
+                        </Row>
                     </Col>
-                )}
-                <Col
-                    xs={12}
-                    className="d-flex flex-column justify-content-center align-items-center"
-                    style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                    }}>
-                    <Row className="w-100 h-100 d-flex justify-content-center align-items-between"
-                        ref={(el: HTMLElement) => el && el.style.setProperty("height", `calc(100svh - ${navbarHeight}px)`, "important")}>
-                        <Col xs={12} sm={6} lg={12} className='d-flex justify-content-center align-items-center history-chart-container'>
-                            <HistoryChartComponent />
-                        </Col>
-                        <Col xs={12} sm={6} lg={12} className='phaser-game-container'>
-                            <PhaserGameComponent onSceneChange={scene => setCurrentScene(scene)} />
-                        </Col>
-                    </Row>
-
-                </Col>
-            </Row>
-        </Container>
-    </>)
+                </Row>
+            </Container>
+        </>
+    )
 }

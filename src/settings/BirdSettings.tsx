@@ -1,4 +1,4 @@
-import { BirdTypes } from "./BirdTypes"
+import { BirdTypes } from './BirdTypes'
 
 export type Range = {
     min: number

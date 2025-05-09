@@ -11,13 +11,13 @@
    4. [x] Abort round
    5. [x] Go back to Select bird
    6. [ ] Time factor
-6. [ ] Implement Evolution chart
-7. [ ] Implement Game View
+6. [x] Implement Evolution chart
+7. [x] Implement Game View
 8. [ ] Implement birds score
 9. [ ] Implement current living birds
    1. [ ] For each enabled bird type
 10. [ ] If there is any human controlled bird
-    1. [ ] [ ] Implement sounds
+    1. [ ] Implement sounds
 11. [x] Local storage
     1. [x] Current birds configuration
     2. [x] Store default configuration in Select birds view

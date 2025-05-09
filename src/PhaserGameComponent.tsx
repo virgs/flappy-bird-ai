@@ -32,6 +32,11 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
         }
     }, [])
 
-    return <div id="game-container" className='d-flex p-3 px-0'
-        onPointerDown={() => EventBus.emit(GameEvents.GAME_CONTAINER_POINTER_DOWN, this)} />
+    return (
+        <div
+            id="game-container"
+            className="d-flex p-3 px-0"
+            onPointerDown={() => EventBus.emit(GameEvents.GAME_CONTAINER_POINTER_DOWN, this)}
+        />
+    )
 }
