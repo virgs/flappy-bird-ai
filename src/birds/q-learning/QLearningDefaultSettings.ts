@@ -29,15 +29,15 @@ export const qLearningDefaultSettings: QLearningSettings = {
     },
     gridSpatialAbstraction: {
         horizontal: {
-            min: 10,
+            min: 5,
             max: gameConstants.gameDimensions.width / 4,
-            value: 30, //gameConstants.physics.pixelsPerFrame / 4,
+            value: 15, //gameConstants.physics.pixelsPerFrame / 4,
             step: 1,
         },
         vertical: {
-            min: 10,
+            min: 5,
             max: gameConstants.gameDimensions.height / 4,
-            value: 20, //gameConstants.obstacles.verticalOffset.total,
+            value: 10, //gameConstants.obstacles.verticalOffset.total,
             step: 1,
         },
     },

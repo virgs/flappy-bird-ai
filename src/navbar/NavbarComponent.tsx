@@ -90,12 +90,8 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         </>
                     )}
                     <Nav className="mx-auto navbar-nav align-items-center">
-                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1">
-                            Speed
-                        </Navbar.Text>
-                        <Navbar.Text className="text-tertiary fs-4 me-1">
-                            {timeFactor.toFixed(1)}x
-                        </Navbar.Text>
+                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1">Speed</Navbar.Text>
+                        <Navbar.Text className="text-tertiary fs-4 me-1">{timeFactor.toFixed(1)}x</Navbar.Text>
                         <Form.Range
                             min={gameConstants.physics.timeFactor.min}
                             max={gameConstants.physics.timeFactor.max}
@@ -106,18 +102,16 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 setTimeFactor(newValue)
                                 Repository.saveTimeFactor(newValue)
                                 EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
-                            }}
-                        >
-
-                        </Form.Range>
-                        <FontAwesomeIcon icon={faBoltLightning} className='ms-1' />
+                            }}></Form.Range>
+                        <FontAwesomeIcon icon={faBoltLightning} className="ms-1" />
                     </Nav>
-
-
 
                     {roundSettings && (
                         <Nav className="">
-                            <ToggleButtonGroup type="checkbox" defaultValue={soundButtonEnabled ? [1] : []} className="d-flex flex-row">
+                            <ToggleButtonGroup
+                                type="checkbox"
+                                defaultValue={soundButtonEnabled ? [1] : []}
+                                className="d-flex flex-row">
                                 <ToggleButton
                                     disabled={!soundButtonEnabled}
                                     variant="info"
@@ -132,11 +126,12 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                         Repository.saveMute(muted)
                                         setSoundMuted(muted)
                                     }}>
-                                    <span className="d-none d-lg-inline mx-2">{soundMuted ? "Mute" : "Sound on"}</span>
+                                    <span className="d-none d-lg-inline mx-2">{soundMuted ? 'Mute' : 'Sound on'}</span>
                                     <FontAwesomeIcon icon={soundMuted ? faVolumeMute : faVolumeUp} />
                                 </ToggleButton>
                             </ToggleButtonGroup>
-                        </Nav>)}
+                        </Nav>
+                    )}
                 </Container>
             </Navbar>
         </>

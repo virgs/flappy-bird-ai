@@ -28,7 +28,7 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
                 if (index === 0) {
                     //@ts-expect-error
                     const table = birdResult.bird.qTableHandler.table
-                    console.log('table size', Object.keys(table).length)
+                    console.log('Qtable states: ' + Object.keys(table).length)
                     // console.log(table)
                 }
                 return this.createQLearningBird()

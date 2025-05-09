@@ -6,7 +6,7 @@ import {
     faRecycle,
     faTableList,
     faTemperatureLow,
-    faTrophy
+    faTrophy,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useState } from 'react'

@@ -17,7 +17,7 @@ export type State = {
         horizontal: number
         vertical: number
     }
-    distanceToCeiling: string
+    altitude: string
     verticalSpeed: string
 }
 
@@ -34,13 +34,12 @@ export class QTableHandler {
 
     public getState(data: UpdateData): State {
         const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
-        const discreteDistanceToCeiling = this.calculateDiscreteFlightAltitude(data)
+        const discreteAltitude = this.calculateDiscreteFlightAltitude(data)
         const state: State = {
-            distanceToCeiling: discreteDistanceToCeiling,
+            altitude: discreteAltitude,
             verticalSpeed: discreteVerticalSpeed,
             distanceToClosestObstacle: this.calculateDiscreteDistanceToClosestObstacle(data),
         }
-        console.log('state', state)
         return state
     }
 
@@ -72,9 +71,9 @@ export class QTableHandler {
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
         const distanceToCeiling = Math.floor(data.position.y / verticalPartition)
         const discreteDistanceToCeiling =
-            distanceToCeiling < this.settings.gridSpatialAbstraction.vertical.value * 0.25
+            distanceToCeiling < this.settings.gridSpatialAbstraction.vertical.value * 0.2
                 ? 'high'
-                : distanceToCeiling > this.settings.gridSpatialAbstraction.vertical.value * 0.5
+                : distanceToCeiling > this.settings.gridSpatialAbstraction.vertical.value * 0.6
                   ? 'low'
                   : '-'
         return discreteDistanceToCeiling
@@ -114,7 +113,7 @@ export class QTableHandler {
         const distanceToClosestObstacle =
             `${state.distanceToClosestObstacle?.horizontal ?? '-'}` +
             `|${state.distanceToClosestObstacle?.vertical ?? '-'}|`
-        const distanceToCeiling = `${state.distanceToCeiling}|${state.verticalSpeed}`
+        const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
         return distanceToClosestObstacle + distanceToCeiling
     }
 
