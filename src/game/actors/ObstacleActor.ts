@@ -26,9 +26,9 @@ export class ObstacleActor {
     }
 
     public update(options: { delta: number }): void {
-        this.pipesSprites.forEach(
-            sprite => (sprite.x -= options.delta * gameConstants.physics.horizontalVelocityInPixelsPerMs)
-        )
+        const horizontalOffset = options.delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
+        this.position.x -= horizontalOffset
+        this.pipesSprites.forEach(sprite => (sprite.x -= horizontalOffset))
         if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < 0)) {
             this.outOfScreen = true
         }

@@ -18,7 +18,7 @@ export type State = {
         vertical: number
     }
     distanceToCeiling: string
-    verticalSpeed: number
+    verticalSpeed: string
 }
 
 export type QTable = { [state: string]: ActionValues }
@@ -33,38 +33,58 @@ export class QTableHandler {
     }
 
     public getState(data: UpdateData): State {
+        const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
+        const discreteDistanceToCeiling = this.calculateDiscreteFlightAltitude(data)
+        const state: State = {
+            distanceToCeiling: discreteDistanceToCeiling,
+            verticalSpeed: discreteVerticalSpeed,
+            distanceToClosestObstacle: this.calculateDiscreteDistanceToClosestObstacle(data),
+        }
+        console.log('state', state)
+        return state
+    }
+
+    private calculateDiscreteDistanceToClosestObstacle(
+        data: UpdateData
+    ): { horizontal: number; vertical: number } | undefined {
         const horizontalPartition =
             gameConstants.gameDimensions.width / this.settings.gridSpatialAbstraction.horizontal.value
         const verticalPartition =
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
-        const distanceToCeiling = Math.floor(data.position.y / verticalPartition)
-        let verticalSpeedState = 0
-        if (Math.abs(data.verticalSpeed) > gameConstants.birdAttributes.maxBirdVerticalSpeed / 2) {
-            verticalSpeedState = data.verticalSpeed > 0 ? 1 : -1
-        }
-        const state: State = {
-            distanceToCeiling:
-                distanceToCeiling < 2
-                    ? 'high'
-                    : distanceToCeiling > this.settings.gridSpatialAbstraction.horizontal.value - 2
-                      ? 'low'
-                      : '-',
-            verticalSpeed: verticalSpeedState,
-        }
+
         if (data.closestObstacleGapPosition !== undefined) {
-            const horizontalValue = Math.floor(
+            const discreteHorizontalDistance = Math.floor(
                 (data.closestObstacleGapPosition.x - data.position.x) / horizontalPartition
             )
-            // Check if the bird is close to the obstacle, otherwise ignore it
-            if (horizontalValue < this.settings.gridSpatialAbstraction.horizontal.value / 2) {
+            // Check if the bird is ahead of the obstacle
+            if (discreteHorizontalDistance >= 0) {
                 // Calculate the distance to the closest obstacle
-                state.distanceToClosestObstacle = {
-                    horizontal: horizontalValue,
+                return {
+                    horizontal: discreteHorizontalDistance,
                     vertical: Math.floor((data.closestObstacleGapPosition.y - data.position.y) / verticalPartition),
                 }
             }
         }
-        return state
+    }
+
+    private calculateDiscreteFlightAltitude(data: UpdateData) {
+        const verticalPartition =
+            gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
+        const distanceToCeiling = Math.floor(data.position.y / verticalPartition)
+        const discreteDistanceToCeiling =
+            distanceToCeiling < this.settings.gridSpatialAbstraction.vertical.value * 0.25
+                ? 'high'
+                : distanceToCeiling > this.settings.gridSpatialAbstraction.vertical.value * 0.5
+                  ? 'low'
+                  : '-'
+        return discreteDistanceToCeiling
+    }
+
+    private calculateDiscreteVerticalSpeed(data: UpdateData): string {
+        if (Math.abs(data.verticalSpeed) > gameConstants.birdAttributes.maxBirdVerticalSpeed / 2) {
+            return data.verticalSpeed > 0 ? 'downwards' : 'upwards'
+        }
+        return '-'
     }
 
     public getQElement(state: State): ActionValues {

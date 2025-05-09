@@ -100,7 +100,7 @@ export const HistoryChartComponent = () => {
                 scaleType: 'linear',
                 position: 'right',
                 label: 'Pipes',
-                tickLabelInterval: (_, index) => true, //Every tick has a label
+                tickLabelInterval: () => true, //Every tick has a label
                 tickInterval: (_value: number, index: number) => index % 10 === 0, // There will be a tick every 10 pipes
                 valueFormatter: (value: number, context: AxisValueFormatterContext<ScaleName>) =>
                     context.location === 'tick' ? value.toString() : `${value} pipes`,

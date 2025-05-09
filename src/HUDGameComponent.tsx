@@ -60,7 +60,7 @@ export const HUDGameComponent = (): ReactNode => {
     }, []);
 
     const formatBirdCounter = (birdType: BirdTypes, birdCounter: BirdCounter): ReactNode => {
-        const totalPopulationDigits = birdCounter.total.toString().length;
+        const totalPopulationDigits = greatestTotalPopulation.toString().length;
         const typeSettings = Object.values(defaultGameSettings).find(setting => setting.birdType === birdType)
         return <div
             key={birdType}

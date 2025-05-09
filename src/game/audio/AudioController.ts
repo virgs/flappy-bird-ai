@@ -40,7 +40,6 @@ export class AudioController {
 
     public destroy() {
         EventBus.removeListener(GameEvents.TOGGLE_SOUND)
-        EventBus.removeListener(GameEvents.UNMUTE)
         EventBus.removeListener(GameEvents.HUMAN_CONTROLLED_BIRD_FLAPPED)
         EventBus.removeListener(GameEvents.HUMAN_CONTROLLED_BIRD_PASSED_PIPE)
     }

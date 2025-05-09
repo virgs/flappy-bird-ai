@@ -6,23 +6,22 @@ import {
     faRecycle,
     faTableList,
     faTemperatureLow,
-    faTrashRestore,
-    faTrophy,
+    faTrophy
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useState } from 'react'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
+import Row from 'react-bootstrap/Row'
 import { GeneticAlgorithmComponent } from '../birds/neuro-evolutionary/GeneticAlgorithmComponent'
 import { QLearningComponent } from '../birds/q-learning/QLearningComponent'
 import { SimulatedAnnealingComponent } from '../birds/simmulated-annealing/SimulatedAnnealingComponent'
+import { Repository } from '../repository/Repository'
 import { BirdSettings } from './BirdSettings'
 import { GameSettings } from './GameSettings'
 import './SelectBirdsComponent.scss'
-import { Repository } from '../repository/Repository'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 
 type AccordionForm = {
     icon: IconDefinition

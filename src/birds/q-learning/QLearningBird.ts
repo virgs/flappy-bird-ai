@@ -35,7 +35,6 @@ export class QLearningBird extends BirdProps {
         //     return
         // }
         // this.ellapsedTime = 0
-
         this.currentState = this.qTableHandler.getState(data)
         if (!this.lastState) {
             this.lastState = this.currentState
