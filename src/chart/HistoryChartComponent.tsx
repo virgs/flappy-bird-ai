@@ -73,8 +73,7 @@ export const HistoryChartComponent = () => {
                 label: 'Iterations',
                 tickSize: 10,
                 tickMinStep: 1,
-                // tickInterval: (_value: number, index: number) => index % 5 === 0,
-                tickLabelInterval: (_, index) => index % 5 === 0,
+                tickLabelInterval: (_, index) => index % 5 === 0, // There will be a label every 5 ticks
                 valueFormatter: (iteration: number, context: AxisValueFormatterContext<ScaleName>) =>
                     context.location === 'tick'
                         ? iteration.toString()
@@ -101,7 +100,8 @@ export const HistoryChartComponent = () => {
                 scaleType: 'linear',
                 position: 'right',
                 label: 'Pipes',
-                tickInterval: (_value: number, index: number) => index % 10 === 0,
+                tickLabelInterval: (_, index) => true, //Every tick has a label
+                tickInterval: (_value: number, index: number) => index % 10 === 0, // There will be a tick every 10 pipes
                 valueFormatter: (value: number, context: AxisValueFormatterContext<ScaleName>) =>
                     context.location === 'tick' ? value.toString() : `${value} pipes`,
                 min: 0,
@@ -120,8 +120,7 @@ export const HistoryChartComponent = () => {
                 tickLabelStyle: {
                     fontFamily: fontFamily,
                     fontSize: 12,
-                },
-                tickLabelInterval: (_, index) => index % 2 === 0,
+                }
             },
         ]
     }

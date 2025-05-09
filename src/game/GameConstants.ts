@@ -73,6 +73,12 @@ export const gameConstants = {
         horizontalVelocityInPixelsPerMs: 300 / 1000, // 300 pixels per second
         fixedFrameIntervalInMs: 10, // Every game iteration will be "10ms" apart
         pixelsPerFrame: (300 / 1000) * 10, // horizontalVelocityInPixelsPerMs * frameIntervalInMs
+        timeFactor: {
+            min: 0.1,
+            max: 10,
+            default: 1,
+            step: 0.1,
+        },
     },
     birdAttributes: {
         initialPosition: {

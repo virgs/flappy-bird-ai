@@ -16,6 +16,7 @@ export class GameScene extends Scene {
         // Result can never be undefined, therefore, there always be a result and result.aborted cand be undefined
         // hence the check for result.aborted === false
         if (result.aborted === false) {
+            console.log('New Round started')
             this.scene.start('RoundScene', this.roundInitializer.createSubsequentRoundsSettings(result))
         }
     }

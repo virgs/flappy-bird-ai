@@ -6,11 +6,11 @@
 4. [x] Implement "Select bird view"
 5. [/] Implemention Nav bar
    1. [/] Enable/disable sound
-   2. [/] Enable/disabe chart
-   3. [ ] Total game time
+   2. [-] Enable/disabe chart
+   3. [-] Total game time
    4. [x] Abort round
    5. [x] Go back to Select bird
-   6. [ ] Time factor
+   6. [x] Time factor
 6. [x] Implement Evolution chart
 7. [x] Implement Game View
 8. [ ] Implement birds score

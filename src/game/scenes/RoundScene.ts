@@ -7,6 +7,7 @@ import { sleep } from '../../time/sleep'
 import { gameConstants } from '../GameConstants'
 
 export class RoundScene extends Scene {
+    private currentTimeFactor: number = 1
     private roundEngine: RoundEngine
     private gameIsOver: boolean
     private roundSettings: RoundSettings
@@ -14,6 +15,7 @@ export class RoundScene extends Scene {
 
     constructor() {
         super('RoundScene')
+        EventBus.on(GameEvents.TIME_FACTOR_CHANGED, (timeFactor: number) => (this.currentTimeFactor = timeFactor))
     }
 
     public create(roundSettings: RoundSettings) {
@@ -30,9 +32,9 @@ export class RoundScene extends Scene {
             return
         }
         //https://gafferongames.com/game-physics/fix-your-timestep
-        this.milisecondsElapsed += delta
+        this.milisecondsElapsed += delta * this.currentTimeFactor
         // max frame time to avoid spiral of death
-        const maxFrameTime = gameConstants.physics.fixedFrameIntervalInMs * 2
+        const maxFrameTime = gameConstants.physics.fixedFrameIntervalInMs * gameConstants.physics.timeFactor.max
         if (this.milisecondsElapsed > maxFrameTime) {
             this.milisecondsElapsed = maxFrameTime
         }
@@ -42,6 +44,7 @@ export class RoundScene extends Scene {
             this.updateFrame(gameConstants.physics.fixedFrameIntervalInMs)
         }
     }
+
     public async updateFrame(delta: number) {
         this.roundEngine.update(delta)
         if (this.roundEngine.isGameOver() && !this.gameIsOver) {

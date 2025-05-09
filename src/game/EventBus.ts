@@ -6,6 +6,7 @@ export enum GameEvents {
     UPDATE_GAME_SCENE = 'update-game-scene',
     NEXT_ITERATION = 'next-iteration',
     NEW_GAME_STARTED = 'new-game-started',
+    TIME_FACTOR_CHANGED = 'time-factor-changed',
 }
 
 // Used to emit events between components, HTML and Phaser scenes

@@ -37,7 +37,7 @@
   "homepage": "https://github.com/virgs/flappy-bird-ai#readme",
   "scripts": {
     "format": "prettier --write 'src/**/*.{tsx,ts,scss,css}'",
-    "mobile-dev": "vite --host",
+    "mobile-dev": "node log.js dev & vite --config vite/config.dev.mjs --host",
     "dev": "node log.js dev & vite --config vite/config.dev.mjs",
     "build": "node log.js build & vite build --config vite/config.prod.mjs",
     "dev-nolog": "vite --config vite/config.dev.mjs",

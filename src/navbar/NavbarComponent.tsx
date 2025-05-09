@@ -1,14 +1,17 @@
-import { faCancel, faChartLine, faForwardStep, faVolumeMute } from '@fortawesome/free-solid-svg-icons'
+import { faBoltLightning, faCancel, faForwardStep, faVolumeMute } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
+import Form from 'react-bootstrap/Form'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup'
 import { EventBus, GameEvents } from '../game/EventBus'
 import './NavbarComponent.scss'
+import { gameConstants } from '../game/GameConstants'
+import { Repository } from '../repository/Repository'
 
 type NavbarComponentProps = {
     onHeightChange: (height: number) => void
@@ -18,7 +21,8 @@ type NavbarComponentProps = {
 const initialNavbarHeight = 72
 
 export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
-    const [historyChartVisible, setHistoryChartVisible] = useState<boolean>(true)
+    const [soundIsOn, setSoundIsOn] = useState<boolean>(true)
+    const [timeFactor, setTimeFactor] = useState<number>(Repository.getTimeFactor())
     const [roundIsRunning, setRoundIsRunning] = useState<boolean>(false)
     const navbarRef = useRef<HTMLDivElement>(null)
 
@@ -32,6 +36,8 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     }
 
     useEffect(() => {
+        EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, timeFactor)
+
         EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) =>
             setRoundIsRunning(sceneInstance.scene.key === 'RoundScene')
         )
@@ -72,38 +78,50 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                     <span className="d-none d-lg-inline mx-2">Next Iteration</span>
                                     <FontAwesomeIcon icon={faForwardStep} />
                                 </Button>
-                                {/* <Navbar.Text className="text-tertiary fs-4 mx-2">
-                                <Form.Range
-                                    min={.1}
-                                    max={10}
-                                    step={.1}
-                                // value={1}
-                                />
-                            </Navbar.Text> */}
-                            </Nav>
-                            <Nav className="ms-auto me-2">
-                                <ToggleButtonGroup type="checkbox" defaultValue={[1]}>
-                                    <ToggleButton
-                                        variant="info"
-                                        className="fs-4 text-tertiary"
-                                        id={'chart-togle'}
-                                        size="sm"
-                                        checked={historyChartVisible}
-                                        value={1}
-                                        onChange={e => setHistoryChartVisible(e.currentTarget.checked)}>
-                                        <span className="d-none d-lg-inline mx-2">Show Evolution</span>
-                                        <FontAwesomeIcon icon={faChartLine} />
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
                             </Nav>
                         </>
                     )}
-                    <Nav className={!roundIsRunning ? 'ms-auto' : ''}>
-                        <Button variant="primary" size="sm" className="fs-4 text-tertiary">
-                            <span className="d-none d-lg-inline mx-2">Toggle Sound</span>
-                            <FontAwesomeIcon icon={faVolumeMute} />
-                        </Button>
+                    <Nav className="mx-auto navbar-nav align-items-center">
+                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1">
+                            Speed
+                        </Navbar.Text>
+                        <Navbar.Text className="text-tertiary fs-4 me-1">
+                            {timeFactor.toFixed(1)}x
+                        </Navbar.Text>
+                        <Form.Range
+                            min={gameConstants.physics.timeFactor.min}
+                            max={gameConstants.physics.timeFactor.max}
+                            step={gameConstants.physics.timeFactor.step}
+                            value={timeFactor}
+                            onChange={e => {
+                                const newValue = parseFloat(e.currentTarget.value)
+                                setTimeFactor(newValue)
+                                EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
+                            }}
+                        >
+
+                        </Form.Range>
+                        <FontAwesomeIcon icon={faBoltLightning} className='ms-1' />
                     </Nav>
+
+
+
+                    {roundIsRunning && (
+                        <Nav className="">
+                            <ToggleButtonGroup type="checkbox" defaultValue={[1]}>
+                                <ToggleButton
+                                    variant="info"
+                                    className="fs-4 text-tertiary"
+                                    id={'sound-toggle'}
+                                    size="sm"
+                                    checked={soundIsOn}
+                                    value={1}
+                                    onChange={e => setSoundIsOn(e.currentTarget.checked)}>
+                                    <span className="d-none d-lg-inline mx-2">Toggle Sound</span>
+                                    <FontAwesomeIcon icon={faVolumeMute} />
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+                        </Nav>)}
                 </Container>
             </Navbar>
         </>
