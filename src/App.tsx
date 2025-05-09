@@ -56,7 +56,7 @@ export const App = (): ReactNode => {
                     }}>
                     <Row className="w-100 h-100 d-flex justify-content-center align-items-between"
                         ref={(el: HTMLElement) => el && el.style.setProperty("height", `calc(100svh - ${navbarHeight}px)`, "important")}>
-                        <Col xs={12} sm={6} lg={12}>
+                        <Col xs={12} sm={6} lg={12} className='d-flex justify-content-center align-items-center'>
                             <HistoryChartComponent />
                         </Col>
                         <Col xs={12} sm={6} lg={12}>

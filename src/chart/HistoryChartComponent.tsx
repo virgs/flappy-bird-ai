@@ -1,4 +1,4 @@
-import { chartsTooltipClasses, LineSeriesType, ScaleName, ShowMarkParams, XAxis, YAxis } from '@mui/x-charts';
+import { chartsTooltipClasses, LineSeriesType, ScaleName, XAxis, YAxis } from '@mui/x-charts';
 import { AxisValueFormatterContext } from '@mui/x-charts/internals';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { MakeOptional } from '@mui/x-internals/types';
@@ -16,6 +16,13 @@ type BirdTypeResult = {
     sum: number;
 };
 
+const ordinalSuffix = (iteration: number) => {
+    const suffixes = ["th", "st", "nd", "rd"];
+    const value = iteration % 100;
+    return suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0];
+}
+
+const fontFamily = 'var(--flappy-bird-font)';
 
 export const HistoryChartComponent = () => {
     const [roundsResults, setRoundsResults] = useState<RoundBirdTypeResult[]>([]);
@@ -60,19 +67,24 @@ export const HistoryChartComponent = () => {
         return [{
             data: Object.values(data)[0].map((_, index) => index),
             label: 'Iterations',
-            tickMinStep: 5,
-            tickSize: 3,
-            // tickLabelInterval: (value, index) => index % 2 === 0,
-            valueFormatter: (value: number, context: AxisValueFormatterContext<ScaleName>) => `Score X axis`,
+            tickSize: 10,
+            tickMinStep: 1,
+            // tickInterval: (_value: number, index: number) => index % 5 === 0,
+            tickLabelInterval: (_, index) => index % 5 === 0,
+            valueFormatter: (iteration: number, context: AxisValueFormatterContext<ScaleName>) =>
+                context.location === 'tick'
+                    ? iteration.toString()
+                    : `${iteration + ordinalSuffix(iteration)} iteration score`,
+            height: 60,
             min: 0,
             max: Math.max(...Object.values(data).map((result) => result.length)) - 1,
             labelStyle: {
-                fontSize: 18,
-                fontFamily: 'var(--flappy-bird-font)',
+                fontSize: 20,
+                fontFamily: fontFamily,
             },
             tickLabelStyle: {
-                fontFamily: 'var(--flappy-bird-font)',
-                angle: 45,
+                height: 20,
+                fontFamily: fontFamily,
                 fontSize: 15,
             },
         }];
@@ -84,14 +96,27 @@ export const HistoryChartComponent = () => {
             {
                 scaleType: 'linear',
                 position: 'right',
-                label: 'Score',
+                label: 'Pipes',
+                tickInterval: (_value: number, index: number) => index % 10 === 0,
+                valueFormatter: (value: number, context: AxisValueFormatterContext<ScaleName>) =>
+                    context.location === 'tick'
+                        ? value.toString()
+                        : `${value} pipes`,
+                min: 0,
+                width: 50,
+                sx: {
+                    fontColor: 'red',
+                    fontSize: 14,
+                    fontFamily: fontFamily,
+                },
+
                 labelStyle: {
                     fontSize: 18,
-                    fontFamily: 'var(--flappy-bird-font)',
+                    fontFamily: fontFamily,
                     angle: 0,
                 },
                 tickLabelStyle: {
-                    fontFamily: 'var(--flappy-bird-font)',
+                    fontFamily: fontFamily,
                     fontSize: 12,
                 },
                 tickLabelInterval: (_, index) => index % 2 === 0,
@@ -119,11 +144,11 @@ export const HistoryChartComponent = () => {
                     name: name,
                     color: settings?.cssColor ?? '#000000',
                     tickLabelStyle: {
-                        fontFamily: 'var(--flappy-bird-font)',
+                        fontFamily: fontFamily,
                         fontSize: 12,
                     },
                     data: data[birdType].map((result) => result?.best ?? null),
-                    // showMark: (item: ShowMarkParams) => item.index % 10 === 0,
+                    showMark: false,
                     labelMarkType: 'square',
                 }
             })
@@ -131,67 +156,38 @@ export const HistoryChartComponent = () => {
 
 
     return (
-        <div className="history-chart">
-            <p className="fs-1">History Chart</p>
+        <div className="history-chart d-flex justify-content-center align-items-center">
             <LineChart
                 slotProps={{
                     legend: {
                         sx: {
                             fontSize: 14,
-                            fontFamily: 'var(--flappy-bird-font)',
+                            fontFamily: fontFamily,
                         },
                     },
                     tooltip: {
                         sx: {
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.valueCell}`]: {
-                            //     color: 'red',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.labelCell}`]: {
-                            //     color: 'blue',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.mark}`]: {
-                            //     color: 'green',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.markContainer}`]: {
-                            //     color: 'green',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.table}`]: {
-                            //     color: 'green',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.axisValueCell}`]: {
-                            //     color: 'green',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.cell}`]: {
-                                color: 'purple',
-                                fontFamily: 'var(--flappy-bird-font)',
+                            [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.table} caption`]: {
+                                fontFamily: fontFamily,
+                                fontSize: 18,
+                                textAlign: 'center',
                             },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.paper}`]: {
-                            //     color: 'pink',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
-                            // [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.row}`]: {
-                            //     color: 'pink',
-                            //     fontFamily: 'var(--flappy-bird-font)',
-                            // },
+                            [`&.${chartsTooltipClasses.root} .${chartsTooltipClasses.cell}`]: {
+                                fontFamily: fontFamily,
+                            },
                         },
                     },
                 }}
                 sx={{
-                    height: '300px',
-
+                    width: '100%',
+                    height: '100%',
+                    fontFamily: fontFamily,
                 }}
                 series={getSeries()}
                 xAxis={getXaxis()}
                 yAxis={getYAxis()}
                 grid={{ horizontal: true }}
-
-            // height={300}
+                height={200}
             />
 
         </div>

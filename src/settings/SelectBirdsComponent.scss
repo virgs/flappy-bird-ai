@@ -1,6 +1,7 @@
 #select-players-component {
     background-color: var(--bs-secondary);
     font-family: var(--flappy-bird-font);
+    overflow-y: auto;
 
     .header {
         font-size: 3rem;
@@ -13,7 +14,7 @@
     }
 
     .accordion {
-        overflow-y: auto;
+        // overflow-y: auto;
     }
 
     .accordion-button::after {

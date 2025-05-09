@@ -1,3 +1,23 @@
 .history-chart {
     font-family: var(--flappy-bird-font);
+    height: 40svh;
+    width: 100%;
+    margin-bottom: 10px 0;
+}
+
+// Example: Hide starting at `min-width: 0`, and then show at the `sm` breakpoint
+// @include media-breakpoint-up(sm) {
+@media (min-width: 576px) {
+    .history-chart {
+        height: 70svh;
+        width: unset;
+    }
+}
+
+// @include media-breakpoint-up(lg) {
+@media (min-width: 992px) {
+    .history-chart {
+        height: min(300px, 40svh);
+        width: 100%;
+    }
 }
