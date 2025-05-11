@@ -132,6 +132,7 @@ export class BirdActor {
             roundIteration: updateProps.roundIteration,
             delta: updateProps.delta,
             cooldownCounter: this.cooldownCounter,
+            birdIsDead: !this.alive,
         }
         this.props.update(props)
         if (this.cooldownCounter <= 0) {
@@ -145,13 +146,14 @@ export class BirdActor {
     private handleObstacleCollision(options: BirdActorUpdateProps): void {
         if (options.closestObstacle) {
             const birdHitboxSprite = this.hitBoxSprite.getBounds()
-            if (
-                options.closestObstacle
-                    .getHitBoxes()
-                    .some(obstacleHitBox => Geom.Intersects.RectangleToRectangle(obstacleHitBox, birdHitboxSprite))
-            ) {
+            const topPipeHitBox = options.closestObstacle.getTopPipeHitBox()
+            const bottomPipeHitBox = options.closestObstacle.getBottomPipeHitBox()
+            if (Geom.Intersects.RectangleToRectangle(topPipeHitBox, birdHitboxSprite)) {
                 this.kill()
-                this.props.onHitObstacle()
+                this.props.onHitTopPipeObstacle()
+            } else if (Geom.Intersects.RectangleToRectangle(birdHitboxSprite, bottomPipeHitBox)) {
+                this.kill()
+                this.props.onHitBottomPipeObstacle()
             }
         }
     }
@@ -195,11 +197,11 @@ export class BirdActor {
         const birdBounds = this.hitBoxSprite.getBounds()
         if (birdBounds.bottom > gameConstants.gameDimensions.height - gameConstants.gameDimensions.floorHeight) {
             this.kill()
-            this.props.onHitFloorOrCeiling()
+            this.props.onHitFloor()
         }
         if (birdBounds.top < 0) {
             this.kill()
-            this.props.onHitFloorOrCeiling()
+            this.props.onHitCeiling()
         }
     }
 

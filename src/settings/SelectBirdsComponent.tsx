@@ -9,7 +9,8 @@ import {
     faTrophy,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { JSX, useState } from 'react'
+import { JSX, ReactNode, useState } from 'react'
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
@@ -51,6 +52,19 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         Repository.saveCompetitorsSettings(gameSettings)
         props.onPlayersSelected(gameSettings)
     }
+
+    const fallbackRender = (data: FallbackProps): ReactNode => {
+        data.resetErrorBoundary()
+        // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+        return (
+            <div role="alert">
+                <p>Something went wrong:</p>
+                <pre style={{ color: "red" }}>{data.error.message}</pre>
+            </div>
+        );
+    }
+
 
     const [gameSettings, setGameSettings] = useState<GameSettings>(loadSettings())
 
@@ -174,7 +188,19 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                     id={birdSettings.label + '-switch'}
                                 />
                             </Accordion.Header>
-                            <Accordion.Body className="py-2">{item.body}</Accordion.Body>
+                            <ErrorBoundary
+                                fallbackRender={fallbackRender}
+                                onReset={(details) => {
+                                    console.log('Resetting error boundary:', details)
+                                    const factoryReset = Repository.getFactorySettings()
+                                    Repository.saveCompetitorsSettings(factoryReset)
+                                    // setGameSettings(factoryReset)
+
+                                    // Reset the state of your app so the error doesn't happen again
+                                }}
+                            >
+                                <Accordion.Body className="py-2">{item.body}</Accordion.Body>
+                            </ErrorBoundary>
                         </Accordion.Item>
                     )
                 })}

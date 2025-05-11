@@ -17,11 +17,19 @@ export type State = {
         horizontal: number
         vertical: number
     }
-    altitude: string
-    verticalSpeed: string
+    dead: boolean
+    // altitude: number
+    // verticalSpeed: number
 }
 
-export type QTable = { [state: string]: ActionValues }
+export type QTuple = {
+    actions: ActionValues
+    visits: number
+}
+
+export type QTable = {
+    [state: string]: QTuple
+}
 
 export class QTableHandler {
     private readonly settings: QLearningSettings
@@ -33,13 +41,15 @@ export class QTableHandler {
     }
 
     public getState(data: UpdateData): State {
-        const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
         const discreteAltitude = this.calculateDiscreteFlightAltitude(data)
+        const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
         const state: State = {
-            altitude: discreteAltitude,
-            verticalSpeed: discreteVerticalSpeed,
+            // altitude: discreteAltitude,
+            // verticalSpeed: discreteVerticalSpeed,
             distanceToClosestObstacle: this.calculateDiscreteDistanceToClosestObstacle(data),
+            dead: data.birdIsDead,
         }
+        // console.log('State:', state)
         return state
     }
 
@@ -66,45 +76,41 @@ export class QTableHandler {
         }
     }
 
-    private calculateDiscreteFlightAltitude(data: UpdateData) {
+    private calculateDiscreteFlightAltitude(data: UpdateData): number {
         const verticalPartition =
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
-        const distanceToCeiling = Math.floor(data.position.y / verticalPartition)
-        const discreteDistanceToCeiling =
-            distanceToCeiling < this.settings.gridSpatialAbstraction.vertical.value * 0.2
-                ? 'high'
-                : distanceToCeiling > this.settings.gridSpatialAbstraction.vertical.value * 0.6
-                  ? 'low'
-                  : '-'
-        return discreteDistanceToCeiling
+        return Math.floor(data.position.y / verticalPartition)
     }
 
-    private calculateDiscreteVerticalSpeed(data: UpdateData): string {
-        if (Math.abs(data.verticalSpeed) > gameConstants.birdAttributes.maxBirdVerticalSpeed / 2) {
-            return data.verticalSpeed > 0 ? 'downwards' : 'upwards'
-        }
-        return '-'
+    private calculateDiscreteVerticalSpeed(data: UpdateData): number {
+        const range = gameConstants.birdAttributes.flapImpulse + gameConstants.birdAttributes.maxBirdVerticalSpeed
+        const verticalPartition = range / this.settings.verticalVelocityDiscretization.value
+        return Math.floor((data.verticalSpeed + gameConstants.birdAttributes.flapImpulse) / verticalPartition)
     }
 
-    public getQElement(state: State): ActionValues {
+    public getQTuple(state: State): QTuple {
         const index = this.getStateHash(state)
         if (!this.table[index]) {
             // this.table[index] = {
             //     [Actions.DO_NOT_FLAP]: -0.01,
             //     [Actions.FLAP]: -0.01,
             // }
-            // this.table[index] = {
-            //     [Actions.DO_NOT_FLAP]: 1,
-            //     [Actions.FLAP]: 1,
-            // }
             this.table[index] = {
-                [Actions.DO_NOT_FLAP]: 0,
-                [Actions.FLAP]: 0,
+                actions: {
+                    [Actions.DO_NOT_FLAP]: Math.random() * 0.01,
+                    [Actions.FLAP]: Math.random() * 0.01,
+                },
+                visits: 1,
             }
             // this.table[index] = {
-            //     [Actions.DO_NOT_FLAP]: Math.random() * 0.1,
-            //     [Actions.FLAP]: Math.random() * 0.05,
+            //     actions: {
+            //         [Actions.DO_NOT_FLAP]: 0,
+            //         [Actions.FLAP]: 0,
+            //     },
+            //     visits: 1,
             // }
+        } else {
+            this.table[index].visits += 1
         }
         return this.table[index]
     }
@@ -113,8 +119,8 @@ export class QTableHandler {
         const distanceToClosestObstacle =
             `${state.distanceToClosestObstacle?.horizontal ?? '-'}` +
             `|${state.distanceToClosestObstacle?.vertical ?? '-'}|`
-        const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
-        return distanceToClosestObstacle + distanceToCeiling
+        // const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
+        return distanceToClosestObstacle + `|${state.dead}`
     }
 
     public updateQValue(data: { currentState: State; lastState: State; reward: number; lastAction: Actions }) {
@@ -123,13 +129,16 @@ export class QTableHandler {
         // Q[s,a] ←(1-α) Q[s,a] + α(r+ γmaxa' Q[s',a']).
         // https://repositorio.ufu.br/bitstream/123456789/22184/3/MetodosInteligenciaArtificial.pdf
         //     //new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
-        const futureQActions = this.getQElement(data.currentState)
+        const futureQTuple = this.getQTuple(data.currentState)
 
-        const estimateMaxQValue = Math.max(futureQActions[Actions.FLAP], futureQActions[Actions.DO_NOT_FLAP])
-        this.getQElement(data.lastState)[data.lastAction] +=
-            this.settings.learningRate.value *
-            (data.reward +
-                this.settings.discountFactor.value * estimateMaxQValue -
-                this.getQElement(data.lastState)[data.lastAction])
+        const estimateMaxQValue = Math.max(
+            futureQTuple.actions[Actions.FLAP],
+            futureQTuple.actions[Actions.DO_NOT_FLAP]
+        )
+        const lastActionValue = this.getQTuple(data.lastState).actions[data.lastAction]
+
+        this.getQTuple(data.lastState).actions[data.lastAction] =
+            (1 - this.settings.learningRate.value) * lastActionValue +
+            this.settings.learningRate.value * (data.reward + this.settings.discountFactor.value * estimateMaxQValue)
     }
 }

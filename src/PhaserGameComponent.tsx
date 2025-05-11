@@ -34,7 +34,11 @@ export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps)
     }, [])
 
     return (
-        <div id="game-container" style={{ position: 'relative' }} className="d-flex p-3 px-0">
+        <div id="game-container" style={{
+            position: 'relative',
+            top: '50%',
+            transform: 'translateY(-50%)'
+        }} className="d-flex p-3 px-0">
             <HUDGameComponent />
         </div>
     )

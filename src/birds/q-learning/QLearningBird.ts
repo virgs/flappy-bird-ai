@@ -1,6 +1,6 @@
-import { Actions, QTableHandler, State } from './QTableHandler'
 import { BirdProps, BirdPropsFixture, UpdateData } from '../../game/actors/BirdProps'
 import { QLearningRewards } from './QLearningSettings'
+import { Actions, QTableHandler, State } from './QTableHandler'
 
 type QLearningBirdProps = BirdPropsFixture & {
     rewards: QLearningRewards
@@ -12,11 +12,10 @@ export class QLearningBird extends BirdProps {
     private readonly _props: QLearningBirdProps
     private readonly qTableHandler: QTableHandler
     private readonly rewards: QLearningRewards
-    // private epsilon = 0.1 // Adjust dynamically over time
     private lastState?: State = undefined
     private currentState?: State = undefined
     private lastAction: Actions = Actions.DO_NOT_FLAP
-    // private ellapsedTime: number = 0
+    private ellapsedTimeMs: number = 0
 
     public constructor(options: QLearningBirdProps) {
         super()
@@ -25,22 +24,17 @@ export class QLearningBird extends BirdProps {
         this.qTableHandler = options.qTableHandler
     }
 
-    public getFixture(): QLearningBirdProps {
+    public override getFixture(): QLearningBirdProps {
         return this._props
     }
 
-    public update(data: UpdateData): void {
-        // this.ellapsedTime += data.delta
-        // if (this.ellapsedTime < 100) {
-        //     return
-        // }
-        // this.ellapsedTime = 0
+    public override update(data: UpdateData): void {
+        this.ellapsedTimeMs += data.delta
         this.currentState = this.qTableHandler.getState(data)
         if (!this.lastState) {
             this.lastState = this.currentState
             return
         }
-        // this.epsilon = Math.max(0.01, this.epsilon - 0.0001 * data.roundIteration) // Decrease epsilon over time
 
         const stateChanged =
             this.qTableHandler.getStateHash(this.currentState) !== this.qTableHandler.getStateHash(this.lastState)
@@ -48,10 +42,11 @@ export class QLearningBird extends BirdProps {
             this.qTableHandler.updateQValue({
                 currentState: this.currentState,
                 lastState: this.lastState,
-                reward: this.rewards.stayAlive.value,
+                reward: this.rewards.secondsAlive.value * (this.ellapsedTimeMs / 1000),
                 lastAction: this.lastAction,
             })
             this.lastState = this.currentState
+            this.ellapsedTimeMs = 0
         }
         this.lastState = this.currentState
     }
@@ -67,36 +62,60 @@ export class QLearningBird extends BirdProps {
         }
     }
 
-    public onHitFloorOrCeiling(): void {
+    public override onHitFloor(): void {
         if (this.lastState) {
             this.qTableHandler.updateQValue({
                 currentState: this.currentState!,
                 lastState: this.lastState,
-                reward: this.rewards.hitFloorOrCeiling.value,
+                reward: this.rewards.hitFloor.value,
                 lastAction: this.lastAction,
             })
         }
     }
 
-    public onHitObstacle(): void {
+    public override onHitCeiling(): void {
         if (this.lastState) {
             this.qTableHandler.updateQValue({
                 currentState: this.currentState!,
                 lastState: this.lastState,
-                reward: this.rewards.hitObstacle.value,
+                reward: this.rewards.hitCeiling.value,
                 lastAction: this.lastAction,
             })
         }
     }
 
-    public shouldFlap(): boolean {
-        // if (Math.random() < this.epsilon) {
-        //     this.lastAction = Math.random() < 0.5 ? Actions.FLAP : Actions.DO_NOT_FLAP
-        //     return this.lastAction === Actions.FLAP
-        // }
+    public override onHitTopPipeObstacle(): void {
+        if (this.lastState) {
+            this.qTableHandler.updateQValue({
+                currentState: this.currentState!,
+                lastState: this.lastState,
+                reward: this.rewards.hitTopPipe.value,
+                lastAction: this.lastAction,
+            })
+        }
+    }
 
-        const qActions = this.qTableHandler.getQElement(this.currentState!)
-        const flapChancesAreHigher = qActions[Actions.FLAP] > qActions[Actions.DO_NOT_FLAP]
+    public override onHitBottomPipeObstacle(): void {
+        if (this.lastState) {
+            this.qTableHandler.updateQValue({
+                currentState: this.currentState!,
+                lastState: this.lastState,
+                reward: this.rewards.hitBottomPipe.value,
+                lastAction: this.lastAction,
+            })
+        }
+    }
+
+    public override shouldFlap(): boolean {
+        const qTuple = this.qTableHandler.getQTuple(this.currentState!)
+        const epsilon = 1 / (qTuple.visits + 1)
+
+        if (Math.random() < epsilon) {
+            this.lastAction = Math.random() < 0.5 ? Actions.FLAP : Actions.DO_NOT_FLAP
+            return this.lastAction === Actions.FLAP
+        }
+
+        const flapChancesAreHigher = qTuple.actions[Actions.FLAP] > qTuple.actions[Actions.DO_NOT_FLAP]
 
         if (flapChancesAreHigher) {
             this.lastAction = Actions.FLAP

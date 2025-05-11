@@ -9,7 +9,7 @@ export const geneticAlgorithmDefaultSettings: GeneticAlgorithmSettings = {
     birdType: BirdTypes.GENETIC_ALGORITHM,
     enabled: false,
     totalPopulation: {
-        min: 1,
+        min: 10,
         max: 100,
         value: 50,
         step: 1,
@@ -45,9 +45,9 @@ export const geneticAlgorithmDefaultSettings: GeneticAlgorithmSettings = {
         },
         elitismRatio: {
             min: 0,
-            max: 100,
-            value: 5,
-            step: 1,
+            max: 1,
+            value: 0.05,
+            step: 0.01,
         },
     },
 }

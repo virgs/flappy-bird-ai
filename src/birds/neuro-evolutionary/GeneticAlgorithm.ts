@@ -24,7 +24,7 @@ export class GeneticAlgorithm {
     public createNextGeneration(oldGenerationResults: CitizenResult[]): Chromosome[] {
         // Sort the results by duration (fitness) in descending order
         const sortedResults = [...oldGenerationResults].sort((a, b) => b.duration - a.duration)
-        const elit = sortedResults.filter((_, index) => index < this.options.elitismRatio)
+        const elit = sortedResults.filter((_, index) => index < this.options.elitismRatio * this.options.population)
         const outcome = elit.map(citizen => citizen.chromosome)
         while (outcome.length < this.options.population) {
             outcome.push(this.createNewCitizen(sortedResults))

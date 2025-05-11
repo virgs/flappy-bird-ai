@@ -8,7 +8,8 @@ type ObstacleActorProps = {
 export class ObstacleActor {
     private readonly position: Geom.Point
     private readonly verticalOffset: number
-    private readonly pipesSprites: Phaser.GameObjects.Sprite[] = []
+    private readonly topPipeSprite: Phaser.GameObjects.Sprite
+    private readonly bottomPipeSprite: Phaser.GameObjects.Sprite
     private outOfScreen: boolean = false
 
     constructor(options: ObstacleActorProps) {
@@ -22,27 +23,33 @@ export class ObstacleActor {
         const randomIndex = Math.floor(Math.random() * verticalOffsetOptions.length)
         this.verticalOffset = verticalOffsetOptions[randomIndex] * gameConstants.gameDimensions.height
         this.position = new Geom.Point(gameConstants.gameDimensions.width, this.verticalOffset)
-        this.createSprites(options)
+        ;[this.topPipeSprite, this.bottomPipeSprite] = this.createSprites(options)
     }
 
     public update(options: { delta: number }): void {
         const horizontalOffset = options.delta * gameConstants.physics.horizontalVelocityInPixelsPerMs
         this.position.x -= horizontalOffset
-        this.pipesSprites.forEach(sprite => (sprite.x -= horizontalOffset))
-        if (this.pipesSprites.every(sprite => sprite.x + sprite.displayWidth < 0)) {
+        this.topPipeSprite.x -= horizontalOffset
+        this.bottomPipeSprite.x -= horizontalOffset
+        if (
+            this.topPipeSprite.x + this.topPipeSprite.displayWidth < 0 &&
+            this.bottomPipeSprite.x + this.bottomPipeSprite.displayWidth < 0
+        ) {
             this.outOfScreen = true
         }
     }
 
     public destroy(): void {
-        this.pipesSprites.forEach(sprite => sprite.destroy())
+        this.topPipeSprite.destroy()
+        this.bottomPipeSprite.destroy()
     }
 
-    public getHitBoxes() {
-        return this.pipesSprites.map(sprite => {
-            const bounds = sprite.getBounds()
-            return new Geom.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height)
-        })
+    public getTopPipeHitBox(): Phaser.Geom.Rectangle {
+        return this.topPipeSprite.getBounds()
+    }
+
+    public getBottomPipeHitBox(): Phaser.Geom.Rectangle {
+        return this.bottomPipeSprite.getBounds()
     }
 
     public getPosition(): Geom.Point {
@@ -53,7 +60,7 @@ export class ObstacleActor {
         return this.outOfScreen
     }
 
-    private createSprites(options: ObstacleActorProps): void {
+    private createSprites(options: ObstacleActorProps): Phaser.GameObjects.Sprite[] {
         const scale = gameConstants.obstacles.scale
         const topPipeSprite = options.scene.add.sprite(
             this.position.x,
@@ -65,7 +72,6 @@ export class ObstacleActor {
         topPipeSprite.setScale(scale)
         topPipeSprite.setDepth(10)
         topPipeSprite.y -= scale * topPipeSprite.height
-        this.pipesSprites.push(topPipeSprite)
 
         const bottomPipeSprite = options.scene.add.sprite(
             this.position.x,
@@ -76,6 +82,6 @@ export class ObstacleActor {
         bottomPipeSprite.displayOriginY = 0
         bottomPipeSprite.setScale(scale)
         bottomPipeSprite.setDepth(10)
-        this.pipesSprites.push(bottomPipeSprite)
+        return [topPipeSprite, bottomPipeSprite]
     }
 }

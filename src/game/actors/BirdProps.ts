@@ -24,6 +24,7 @@ export type UpdateData = {
     }
     delta: number
     cooldownCounter: number
+    birdIsDead: boolean
 }
 
 export abstract class BirdProps {
@@ -35,11 +36,19 @@ export abstract class BirdProps {
         /* hook method */
     }
 
-    public onHitFloorOrCeiling(): void {
+    public onHitCeiling() {
         /* hook method */
     }
 
-    public onHitObstacle(): void {
+    public onHitFloor(): void {
+        /* hook method */
+    }
+
+    public onHitTopPipeObstacle(): void {
+        /* hook method */
+    }
+
+    public onHitBottomPipeObstacle() {
         /* hook method */
     }
 

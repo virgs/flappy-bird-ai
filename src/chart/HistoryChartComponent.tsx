@@ -84,11 +84,13 @@ export const HistoryChartComponent = () => {
                 labelStyle: {
                     fontSize: 20,
                     fontFamily: fontFamily,
+                    userSelect: 'none',
                 },
                 tickLabelStyle: {
                     height: 20,
                     fontFamily: fontFamily,
                     fontSize: 15,
+                    userSelect: 'none',
                 },
             },
         ]
@@ -110,16 +112,19 @@ export const HistoryChartComponent = () => {
                     fontColor: 'red',
                     fontSize: 14,
                     fontFamily: fontFamily,
+                    userSelect: 'none',
                 },
 
                 labelStyle: {
                     fontSize: 18,
                     fontFamily: fontFamily,
                     angle: 0,
+                    userSelect: 'none',
                 },
                 tickLabelStyle: {
                     fontFamily: fontFamily,
                     fontSize: 12,
+                    userSelect: 'none'
                 },
             },
         ]
@@ -150,6 +155,7 @@ export const HistoryChartComponent = () => {
                     tickLabelStyle: {
                         fontFamily: fontFamily,
                         fontSize: 12,
+                        userSelect: 'none',
                     },
                     data: data[birdType].map(result => result?.best ?? null),
                     showMark: false,
@@ -168,6 +174,7 @@ export const HistoryChartComponent = () => {
                         sx: {
                             fontSize: 14,
                             fontFamily: fontFamily,
+                            userSelect: 'none',
                         },
                     },
                     tooltip: {

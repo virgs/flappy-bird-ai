@@ -11,7 +11,7 @@ export const qLearningDefaultSettings: QLearningSettings = {
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
     totalPopulation: {
         min: 1,
-        max: 100,
+        max: 1,
         value: 1,
         step: 1,
     },
@@ -23,7 +23,7 @@ export const qLearningDefaultSettings: QLearningSettings = {
     },
     discountFactor: {
         min: 0.0,
-        max: 1.0,
+        max: 1,
         value: 0.75,
         step: 0.01,
     },
@@ -37,34 +37,52 @@ export const qLearningDefaultSettings: QLearningSettings = {
         vertical: {
             min: 5,
             max: gameConstants.gameDimensions.height / 4,
-            value: 10, //gameConstants.obstacles.verticalOffset.total,
+            value: 8, //gameConstants.obstacles.verticalOffset.total,
             step: 1,
         },
     },
+    verticalVelocityDiscretization: {
+        min: 1,
+        max: 10,
+        value: 5,
+        step: 1,
+    },
     rewards: {
-        hitFloorOrCeiling: {
-            min: -100,
-            max: 0,
-            value: -50,
-            step: 1,
-        },
-        hitObstacle: {
-            min: -100,
+        hitTopPipe: {
+            min: -1000,
             max: 0,
             value: -15,
-            step: 1,
+            step: 5,
         },
-        stayAlive: {
+        hitBottomPipe: {
+            min: -1000,
+            max: 0,
+            value: -15,
+            step: 5,
+        },
+        secondsAlive: {
             min: 0,
             max: 100,
-            value: 0.1,
-            step: 0.1,
+            value: 1,
+            step: 1,
         },
         passedPipe: {
             min: 1,
             max: 100,
             value: 100,
             step: 1,
+        },
+        hitFloor: {
+            min: -1000,
+            max: 0,
+            value: -50,
+            step: 5,
+        },
+        hitCeiling: {
+            min: -1000,
+            max: 0,
+            value: -50,
+            step: 5,
         },
     },
 }

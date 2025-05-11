@@ -41,22 +41,6 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Population: <strong>{settings.totalPopulation.value}</strong>
-                    </Form.Label>
-                    <Form.Range
-                        min={settings.totalPopulation.min}
-                        max={settings.totalPopulation.max}
-                        step={settings.totalPopulation.step}
-                        value={settings.totalPopulation.value}
-                        onChange={e => {
-                            const newSettings = { ...settings }
-                            newSettings.totalPopulation.value = parseFloat(e.target.value)
-                            setSettings(newSettings)
-                        }}
-                    />
-                </Col>
-                <Col xs={12} md={6}>
-                    <Form.Label className="fs-3">
                         Learning Rate: <strong>{settings.learningRate.value}</strong>
                     </Form.Label>
                     <Form.Range
@@ -123,20 +107,39 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                     />
                 </Col>
                 <Col xs={12}>
+                    <div className="fs-3 text-center mb-2">Velocity Discretization</div>
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Vertical Velocity: <strong>{settings.verticalVelocityDiscretization.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.verticalVelocityDiscretization.min}
+                        max={settings.verticalVelocityDiscretization.max}
+                        step={settings.verticalVelocityDiscretization.step}
+                        value={settings.verticalVelocityDiscretization.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.verticalVelocityDiscretization.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12}>
                     <div className="fs-3 text-center mb-2">Rewards</div>
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Stay Alive: <strong>{settings.rewards.stayAlive.value}</strong>
+                        Seconds Alive: <strong>{settings.rewards.secondsAlive.value}</strong>
                     </Form.Label>
                     <Form.Range
-                        min={settings.rewards.stayAlive.min}
-                        max={settings.rewards.stayAlive.max}
-                        step={settings.rewards.stayAlive.step}
-                        value={settings.rewards.stayAlive.value}
+                        min={settings.rewards.secondsAlive.min}
+                        max={settings.rewards.secondsAlive.max}
+                        step={settings.rewards.secondsAlive.step}
+                        value={settings.rewards.secondsAlive.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.rewards.stayAlive.value = parseFloat(e.target.value)
+                            newSettings.rewards.secondsAlive.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />
@@ -159,32 +162,64 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Hit Pipes: <strong>{settings.rewards.hitObstacle.value}</strong>
+                        Hit Top Pipe: <strong>{settings.rewards.hitTopPipe.value}</strong>
                     </Form.Label>
                     <Form.Range
-                        min={settings.rewards.hitObstacle.min}
-                        max={settings.rewards.hitObstacle.max}
-                        step={settings.rewards.hitObstacle.step}
-                        value={settings.rewards.hitObstacle.value}
+                        min={settings.rewards.hitTopPipe.min}
+                        max={settings.rewards.hitTopPipe.max}
+                        step={settings.rewards.hitTopPipe.step}
+                        value={settings.rewards.hitTopPipe.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.rewards.hitObstacle.value = parseFloat(e.target.value)
+                            newSettings.rewards.hitTopPipe.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Hit Floor or Ceiling: <strong>{settings.rewards.hitFloorOrCeiling.value}</strong>
+                        Hit Bottom Pipe: <strong>{settings.rewards.hitBottomPipe.value}</strong>
                     </Form.Label>
                     <Form.Range
-                        min={settings.rewards.hitFloorOrCeiling.min}
-                        max={settings.rewards.hitFloorOrCeiling.max}
-                        step={settings.rewards.hitFloorOrCeiling.step}
-                        value={settings.rewards.hitFloorOrCeiling.value}
+                        min={settings.rewards.hitBottomPipe.min}
+                        max={settings.rewards.hitBottomPipe.max}
+                        step={settings.rewards.hitBottomPipe.step}
+                        value={settings.rewards.hitBottomPipe.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.rewards.hitFloorOrCeiling.value = parseFloat(e.target.value)
+                            newSettings.rewards.hitBottomPipe.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Hit Ceiling: <strong>{settings.rewards.hitCeiling.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.rewards.hitCeiling.min}
+                        max={settings.rewards.hitCeiling.max}
+                        step={settings.rewards.hitCeiling.step}
+                        value={settings.rewards.hitCeiling.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.rewards.hitCeiling.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Hit Floor: <strong>{settings.rewards.hitFloor.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.rewards.hitFloor.min}
+                        max={settings.rewards.hitFloor.max}
+                        step={settings.rewards.hitFloor.step}
+                        value={settings.rewards.hitFloor.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.rewards.hitFloor.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />

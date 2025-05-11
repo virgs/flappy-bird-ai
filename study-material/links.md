@@ -7,10 +7,11 @@
 ## Q-Learning
 
 1. <https://github.com/yashkotadia/FlapPy-Bird-RL-Q-Learning-Bot>
-2. <https://github.com/hsahib2912/AI-Flappy-Birds/tree/master>
+2. <https://github.com/hsahib2912/AI-Flappy-Birds>
 3. <https://repositorio.ufu.br/bitstream/123456789/22184/3/MetodosInteligenciaArtificial.pdf>
 4. <https://arxiv.org/html/2312.04704v2>
-5. <https://tonypoer.io/2016/12/15/making-an-ai-to-play-flappy-bird-w-q-learning/>
+5. <https://sarvagyavaish.github.io/FlappyBirdRL/>
+6. <https://tonypoer.io/2016/12/15/making-an-ai-to-play-flappy-bird-w-q-learning/>
 
 ## Simulated Annealing
 

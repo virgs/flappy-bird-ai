@@ -45,12 +45,12 @@ export class HumanControlledBird extends BirdProps {
         }
     }
 
-    public onHitFloorOrCeiling(): void {
+    public onHitFloor(): void {
         this.alive = false
         EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_DIED)
     }
 
-    public onHitObstacle(): void {
+    public onHitTopPipeObstacle(): void {
         this.alive = false
         EventBus.emit(GameEvents.HUMAN_CONTROLLED_BIRD_DIED)
     }

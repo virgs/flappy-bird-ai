@@ -6,7 +6,7 @@ import { RoundResult } from '../../game/round/RoundResult'
 import { BirdTypes } from '../../settings/BirdTypes'
 import { QLearningSettings } from './QLearningSettings'
 import { QLearningBird } from './QLearningBird'
-import { QTableHandler } from './QTableHandler'
+import { QTable, QTableHandler, QTuple } from './QTableHandler'
 
 export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
     private readonly qTableHandler: QTableHandler
@@ -22,17 +22,23 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
     }
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
-        return roundResult.birdResults
+        const newLocal = roundResult.birdResults
             .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
             .map((birdResult, index) => {
                 if (index === 0) {
                     //@ts-expect-error
-                    const table = birdResult.bird.qTableHandler.table
-                    console.log('Qtable states: ' + Object.keys(table).length)
+                    const table: QTable = birdResult.bird.qTableHandler.table
+                    const visits = Object.values(table).reduce((acc: number, value: QTuple) => {
+                        return acc + value.visits
+                    }, 0 as number)
+                    console.log(
+                        `Qtable states ${Object.keys(table).length}, time alive: ${birdResult.timeAlive}, total visits: ${visits}`
+                    )
                     // console.log(table)
                 }
                 return this.createQLearningBird()
             })
+        return newLocal
     }
 
     public createFirstRoundSettings(): BirdProps[] {

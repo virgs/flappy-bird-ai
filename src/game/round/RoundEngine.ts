@@ -89,8 +89,17 @@ export class RoundEngine {
         if (this.closestObstacleIndex >= this.obstacles.length || this.closestObstacleIndex < 0) {
             return
         }
-        const closestObstacleHitBoxes = this.obstacles[this.closestObstacleIndex].getHitBoxes()
-        if (this.birds.every(bird => closestObstacleHitBoxes.every(pipe => bird.getHitBox().left > pipe.right))) {
+        const closestObstacleTopHitBox = this.obstacles[this.closestObstacleIndex].getTopPipeHitBox()
+        const closestObstacleBottomHitBox = this.obstacles[this.closestObstacleIndex].getBottomPipeHitBox()
+        if (
+            this.birds.every(bird => {
+                const birdHitBox = bird.getHitBox()
+                return (
+                    birdHitBox.left > closestObstacleTopHitBox.right &&
+                    birdHitBox.left > closestObstacleBottomHitBox.right
+                )
+            })
+        ) {
             this.birds.forEach(bird => {
                 bird.passedPipe()
             })

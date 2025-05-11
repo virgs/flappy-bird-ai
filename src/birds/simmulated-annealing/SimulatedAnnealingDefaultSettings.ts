@@ -10,7 +10,7 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
     enabled: false,
     texture: gameConstants.spriteSheet.assets.birdRed.name,
     totalPopulation: {
-        min: 1,
+        min: 10,
         max: 100,
         value: 50,
         step: 1,

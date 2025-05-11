@@ -1,16 +1,42 @@
 .hud {
+    user-select: none;
+    touch-action: none;
+
     .hud-score {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        text-shadow: 6px 6px 0 var(--bs-dark);
+        text-shadow: 2px 2px 0 var(--bs-dark);
         font-family: var(--flappy-bird-font);
         font-size: min(max(5svw, 5svh), 5rem);
     }
 
     .hud-bird-counter {
-        text-shadow: 3px 3px 0 var(--bs-dark);
+        text-shadow: 1px 1px 0 var(--bs-dark);
         font-family: var(--flappy-bird-font);
         font-size: min(max(3svw, 3svh), 3rem);
+    }
+
+    /* Example: Hide starting at `min-width: 0`, and then show at the `sm` breakpoint */
+    /* @include media-breakpoint-up(sm) { */
+    @media (min-width: 576px) {
+        .hud-score {
+            text-shadow: 4px 4px 0 var(--bs-dark);
+        }
+
+        .hud-bird-counter {
+            text-shadow: 2px 2px 0 var(--bs-dark);
+        }
+    }
+
+    /* @include media-breakpoint-up(lg) { */
+    @media (min-width: 992px) {
+        .hud-score {
+            text-shadow: 6px 6px 0 var(--bs-dark);
+        }
+
+        .hud-bird-counter {
+            text-shadow: 3px 3px 0 var(--bs-dark);
+        }
     }
 }
