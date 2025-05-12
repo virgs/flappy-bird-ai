@@ -97,12 +97,6 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                             max={gameConstants.physics.timeFactor.max}
                             step={gameConstants.physics.timeFactor.step}
                             value={timeFactor}
-                            onDoubleClick={() => {
-                                const newValue = parseFloat(1.0.toFixed(1))
-                                setTimeFactor(newValue)
-                                Repository.saveTimeFactor(newValue)
-                                EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
-                            }}
                             onChange={e => {
                                 const newValue = parseFloat(e.currentTarget.value)
                                 setTimeFactor(newValue)
@@ -110,7 +104,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
                             }}></Form.Range>
                         <FontAwesomeIcon icon={faBoltLightning}
-                            onDoubleClick={() => {
+                            onPointerDown={() => {
                                 const newValue = parseFloat(1.0.toFixed(1))
                                 setTimeFactor(newValue)
                                 Repository.saveTimeFactor(newValue)

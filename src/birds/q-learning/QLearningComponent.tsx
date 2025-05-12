@@ -41,7 +41,7 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Learning Rate: <strong>{settings.learningRate.value}</strong>
+                        Learning Rate (ɑε): <strong>{settings.learningRate.value}</strong>
                     </Form.Label>
                     <Form.Range
                         min={settings.learningRate.min}
@@ -57,7 +57,7 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Discount Factor: <strong>{settings.discountFactor.value}</strong>
+                        Discount Factor (𝛾): <strong>{settings.discountFactor.value}</strong>
                     </Form.Label>
                     <Form.Range
                         min={settings.discountFactor.min}

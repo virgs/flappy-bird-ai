@@ -10,6 +10,7 @@ import { GameSettings } from './settings/GameSettings'
 import { SelectGameSettingsComponent } from './settings/SelectBirdsComponent'
 import { HistoryChartComponent } from './chart/HistoryChartComponent'
 import './App.scss'
+import { GitHubCorner } from './GitHubCorner'
 
 export const App = (): ReactNode => {
     const [navbarHeight, setNavbarHeight] = useState<number>(60)
@@ -72,6 +73,7 @@ export const App = (): ReactNode => {
                     </Col>
                 </Row>
             </Container>
+            <GitHubCorner />
         </>
     )
 }

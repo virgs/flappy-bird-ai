@@ -18,8 +18,8 @@ export type State = {
         vertical: number
     }
     dead: boolean
-    // altitude: number
-    // verticalSpeed: number
+    altitude: number
+    verticalSpeed: number
 }
 
 export type QTuple = {
@@ -44,8 +44,8 @@ export class QTableHandler {
         const discreteAltitude = this.calculateDiscreteFlightAltitude(data)
         const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
         const state: State = {
-            // altitude: discreteAltitude,
-            // verticalSpeed: discreteVerticalSpeed,
+            altitude: discreteAltitude,
+            verticalSpeed: discreteVerticalSpeed,
             distanceToClosestObstacle: this.calculateDiscreteDistanceToClosestObstacle(data),
             dead: data.birdIsDead,
         }
@@ -119,8 +119,8 @@ export class QTableHandler {
         const distanceToClosestObstacle =
             `${state.distanceToClosestObstacle?.horizontal ?? '-'}` +
             `|${state.distanceToClosestObstacle?.vertical ?? '-'}|`
-        // const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
-        return distanceToClosestObstacle + `|${state.dead}`
+        const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
+        return distanceToClosestObstacle + distanceToCeiling + `|${state.dead}`
     }
 
     public updateQValue(data: { currentState: State; lastState: State; reward: number; lastAction: Actions }) {
