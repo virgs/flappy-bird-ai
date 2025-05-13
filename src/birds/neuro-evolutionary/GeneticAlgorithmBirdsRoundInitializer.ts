@@ -46,7 +46,8 @@ export class GeneticAlgorithmBirdsRoundInitializer implements RoundBirdInitializ
                 const neuroEvolutionProps = birdResult.bird.getFixture() as NeuralNetworkBirdProps
                 return {
                     chromosome: { genes: neuroEvolutionProps.annSettings.weights },
-                    duration: birdResult.timeAlive,
+                    timeAlive: birdResult.timeAlive,
+                    pipesPassed: birdResult.pipesPassed,
                 }
             })
         if (neuroEvolutionaryBirds.length > 0) {

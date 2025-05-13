@@ -6,10 +6,10 @@ export type SimulatedAnnealingSettings = {
     birdType: BirdTypes.SIMULATED_ANNEALING
     artificialNeuralNetwork: NeuralNetworkSettings
     simulatedAnnealing: {
-        // restartThreshold: 4000,
         initialTemperature: Range
         temperatureDecreaseRate: Range
         topCandidatesRatio: Range
-        straightSuccessesToCooldown: Range
+        consecutiveSuccessesToCooldown: Range
+        weightDisturbanceRatio: Range
     }
 } & BirdSettings

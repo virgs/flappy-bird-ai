@@ -1,9 +1,12 @@
+import { arrayShuffler } from '../../math/array-shufller'
+
 export type SimulatedAnnealingProps = {
     population: number
     initialTemperature: number
     topCandidatesRatio: number
     temperatureDecreaseRate: number
     successToCooldown: number
+    weightDisturbanceRatio: number
     numberOfWeights: number
 }
 
@@ -37,6 +40,7 @@ export class SimulatedAnnealing {
 
         // Adjust temperature if successCounter exceeds maxSuccessPerIteration
         if (this.successCounter > this.props.successToCooldown) {
+            console.log('Success counter exceeded, cooling down temperature')
             this.successCounter = 0
             this.temperature *= this.props.temperatureDecreaseRate
         }
@@ -49,7 +53,7 @@ export class SimulatedAnnealing {
 
         // Generate new candidates by disturbing the remaining candidates
         const newCandidates = Array.from(Array(this.props.population - topCandidates.length)).map(() =>
-            this.disturbCandidate(sortedResults[Math.floor(Math.random() * sortedResults.length)])
+            this.disturbCandidate(this.pickOne(sortedResults))
         )
 
         // Return the new population (top candidates + disturbed candidates)
@@ -57,9 +61,17 @@ export class SimulatedAnnealing {
     }
 
     private disturbCandidate(candidate: Candidate): Candidate {
-        const newWeights = candidate.weights.map(weight => {
-            // Disturb the weight based on the current temperature
-            if (Math.random() < this.temperature) {
+        const weightIndexes: number[] = arrayShuffler(
+            Array.from({ length: candidate.weights.length }, (_, index) => index)
+        )
+        // Select random indexes to disturb
+        const disturbedWeightIndexes: number[] = weightIndexes.slice(
+            0,
+            Math.ceil(this.props.weightDisturbanceRatio * candidate.weights.length)
+        )
+        const newWeights = candidate.weights.map((weight, index) => {
+            if (disturbedWeightIndexes.includes(index)) {
+                // Disturb the selected weight based on the current temperature
                 return this.disturbWeight(weight)
             }
             return weight
@@ -79,5 +91,23 @@ export class SimulatedAnnealing {
     private calculateAverageScore(results: Candidate[]): number {
         // Calculate the average score of the population
         return results.reduce((sum, candidate) => sum + candidate.score, 0) / results.length
+    }
+
+    //Every bird is a candidate. The ones that have best fitness value (normalized) have more probability to be chosen
+
+    // Uses a fitness-proportional selection (roulette wheel).
+    // A valid approach, but it assumes that all duration values are positive.
+    // If any duration is zero or negative, the method could fail or behave unexpectedly.
+    // All durations values should be positive before calling
+    private pickOne(generation: Candidate[]): Candidate {
+        const totalFitness = generation.reduce((acc, bird) => acc + bird.score, 0)
+        let index = 0
+        let r = Math.random() * totalFitness
+        while (r > 0) {
+            r = r - generation[index].score
+            index++
+        }
+        index--
+        return generation[index]
     }
 }

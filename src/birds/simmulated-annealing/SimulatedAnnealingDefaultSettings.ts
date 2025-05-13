@@ -49,11 +49,17 @@ export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
             value: 0.2,
             step: 0.01,
         },
-        straightSuccessesToCooldown: {
+        consecutiveSuccessesToCooldown: {
             min: 1,
-            max: 100,
-            value: 20,
+            max: 50,
+            value: 5,
             step: 1,
+        },
+        weightDisturbanceRatio: {
+            min: 0,
+            max: 1,
+            value: 0.15,
+            step: 0.01,
         },
     },
 }

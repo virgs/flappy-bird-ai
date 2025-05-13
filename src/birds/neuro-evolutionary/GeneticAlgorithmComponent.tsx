@@ -39,7 +39,7 @@ export const GeneticAlgorithmComponent = (props: GeneticAlgorithmComponentProps)
             </div>
             <Row className="gx-4 justify-content-between align-items-center form-row">
                 <Col xs={12}>
-                    <div className="fs-2 text-center mb-2">Simmulated Annealing</div>
+                    <div className="fs-2 text-center mb-2">Genetic Algorithm</div>
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">

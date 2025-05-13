@@ -9,7 +9,7 @@ export type NeuralNetworkBirdProps = BirdPropsFixture & {
 export class NeuralNetworkBird extends BirdProps {
     private readonly _props: NeuralNetworkBirdProps
     private readonly ann: ArtificialNeuralNetwork
-    private lastUpdateData: UpdateData
+    private lastUpdateData?: UpdateData
 
     public constructor(options: NeuralNetworkBirdProps) {
         super()
@@ -26,16 +26,24 @@ export class NeuralNetworkBird extends BirdProps {
     }
 
     public shouldFlap(): boolean {
-        const data = this.lastUpdateData
-        if (data.closestObstacleGapPosition === undefined) {
+        if (!this.lastUpdateData) {
             return false
         }
-
+        // When there is no obstacle, the gap position is set to a non-existent position
+        // to avoid NaN errors in the ANN
+        const nonExistentObstacleModifier = 20
+        const closestObstacleGapPosition = this.lastUpdateData.closestObstacleGapPosition
+            ? this.lastUpdateData.closestObstacleGapPosition
+            : {
+                  x: nonExistentObstacleModifier * gameConstants.gameDimensions.width,
+                  y: nonExistentObstacleModifier * gameConstants.gameDimensions.height,
+              }
+        const data = this.lastUpdateData
         const output = this.ann.process([
             data.position.y / gameConstants.gameDimensions.height,
             data.verticalSpeed / gameConstants.birdAttributes.maxBirdVerticalSpeed,
-            (data.closestObstacleGapPosition.x - data.position.x) / gameConstants.gameDimensions.width,
-            (data.closestObstacleGapPosition.y - data.position.y) / gameConstants.gameDimensions.height,
+            (closestObstacleGapPosition.x - data.position.x) / gameConstants.gameDimensions.width,
+            (closestObstacleGapPosition.y - data.position.y) / gameConstants.gameDimensions.height,
         ])
         return output[0] > 0.5
     }

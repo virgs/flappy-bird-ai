@@ -107,17 +107,34 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Straight Successes to Cooldown:{' '}
-                        <strong>{settings.simulatedAnnealing.straightSuccessesToCooldown.value}</strong>
+                        Consecutive Successes to Cooldown: <strong>{settings.simulatedAnnealing.consecutiveSuccessesToCooldown.value}</strong>
                     </Form.Label>
                     <Form.Range
-                        min={settings.simulatedAnnealing.straightSuccessesToCooldown.min}
-                        max={settings.simulatedAnnealing.straightSuccessesToCooldown.max}
-                        step={settings.simulatedAnnealing.straightSuccessesToCooldown.step}
-                        value={settings.simulatedAnnealing.straightSuccessesToCooldown.value}
+                        min={settings.simulatedAnnealing.consecutiveSuccessesToCooldown.min}
+                        max={settings.simulatedAnnealing.consecutiveSuccessesToCooldown.max}
+                        step={settings.simulatedAnnealing.consecutiveSuccessesToCooldown.step}
+                        value={settings.simulatedAnnealing.consecutiveSuccessesToCooldown.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.simulatedAnnealing.straightSuccessesToCooldown.value = parseFloat(
+                            newSettings.simulatedAnnealing.consecutiveSuccessesToCooldown.value = parseFloat(
+                                e.target.value
+                            )
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Weight Disturbance Ratio: <strong>{settings.simulatedAnnealing.weightDisturbanceRatio.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.simulatedAnnealing.weightDisturbanceRatio.min}
+                        max={settings.simulatedAnnealing.weightDisturbanceRatio.max}
+                        step={settings.simulatedAnnealing.weightDisturbanceRatio.step}
+                        value={settings.simulatedAnnealing.weightDisturbanceRatio.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.simulatedAnnealing.weightDisturbanceRatio.value = parseFloat(
                                 e.target.value
                             )
                             setSettings(newSettings)

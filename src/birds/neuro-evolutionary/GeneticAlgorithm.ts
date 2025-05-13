@@ -11,7 +11,8 @@ export type GeneticAlgorithmOptions = {
 
 export type CitizenResult = {
     chromosome: Chromosome
-    duration: number
+    timeAlive: number
+    pipesPassed: number
 }
 
 export class GeneticAlgorithm {
@@ -23,7 +24,7 @@ export class GeneticAlgorithm {
 
     public createNextGeneration(oldGenerationResults: CitizenResult[]): Chromosome[] {
         // Sort the results by duration (fitness) in descending order
-        const sortedResults = [...oldGenerationResults].sort((a, b) => b.duration - a.duration)
+        const sortedResults = [...oldGenerationResults].sort((a, b) => b.timeAlive - a.timeAlive)
         const elit = sortedResults.filter((_, index) => index < this.options.elitismRatio * this.options.population)
         const outcome = elit.map(citizen => citizen.chromosome)
         while (outcome.length < this.options.population) {
@@ -66,13 +67,13 @@ export class GeneticAlgorithm {
     // Uses a fitness-proportional selection (roulette wheel).
     // A valid approach, but it assumes that all duration values are positive.
     // If any duration is zero or negative, the method could fail or behave unexpectedly.
-    // Fix: Ensure all duration values are normalized to be positive before calling
+    // All durations values should be positive before calling
     private pickOne(generation: CitizenResult[]): CitizenResult {
-        const totalFitness = generation.reduce((acc, bird) => acc + bird.duration, 0)
+        const totalFitness = generation.reduce((acc, bird) => acc + bird.timeAlive, 0)
         let index = 0
         let r = Math.random() * totalFitness
         while (r > 0) {
-            r = r - generation[index].duration
+            r = r - generation[index].timeAlive
             index++
         }
         index--
