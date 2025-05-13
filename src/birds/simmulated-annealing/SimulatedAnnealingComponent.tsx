@@ -27,10 +27,12 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
     return (
         <>
             <div className="fs-5 mx-2 my-3">
-                <strong>Simulated Annealing</strong> is a probabilistic optimization algorithm that searches for the
-                global minimum of a function. It uses a temperature parameter to control the probability of accepting
-                worse solutions as the algorithm progresses. This game uses it to train artificial neural networks by
-                simulating the annealing process of metals. Read more about it{' '}
+                <strong>Simulated Annealing</strong> is what happens when an algorithm decides it's okay to make bad
+                decisions — as long as it’s still early and the metaphorical metal is hot. Inspired by metallurgy
+                (because of course it is), this method wanders around the solution space, occasionally tripping on worse
+                answers in the hope that they eventually lead somewhere better. This game uses that very strategy to
+                train neural networks, because sometimes the best path forward is to get lost on purpose. Learn more
+                about this controlled chaos{' '}
                 <a href="https://en.wikipedia.org/wiki/Simulated_annealing" target="_blank" rel="noreferrer">
                     here
                 </a>
@@ -107,7 +109,8 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Consecutive Successes to Cooldown: <strong>{settings.simulatedAnnealing.consecutiveSuccessesToCooldown.value}</strong>
+                        Consecutive Successes to Cooldown:{' '}
+                        <strong>{settings.simulatedAnnealing.consecutiveSuccessesToCooldown.value}</strong>
                     </Form.Label>
                     <Form.Range
                         min={settings.simulatedAnnealing.consecutiveSuccessesToCooldown.min}
@@ -125,7 +128,8 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Weight Disturbance Ratio: <strong>{settings.simulatedAnnealing.weightDisturbanceRatio.value}</strong>
+                        Weight Disturbance Ratio:{' '}
+                        <strong>{settings.simulatedAnnealing.weightDisturbanceRatio.value}</strong>
                     </Form.Label>
                     <Form.Range
                         min={settings.simulatedAnnealing.weightDisturbanceRatio.min}
@@ -134,9 +138,7 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
                         value={settings.simulatedAnnealing.weightDisturbanceRatio.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.simulatedAnnealing.weightDisturbanceRatio.value = parseFloat(
-                                e.target.value
-                            )
+                            newSettings.simulatedAnnealing.weightDisturbanceRatio.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />

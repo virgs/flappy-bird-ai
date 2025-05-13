@@ -27,11 +27,11 @@ export const GeneticAlgorithmComponent = (props: GeneticAlgorithmComponentProps)
     return (
         <>
             <div className="fs-5 mx-2 my-3">
-                <strong>Genetic Algorithm</strong> is a type of evolutionary algorithm that uses the principles of
-                natural selection and genetics to solve optimization problems. It uses a population of individuals, each
-                represented by a set of genes, and applies genetic operators such as selection, crossover, and mutation
-                to create new individuals. This game uses it to train artificial neural networks by simulating the
-                evolution of a population of neural networks. Read more about it{' '}
+                <strong>Genetic Algorithm</strong> is what happens when computer scientists get inspired by nature and
+                think, “What if we let a bunch of digital creatures struggle, reproduce, and mutate until one of them
+                accidentally gets it right?” Instead of survival of the fittest, it’s more like survival of the least
+                terrible. This game uses that very approach to evolve neural networks — because nothing says 'progress'
+                like blindly stumbling through generations of failure. Learn more about this charming chaos{' '}
                 <a href="https://en.wikipedia.org/wiki/Genetic_algorithm" target="_blank" rel="noreferrer">
                     here
                 </a>

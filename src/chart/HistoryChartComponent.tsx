@@ -124,7 +124,7 @@ export const HistoryChartComponent = () => {
                 tickLabelStyle: {
                     fontFamily: fontFamily,
                     fontSize: 12,
-                    userSelect: 'none'
+                    userSelect: 'none',
                 },
             },
         ]

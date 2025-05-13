@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, ReactNode, useState } from 'react'
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
@@ -60,11 +60,10 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         return (
             <div role="alert">
                 <p>Something went wrong:</p>
-                <pre style={{ color: "red" }}>{data.error.message}</pre>
+                <pre style={{ color: 'red' }}>{data.error.message}</pre>
             </div>
-        );
+        )
     }
-
 
     const [gameSettings, setGameSettings] = useState<GameSettings>(loadSettings())
 
@@ -190,12 +189,11 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                             </Accordion.Header>
                             <ErrorBoundary
                                 fallbackRender={fallbackRender}
-                                onReset={(details) => {
+                                onReset={details => {
                                     console.log('Resetting error boundary:', details)
                                     Repository.clearCompetitorsSettings()
                                     // Reset the state of your app so the error doesn't happen again
-                                }}
-                            >
+                                }}>
                                 <Accordion.Body className="py-2">{item.body}</Accordion.Body>
                             </ErrorBoundary>
                         </Accordion.Item>

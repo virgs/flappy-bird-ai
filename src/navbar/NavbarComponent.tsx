@@ -64,7 +64,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     }, [])
 
     const resetTimeFactor = (): void => {
-        const newValue = parseFloat(1.0.toFixed(1))
+        const newValue = parseFloat((1.0).toFixed(1))
         setTimeFactor(newValue)
         Repository.saveTimeFactor(newValue)
         EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
@@ -97,8 +97,11 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         </>
                     )}
                     <Nav className="mx-auto navbar-nav align-items-center">
-                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1"
-                            onPointerDown={() => resetTimeFactor()}>Speed</Navbar.Text>
+                        <Navbar.Text
+                            className="text-tertiary fs-4 d-none d-lg-inline me-1"
+                            onPointerDown={() => resetTimeFactor()}>
+                            Speed
+                        </Navbar.Text>
                         <Navbar.Text className="text-tertiary fs-4 me-1">{timeFactor.toFixed(1)}x</Navbar.Text>
                         <Form.Range
                             min={gameConstants.physics.timeFactor.min}
@@ -111,9 +114,11 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 Repository.saveTimeFactor(newValue)
                                 EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
                             }}></Form.Range>
-                        <FontAwesomeIcon icon={faBoltLightning}
+                        <FontAwesomeIcon
+                            icon={faBoltLightning}
                             onPointerDown={() => resetTimeFactor()}
-                            className="ms-1" />
+                            className="ms-1"
+                        />
                     </Nav>
 
                     {roundSettings && (
