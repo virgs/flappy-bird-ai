@@ -63,6 +63,13 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
         }
     }, [])
 
+    const resetTimeFactor = (): void => {
+        const newValue = parseFloat(1.0.toFixed(1))
+        setTimeFactor(newValue)
+        Repository.saveTimeFactor(newValue)
+        EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
+    }
+
     return (
         <>
             <Navbar ref={navbarRef} fixed="top" className="bg-body-secondary mx-auto border-start border-end border-2">
@@ -90,7 +97,8 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         </>
                     )}
                     <Nav className="mx-auto navbar-nav align-items-center">
-                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1">Speed</Navbar.Text>
+                        <Navbar.Text className="text-tertiary fs-4 d-none d-lg-inline me-1"
+                            onPointerDown={() => resetTimeFactor()}>Speed</Navbar.Text>
                         <Navbar.Text className="text-tertiary fs-4 me-1">{timeFactor.toFixed(1)}x</Navbar.Text>
                         <Form.Range
                             min={gameConstants.physics.timeFactor.min}
@@ -104,13 +112,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
                             }}></Form.Range>
                         <FontAwesomeIcon icon={faBoltLightning}
-                            onPointerDown={() => {
-                                const newValue = parseFloat(1.0.toFixed(1))
-                                setTimeFactor(newValue)
-                                Repository.saveTimeFactor(newValue)
-                                EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, newValue)
-                            }}
-
+                            onPointerDown={() => resetTimeFactor()}
                             className="ms-1" />
                     </Nav>
 

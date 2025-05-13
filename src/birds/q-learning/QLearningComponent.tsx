@@ -3,10 +3,87 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
 import { QLearningSettings } from './QLearningSettings'
+import { Range } from '../../settings/BirdSettings'
 
 type QLearningComponentProps = {
     value: QLearningSettings
     onChange: (data: QLearningSettings) => void
+}
+
+export const RangeComponent = (props: { range: Range, title: string, onChange: (value: number) => void }) => {
+    const clampValue = (value: number) => {
+        const stepValue = Math.round((value - props.range.min) / props.range.step) * props.range.step + props.range.min
+        return Math.max(props.range.min, Math.min(props.range.max, stepValue))
+    }
+
+    const allowNegative = props.range.min < 0
+    const allowDecimal = props.range.step < 1
+    const pattern = new RegExp(`^${allowNegative ? '-?' : ''}\\d+${allowDecimal ? '(\\.\\d+)?' : ''}$`)
+
+    return (
+        <>
+            <Row>
+                <Col xs className="text-start justify-content-between">
+                    <Form.Label className="fs-3 w-100">
+                        {props.title}:
+                    </Form.Label>
+
+                </Col>
+                <Col xs={"auto"} className="text-end">
+                    <Form.Control
+                        min={props.range.min}
+                        max={props.range.max}
+                        step={props.range.step}
+                        value={props.range.value}
+                        pattern={pattern.source}
+                        onInput={e => {
+                            console.log('onInput', e)
+                            const input = e.target as HTMLInputElement
+                            if (!pattern.test(input.value)) {
+                                input.setCustomValidity('Invalid value')
+                                console.log('Invalid value', input.value)
+                                input.value = clampValue(parseFloat(props.range.value.toString())).toString()
+                            } else {
+                                console.log('Valid value', input.value)
+                                input.setCustomValidity('')
+                            }
+                        }}
+                        onInvalid={e => {
+                            console.log('onInvalid', e)
+                            const input = e.target as HTMLInputElement
+                            if (input.validity.patternMismatch) {
+                                input.setCustomValidity('Invalid value')
+                            }
+                        }}
+                        onBlur={e => {
+                            console.log('onBlur', e)
+                            const input = e.target as HTMLInputElement
+                            if (input.validity.patternMismatch) {
+                                input.setCustomValidity('Invalid value')
+                                console.log('Invalid value', input.value)
+                            } else {
+                                console.log('Valid value', input.value)
+                                input.setCustomValidity('')
+                            }
+                            input.value = clampValue(parseFloat(input.value)).toString()
+                            props.onChange(clampValue(parseFloat(input.value)))
+                        }}
+                        onChange={e => props.onChange(clampValue(parseFloat(e.target.value)))}
+                        placeholder={props.title}
+                        type="number"
+                        aria-describedby="passwordHelpBlock"
+                    />
+                </Col>
+            </Row>
+            <Form.Range
+                min={props.range.min}
+                max={props.range.max}
+                step={props.range.step}
+                value={props.range.value}
+                onChange={e => props.onChange(clampValue(parseFloat(e.target.value)))}
+            />
+        </>
+    )
 }
 
 export const QLearningComponent = (props: QLearningComponentProps) => {
@@ -41,7 +118,23 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Learning Rate (ɑε): <strong>{settings.learningRate.value}</strong>
+                        Total Population: <strong>{settings.totalPopulation.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.totalPopulation.min}
+                        max={settings.totalPopulation.max}
+                        step={settings.totalPopulation.step}
+                        value={settings.totalPopulation.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.totalPopulation.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Learning Rate (ɑ): <strong>{settings.learningRate.value}</strong>
                     </Form.Label>
                     <Form.Range
                         min={settings.learningRate.min}
@@ -67,6 +160,38 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                         onChange={e => {
                             const newSettings = { ...settings }
                             newSettings.discountFactor.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Exploration Rate (ε): <strong>{settings.explorationRate.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.explorationRate.min}
+                        max={settings.explorationRate.max}
+                        step={settings.explorationRate.step}
+                        value={settings.explorationRate.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.explorationRate.value = parseFloat(e.target.value)
+                            setSettings(newSettings)
+                        }}
+                    />
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Label className="fs-3">
+                        Exploration Rate Decay: <strong>{settings.explorationRateDecay.value}</strong>
+                    </Form.Label>
+                    <Form.Range
+                        min={settings.explorationRateDecay.min}
+                        max={settings.explorationRateDecay.max}
+                        step={settings.explorationRateDecay.step}
+                        value={settings.explorationRateDecay.value}
+                        onChange={e => {
+                            const newSettings = { ...settings }
+                            newSettings.explorationRateDecay.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />
@@ -130,16 +255,16 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Seconds Alive: <strong>{settings.rewards.secondsAlive.value}</strong>
+                        Milliseconds Alive: <strong>{settings.rewards.millisecondsAlive.value}</strong>
                     </Form.Label>
                     <Form.Range
-                        min={settings.rewards.secondsAlive.min}
-                        max={settings.rewards.secondsAlive.max}
-                        step={settings.rewards.secondsAlive.step}
-                        value={settings.rewards.secondsAlive.value}
+                        min={settings.rewards.millisecondsAlive.min}
+                        max={settings.rewards.millisecondsAlive.max}
+                        step={settings.rewards.millisecondsAlive.step}
+                        value={settings.rewards.millisecondsAlive.value}
                         onChange={e => {
                             const newSettings = { ...settings }
-                            newSettings.rewards.secondsAlive.value = parseFloat(e.target.value)
+                            newSettings.rewards.millisecondsAlive.value = parseFloat(e.target.value)
                             setSettings(newSettings)
                         }}
                     />

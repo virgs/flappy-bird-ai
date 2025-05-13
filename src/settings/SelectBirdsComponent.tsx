@@ -192,10 +192,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                                 fallbackRender={fallbackRender}
                                 onReset={(details) => {
                                     console.log('Resetting error boundary:', details)
-                                    const factoryReset = Repository.getFactorySettings()
-                                    Repository.saveCompetitorsSettings(factoryReset)
-                                    // setGameSettings(factoryReset)
-
+                                    Repository.clearCompetitorsSettings()
                                     // Reset the state of your app so the error doesn't happen again
                                 }}
                             >

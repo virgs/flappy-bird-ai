@@ -2,8 +2,8 @@
     color: unset;
     text-decoration: none;
     transform: scaleX(-1);
-    fill: #75caeb;
-    color: #75caeb;
+    fill: var(--bs-primary);
+    color: var(--bs-primary);
     position: absolute;
     bottom: 0;
     border: 0;

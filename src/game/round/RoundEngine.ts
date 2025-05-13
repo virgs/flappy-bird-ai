@@ -34,12 +34,6 @@ export class RoundEngine {
         )
         this.platform = new PlatformActor({ scene: scene })
 
-        this.obstacles.push(
-            new ObstacleActor({
-                scene: scene,
-            })
-        )
-
         EventBus.on(GameEvents.NEXT_ITERATION, () => {
             this.birds.forEach(bird => {
                 this.killBird(bird)
@@ -86,27 +80,28 @@ export class RoundEngine {
 
     private updateObstacles(delta: number) {
         // Check if the bird has passed the pipes
-        if (this.closestObstacleIndex >= this.obstacles.length || this.closestObstacleIndex < 0) {
-            return
-        }
-        const closestObstacleTopHitBox = this.obstacles[this.closestObstacleIndex].getTopPipeHitBox()
-        const closestObstacleBottomHitBox = this.obstacles[this.closestObstacleIndex].getBottomPipeHitBox()
-        if (
-            this.birds.every(bird => {
-                const birdHitBox = bird.getHitBox()
-                return (
-                    birdHitBox.left > closestObstacleTopHitBox.right &&
-                    birdHitBox.left > closestObstacleBottomHitBox.right
-                )
-            })
-        ) {
-            this.birds.forEach(bird => {
-                bird.passedPipe()
-            })
-            if (this.birds.some(bird => bird.isAlive())) {
-                EventBus.emit(GameEvents.BIRDS_PASSED_PIPE)
+        if (this.closestObstacleIndex < this.obstacles.length && this.closestObstacleIndex >= 0) {
+            const closestObstacleTopHitBox = this.obstacles[this.closestObstacleIndex].getTopPipeHitBox()
+            const closestObstacleBottomHitBox = this.obstacles[this.closestObstacleIndex].getBottomPipeHitBox()
+            if (
+                this.birds.every(bird => {
+                    const birdHitBox = bird.getHitBox()
+                    return (
+                        birdHitBox.left > closestObstacleTopHitBox.right &&
+                        birdHitBox.left > closestObstacleBottomHitBox.right
+                    )
+                })
+            ) {
+                this.birds
+                    .filter(bird => bird.isAlive())
+                    .forEach(bird => {
+                        bird.passedPipe()
+                    })
+                if (this.birds.some(bird => bird.isAlive())) {
+                    EventBus.emit(GameEvents.BIRDS_PASSED_PIPE)
+                }
+                this.closestObstacleIndex++
             }
-            this.closestObstacleIndex++
         }
 
         // Process pipes and remove those that are out of screen

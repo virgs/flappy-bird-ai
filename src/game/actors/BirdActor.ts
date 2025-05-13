@@ -76,9 +76,9 @@ export class BirdActor {
     public update(updateProps: BirdActorUpdateProps): void {
         this.adjustSprite(updateProps.delta)
         this.applyGravity(updateProps)
+        this.updateSoul(updateProps)
         if (this.alive) {
             this.timeAlive += updateProps.delta
-            this.updateSoul(updateProps)
             this.handleCommands()
             this.handleFloorAndCeilingCollision()
             this.handleObstacleCollision(updateProps)
@@ -132,7 +132,7 @@ export class BirdActor {
             roundIteration: updateProps.roundIteration,
             delta: updateProps.delta,
             cooldownCounter: this.cooldownCounter,
-            birdIsDead: !this.alive,
+            alive: this.alive,
         }
         this.props.update(props)
         if (this.cooldownCounter <= 0) {

@@ -13,11 +13,11 @@ export type ActionValues = {
 }
 
 export type State = {
-    distanceToClosestObstacle?: {
-        horizontal: number
-        vertical: number
+    closestObstacleGapPosition?: {
+        horizontalDistanceToBird: number
+        verticalDistanceToCeiling: number
     }
-    dead: boolean
+    alive: boolean
     altitude: number
     verticalSpeed: number
 }
@@ -33,7 +33,7 @@ export type QTable = {
 
 export class QTableHandler {
     private readonly settings: QLearningSettings
-    private readonly table: QTable
+    public readonly table: QTable
 
     public constructor(settings: QLearningSettings) {
         this.settings = settings
@@ -46,16 +46,19 @@ export class QTableHandler {
         const state: State = {
             altitude: discreteAltitude,
             verticalSpeed: discreteVerticalSpeed,
-            distanceToClosestObstacle: this.calculateDiscreteDistanceToClosestObstacle(data),
-            dead: data.birdIsDead,
+            closestObstacleGapPosition: this.calculateDiscreteDistanceToClosestObstacle(data),
+            alive: data.alive,
         }
         // console.log('State:', state)
         return state
     }
 
-    private calculateDiscreteDistanceToClosestObstacle(
-        data: UpdateData
-    ): { horizontal: number; vertical: number } | undefined {
+    private calculateDiscreteDistanceToClosestObstacle(data: UpdateData):
+        | {
+              horizontalDistanceToBird: number
+              verticalDistanceToCeiling: number
+          }
+        | undefined {
         const horizontalPartition =
             gameConstants.gameDimensions.width / this.settings.gridSpatialAbstraction.horizontal.value
         const verticalPartition =
@@ -67,10 +70,12 @@ export class QTableHandler {
             )
             // Check if the bird is ahead of the obstacle
             if (discreteHorizontalDistance >= 0) {
+                const newLocal = Math.floor(data.closestObstacleGapPosition.y / verticalPartition)
+                // console.log(newLocal, gameConstants.obstacles.verticalOffset.total)
                 // Calculate the distance to the closest obstacle
                 return {
-                    horizontal: discreteHorizontalDistance,
-                    vertical: Math.floor((data.closestObstacleGapPosition.y - data.position.y) / verticalPartition),
+                    horizontalDistanceToBird: discreteHorizontalDistance,
+                    verticalDistanceToCeiling: newLocal,
                 }
             }
         }
@@ -89,56 +94,66 @@ export class QTableHandler {
     }
 
     public getQTuple(state: State): QTuple {
-        const index = this.getStateHash(state)
-        if (!this.table[index]) {
+        return this.table[this.getStateHash(state)]
+    }
+
+    public getStateHash(state: State) {
+        const distanceToClosestObstacle =
+            `${state.closestObstacleGapPosition?.horizontalDistanceToBird ?? '-'}` +
+            `|${state.closestObstacleGapPosition?.verticalDistanceToCeiling ?? '-'}|`
+        const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
+        const hash = distanceToClosestObstacle + distanceToCeiling + `|${state.alive}`
+        if (!this.table[hash]) {
             // this.table[index] = {
             //     [Actions.DO_NOT_FLAP]: -0.01,
             //     [Actions.FLAP]: -0.01,
             // }
-            this.table[index] = {
+            // this.table[hash] = {
+            //     actions: {
+            //         [Actions.DO_NOT_FLAP]: Math.random() * 0.01,
+            //         [Actions.FLAP]: Math.random() * 0.01,
+            //     },
+            //     visits: 1,
+            // }
+            this.table[hash] = {
                 actions: {
-                    [Actions.DO_NOT_FLAP]: Math.random() * 0.01,
-                    [Actions.FLAP]: Math.random() * 0.01,
+                    [Actions.DO_NOT_FLAP]: 0,
+                    [Actions.FLAP]: 0,
                 },
                 visits: 1,
             }
             // this.table[index] = {
             //     actions: {
-            //         [Actions.DO_NOT_FLAP]: 0,
-            //         [Actions.FLAP]: 0,
+            //         [Actions.DO_NOT_FLAP]: 1,
+            //         [Actions.FLAP]: 1,
             //     },
             //     visits: 1,
             // }
-        } else {
-            this.table[index].visits += 1
         }
-        return this.table[index]
+        return hash
     }
 
-    public getStateHash(state: State) {
-        const distanceToClosestObstacle =
-            `${state.distanceToClosestObstacle?.horizontal ?? '-'}` +
-            `|${state.distanceToClosestObstacle?.vertical ?? '-'}|`
-        const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
-        return distanceToClosestObstacle + distanceToCeiling + `|${state.dead}`
-    }
-
-    public updateQValue(data: { currentState: State; lastState: State; reward: number; lastAction: Actions }) {
+    public updateQValue(data: { nextState: State; currentState: State; reward: number; action: Actions }) {
+        // console.log('Update Q value', data.reward, JSON.stringify(data.nextState))
         // https://github.com/yashkotadia/FlapPy-Bird-RL-Q-Learning-Bot
         // https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
         // Q[s,a] ←(1-α) Q[s,a] + α(r+ γmaxa' Q[s',a']).
         // https://repositorio.ufu.br/bitstream/123456789/22184/3/MetodosInteligenciaArtificial.pdf
         //     //new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
-        const futureQTuple = this.getQTuple(data.currentState)
+        const futureQTuple = this.getQTuple(data.nextState)
 
         const estimateMaxQValue = Math.max(
             futureQTuple.actions[Actions.FLAP],
             futureQTuple.actions[Actions.DO_NOT_FLAP]
         )
-        const lastActionValue = this.getQTuple(data.lastState).actions[data.lastAction]
+        const qTuple = this.getQTuple(data.currentState).actions[data.action]
 
-        this.getQTuple(data.lastState).actions[data.lastAction] =
-            (1 - this.settings.learningRate.value) * lastActionValue +
-            this.settings.learningRate.value * (data.reward + this.settings.discountFactor.value * estimateMaxQValue)
+        this.getQTuple(data.currentState).actions[data.action] =
+            qTuple +
+            this.settings.learningRate.value *
+                (data.reward + this.settings.discountFactor.value * estimateMaxQValue - qTuple)
+
+        // q_table[(state, action)] =
+        //     q_table[(state, action)] + alpha * (reward + gamma * np.max(q_table[next_state]) - q_table[(state, action)])
     }
 }

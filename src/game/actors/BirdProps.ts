@@ -24,7 +24,7 @@ export type UpdateData = {
     }
     delta: number
     cooldownCounter: number
-    birdIsDead: boolean
+    alive: boolean
 }
 
 export abstract class BirdProps {

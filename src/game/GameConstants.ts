@@ -79,7 +79,7 @@ export const gameConstants = {
         pixelsPerFrame: (300 / 1000) * 10, // horizontalVelocityInPixelsPerMs * frameIntervalInMs
         timeFactor: {
             min: 0.1,
-            max: 10,
+            max: 50,
             default: 1,
             step: 0.1,
         },

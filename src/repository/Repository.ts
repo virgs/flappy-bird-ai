@@ -13,6 +13,10 @@ export class Repository {
     public static getFactorySettings() {
         return JSON.parse(JSON.stringify(defaultGameSettings))
     }
+    public static clearCompetitorsSettings() {
+        localStorage.removeItem('gameSettings')
+    }
+
     public static saveCompetitorsSettings(gameSettings: GameSettings) {
         localStorage.setItem('gameSettings', JSON.stringify(gameSettings))
     }

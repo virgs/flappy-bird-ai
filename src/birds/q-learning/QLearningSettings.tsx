@@ -3,7 +3,7 @@ import { Range, BirdSettings } from '../../settings/BirdSettings'
 import { BirdTypes } from '../../settings/BirdTypes'
 
 export type QLearningRewards = {
-    secondsAlive: Range
+    millisecondsAlive: Range
     hitCeiling: Range
     hitFloor: Range
     passedPipe: Range
@@ -22,6 +22,17 @@ export type QLearningSettings = {
     // The discount factor is a measure of how much we want to care about future rewards rather than immediate rewards.
     // It is usually fairly high (because we put greater importance on long term gains) and between 0 and 1.
     discountFactor: Range
+
+    // Epsilon
+    // The exploration rate is the probability of choosing a random action instead of the best action.
+    // It is usually fairly high (because we want to explore the environment) and between 0 and 1.
+    // The exploration rate is decayed exponentially over time to reduce the amount of exploration.
+    explorationRate: Range
+
+    // Epsilon decay
+    // The exploration rate decay is the rate at which the exploration rate is decayed.
+    // It is usually fairly low (because we want to explore the environment) and between 0 and 1.
+    explorationRateDecay: Range
 
     // The grid spatial abstraction is used to reduce the number of states in the Q-table.
     gridSpatialAbstraction: {
