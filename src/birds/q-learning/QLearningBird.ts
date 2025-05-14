@@ -43,9 +43,10 @@ export class QLearningBird extends BirdProps {
         this.explorationRate = options.settings.explorationRate.value
         this.reward = Rewards.MILLISECONDS_ALIVE
         this.action = Actions.DO_NOT_FLAP
-        this.explorationRate =
-            options.settings.explorationRate.value *
-            Math.pow(options.settings.explorationRateDecay.value, options.episode)
+        this.explorationRate = Math.max(
+            0.001,
+            options.settings.explorationRate.value - options.settings.explorationRateDecay.value * options.episode
+        )
     }
 
     public override getFixture(): QLearningBirdProps {
@@ -54,12 +55,6 @@ export class QLearningBird extends BirdProps {
 
     public override update(data: UpdateData): void {
         const nextState = this.qTableHandler.getState(data)
-        // this.ellapsedTimeMs += data.delta
-        // this.nextState = this.qTableHandler.getState(data)
-        // if (!this.currentState) {
-        //     this.currentState = this.nextState
-        //     return
-        // }
 
         if (this.currentState && this.alive) {
             const stateChanged =
@@ -71,109 +66,39 @@ export class QLearningBird extends BirdProps {
             ) {
                 this.alive = false
             }
-            if (!this.reward) {
-                console.log('Reward is undefined')
-            }
-            // this.reward && console.log(this.reward, this.alive)
             if (stateChanged || !this.alive) {
                 this.moves.push({
                     state: this.qTableHandler.getStateHash(this.currentState),
                     action: this.action,
                     reward: this.reward!,
-                    // reward: this.rewardsValues.millisecondsAlive.value * this.ellapsedTimeMs,
                     nextState: this.qTableHandler.getStateHash(nextState),
                 })
                 // Reset values
                 this.reward = Rewards.MILLISECONDS_ALIVE
                 this.action = Actions.DO_NOT_FLAP
             }
-            // if (this.alive) {
-            // this.qTableHandler.updateQValue({
-            //     nextState: nextState,
-            //     currentState: this.currentState,
-            //     reward: this.rewardsValues.millisecondsAlive.value * this.ellapsedTimeMs,
-            //     action: this.action,
-            // })
         }
         this.currentState = nextState
-        // this.ellapsedTimeMs = 0
-        // }
-        // this.currentState = this.nextState
     }
 
     public override onPassedPipe(): void {
-        // this.reward = this.rewardsValues.passedPipe
         this.reward = Rewards.PASSED_PIPE
-        // console.log('Passed pipe')
-        // // this.action = Actions.FLAP
-        // if (this.currentState) {
-        //     this.qTableHandler.updateQValue({
-        //         nextState: this.nextState!,
-        //         currentState: this.currentState,
-        //         reward: this.rewardsValues.passedPipe.value,
-        //         action: this.action,
-        //     })
-        // }
     }
 
     public override onHitFloor(): void {
         this.reward = Rewards.HIT_FLOOR
-        // console.log('Hit floor')
-        // this.reward = this.rewardsValues.hitFloor
-        // this.alive = false
-        // if (this.currentState) {
-        //     this.qTableHandler.updateQValue({
-        //         nextState: this.nextState!,
-        //         currentState: this.currentState,
-        //         reward: this.rewardsValues.hitFloor.value,
-        //         action: this.action,
-        //     })
-        // }
     }
 
     public override onHitCeiling(): void {
         this.reward = Rewards.HIT_CEILING
-        // console.log('Hit ceiling')
-        // this.reward = this.rewardsValues.hitCeiling
-        // this.alive = false
-        // if (this.currentState) {
-        //     this.qTableHandler.updateQValue({
-        //         nextState: this.nextState!,
-        //         currentState: this.currentState,
-        //         reward: this.rewardsValues.hitCeiling.value,
-        //         action: this.action,
-        //     })
-        // }
     }
 
     public override onHitTopPipeObstacle(): void {
         this.reward = Rewards.HIT_TOP_PIPE
-        // console.log('Hit top pipe')
-        // this.reward = this.rewardsValues.hitTopPipe
-        // this.alive = false
-        // if (this.currentState) {
-        //     this.qTableHandler.updateQValue({
-        //         nextState: this.nextState!,
-        //         currentState: this.currentState,
-        //         reward: this.rewardsValues.hitTopPipe.value,
-        //         action: this.action,
-        //     })
-        // }
     }
 
     public override onHitBottomPipeObstacle(): void {
         this.reward = Rewards.HIT_BOTTOM_PIPE
-        // console.log('Hit bottom pipe')
-        // this.reward = this.rewardsValues.hitBottomPipe
-        // this.alive = false
-        // if (this.currentState) {
-        //     this.qTableHandler.updateQValue({
-        //         nextState: this.nextState!,
-        //         currentState: this.currentState,
-        //         reward: this.rewardsValues.hitBottomPipe.value,
-        //         action: this.action,
-        //     })
-        // }
     }
 
     public override shouldFlap(): boolean {

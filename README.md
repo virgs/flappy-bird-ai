@@ -2,25 +2,54 @@
 
 ![screenshot](./screenshot.png)
 
-This project was created for fun and studying purposes.
-These were the mains goals behind it:
+Yes. You read it right. It’s *another* Flappy Bird AI. Because the world clearly doesn’t have enough of those, and I apparently have too much free time and a deep desire to make a pixelated bird suffer in the name of science.
 
-1. Use the _Reactive Message Orientation Object Orientation_. A paradigm I conceived to try to reflect [Reactive System](https://www.reactivemanifesto.org/) design in a OO level to get the hang of it and get used to the difficulties that may occur.
-    To do this, I elaborated two ground rules:
+If you haven’t stumbled upon my other masochistic coding experiments yet, you’re missing out on a symphony of algorithms and existential despair. Here, educate yourself:
 
-    - __Message oriented object communication__: no public methods. Every communication has to be through a message mechanism (Event emitters) and serializable objects (dto, vo, and others). Objects are not aware of each other.
-    - __Stateless messages__: the messages should include every information it needs, so the receivers process them accordingly.
+* [Pacman](https://github.com/virgs/pacman) — because eating ghosts is more fulfilling than eating real food.
+* [Minesweeper AI](https://github.com/virgs/minesweeper-ai) — where AI learns to click and die just like humans.
+* [2048 AI](https://github.com/virgs/2048-ai) - AI learns how to multiply by 2.
+* [Sudoku](https://github.com/virgs/sudoku) — because solving math puzzles is what sane people do for fun.
+* [Rubik's Cubes AI](https://github.com/virgs/rubiks-cubes-ai) — it solves what your hands gave up on years ago.
+* [Mancala](https://github.com/virgs/mancala) — yes, that game you vaguely remember from childhood.
+* [Tetris](https://github.com/virgs/tetris) — *Please rotate piece. Please rotate pie—oh it’s dead.*
+* [Navigator's Gamble](https://github.com/virgs/navigators-gamble) — a fancy name for AI playing with uncertainty and pain.
 
-1. Study NeuroEvolutionary algorithms. A combination of [Neural Network](./src/ai/neural-network.ts) and [Genetic Algorithms](./src/ai/genetic-algorithm.ts). The idea is to find a mathematical function that receives inputs (bird y position, the closest pipe gap x position, the closest pipe gap y position) and results in a single output (should jump?). After that, select the best citizens of every generation and create a new generation based exclusively on this and operations such as _crossover_ and _mutations_.
+---
 
-1. Study [Reinforcement Learning (q-learning)](./src/actors/birds/bird-q.ts). An _agent_ (i.e. the bird) takes in a state and a reward from the environment, and based on these variables, the agent chooses the optimal action (flap/not to flap).
+## Overview
 
-1. Study [Simulated annealing](./src/ai/simulated-annealing-algorithm.ts). [Simulated_annealing](https://en.wikipedia.org/wiki/Simulated_annealing) is a metaheuristic to approximate global optimization in a large search space for an optimization problem.
+This project was built mostly for fun, but also as a platform to explore different AI techniques applied in games. If you're reading a book of mine about AI in games, this might look familiar.
+This abomination of digital feathers was cobbled together for the unholy trinity of reasons:
 
-1. Have fun. Yay.
+1. **Learn Neuroevolution** — which is a fancy way of saying “throw random numbers at a neural net and hope it learns to jump at the right time before faceplanting into a pipe.” Think of it as natural selection, but with fewer ethics and more pipes.
 
-If you want to, [you can watch it live or/and defy the AI](https://virgs.github.io/flappy-bird-ai?mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01&qBirdsNumber=100). I should warn you, it's not a good idea.
+2. **Simulated Annealing** — because nothing says “solid learning” like slowly turning down the temperature on randomness until the AI finally gives up and flaps like it's drunk but determined.
 
-Remember to control the __BLUE__ one (press SPACE BAR to jump and ESC to reinitialize round). Feel free to mess around with the __url query params__ (Defaults to: mutationRate=0.01&populationPerGeneration=1500&relativeSelectedPopulationPerGeneration=0.01&qBirdsNumber=100)
+3. **Reverse Q-Learning** — technically reinforcement learning, but flipped around, confused, disoriented, and mostly ineffective. Spoiler: it did not go well.
 
-![Preview](./preview.gif)
+4. **Make AI visual and tweakable** — so you, dear reader, can play God and mutate birds at will like a caffeinated Darwin with a debugger. ![config-screenshot](./config-screenshot.png)
+
+5. **Have fun** — Or at least tell yourself that’s what you’re doing while watching the 800th bird nose-dive into a pipe.
+
+Wanna see the chaos live or challenge the AI to a duel? [Here you go, brave soul](https://virgs.github.io/flappy-bird-ai). Just don’t blame me when it wins. Or loses. Or just awkwardly flaps into oblivion.
+
+---
+
+## Outcomes
+
+Let’s review what worked, what sort of worked, and what will haunt me in my dreams:
+
+1. **Neuroevolutionary Approach**
+   Worked as expected. With default settings, it consistently produced birds capable of surviving hundreds of pipes — often in under 200 generations.
+
+2. **Simulated Annealing**
+   Slightly less efficient, but still capable. It managed to train networks that performed well in most runs, usually within 200 iterations.
+
+3. **Reverse Q-learning**
+   This one didn’t deliver. Despite many parameter tweaks, it struggled to produce a consistently successful bird. Some runs managed to survive around 50 pipes, but most failed to converge on a stable solution — even after 3,000 iterations with a population of 100. Could be improved, or maybe it's just not the best fit for this problem.
+
+---
+
+If you're here to learn, poke around, or just watch birds fail at life with mathematical precision — welcome. The code’s yours, the mess is mine.
+This project is meant to be a learning resource and a sandbox for experimentation. If you find something interesting (or break it in creative ways), feel free to reach out or fork it.

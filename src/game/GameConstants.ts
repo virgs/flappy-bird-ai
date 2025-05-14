@@ -113,7 +113,7 @@ export const gameConstants = {
         flapCoolDownMs: 200,
     },
     obstacles: {
-        spriteDepth: 1000,
+        spriteDepth: 10000,
         scale: 4,
         verticalOffset: {
             // proportion of the screen height

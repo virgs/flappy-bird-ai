@@ -3,15 +3,15 @@ import { BirdTypes } from '../../settings/BirdTypes'
 import { QLearningSettings } from './QLearningSettings'
 
 export const qLearningDefaultSettings: QLearningSettings = {
-    label: 'Q-Learning',
+    label: 'Reverse Q-Learning',
     cssColor: 'var(--bs-info)',
     birdType: BirdTypes.Q_LEARNING,
     enabled: false,
     texture: gameConstants.spriteSheet.assets.birdBlue.name,
     totalPopulation: {
         min: 1,
-        max: 100,
-        value: 100,
+        max: 1000,
+        value: 1000,
         step: 1,
     },
     learningRate: {
@@ -29,14 +29,14 @@ export const qLearningDefaultSettings: QLearningSettings = {
     explorationRate: {
         min: 0.0,
         max: 1,
-        value: 0.05,
+        value: 1,
         step: 0.01,
     },
     explorationRateDecay: {
         min: 0.0,
         max: 1,
-        value: 0.99,
-        step: 0.01,
+        value: 0.005,
+        step: 0.001,
     },
     gridSpatialAbstraction: {
         horizontal: {

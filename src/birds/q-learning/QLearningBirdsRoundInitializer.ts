@@ -4,10 +4,9 @@ import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
 import { BirdTypes } from '../../settings/BirdTypes'
-import { Move as QLearningMove, QLearningBird, Rewards } from './QLearningBird'
+import { QLearningBird, Move as QLearningMove, Rewards } from './QLearningBird'
 import { QLearningSettings } from './QLearningSettings'
-import { Actions, QTable, QTableHandler, State } from './QTableHandler'
-import { Range } from '../../settings/BirdSettings'
+import { Actions, QTable, QTableHandler } from './QTableHandler'
 
 export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
     private readonly qTableHandler: QTableHandler
@@ -34,44 +33,24 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         this.episode++
-        let sum = 0
-        const newLocal = roundResult.birdResults
+        return roundResult.birdResults
             .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
-            .map(birdResult => {
-                sum += birdResult.timeAlive
-                return birdResult.bird as QLearningBird
-            })
-            .map((qLearningBird, index) => {
-                if (index === 0 && this.episode % 50 === 0) {
-                    // @ts-expect-error
-                    const table: QTable = qLearningBird.qTableHandler.table
-                    // @ts-expect-error
-                    const states: { [propname: string]: Set<number> } = qLearningBird.qTableHandler.states
-                    console.log(
-                        `Qtable states ${Object.keys(table).length}. Total: ${
-                            this.qLearningSettings.verticalVelocityDiscretization.value *
-                            this.qLearningSettings.gridSpatialAbstraction.vertical.value *
-                            this.qLearningSettings.gridSpatialAbstraction.horizontal.value *
-                            gameConstants.obstacles.verticalOffset.total
-                        }, avg ${(sum / this.qLearningSettings.totalPopulation.value).toFixed(2)}`
-                    )
-                    console.log(
-                        'States:',
-                        Object.keys(states).map(
-                            key =>
-                                `${key} (${states[key].size}): ${[...states[key]].sort((a: number, b: number) => a - b)}`
-                        )
-                    )
-                }
+            .map(birdResult => birdResult.bird as QLearningBird)
+            .map(qLearningBird => {
                 this.updateQTable(qLearningBird.moves)
                 return this.createQLearningBird()
             })
-        return newLocal
     }
     private updateQTable(moves: QLearningMove[]): void {
         const reversedHistory = [...moves].reverse()
 
+        const alpha = this.qLearningSettings.learningRate.value
+        const gamma = this.qLearningSettings.discountFactor.value
+
         for (const move of reversedHistory) {
+            this.qTableHandler.table[move.state].visits++
+            // const alpha = 1 / this.qTableHandler.table[move.state].visits
+
             // Get best next Q-value
             const bestNextQ = Math.max(
                 this.qTableHandler.table[move.nextState].actions[Actions.FLAP],
@@ -80,10 +59,8 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
             // Update Q-value using Q-learning formula
             this.qTableHandler.table[move.state].actions[move.action] =
-                (1 - this.qLearningSettings.learningRate.value) *
-                    this.qTableHandler.table[move.state].actions[move.action] +
-                this.qLearningSettings.learningRate.value *
-                    (this.rewardMap.get(move.reward)! + this.qLearningSettings.discountFactor.value * bestNextQ)
+                (1 - alpha) * this.qTableHandler.table[move.state].actions[move.action] +
+                alpha * (this.rewardMap.get(move.reward)! + gamma * bestNextQ)
         }
     }
 

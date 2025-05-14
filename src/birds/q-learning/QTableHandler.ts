@@ -1,3 +1,4 @@
+import { Geom } from 'phaser'
 import { UpdateData } from '../../game/actors/BirdProps'
 import { gameConstants } from '../../game/GameConstants'
 import { QLearningSettings } from './QLearningSettings'
@@ -24,6 +25,7 @@ export type State = {
 
 export type QTuple = {
     actions: ActionValues
+    visits: number
 }
 
 export type QTable = {
@@ -33,7 +35,6 @@ export type QTable = {
 export class QTableHandler {
     private readonly settings: QLearningSettings
     public readonly table: QTable
-    public readonly states: { [propname: string]: Set<number> } = {}
 
     public constructor(settings: QLearningSettings) {
         this.settings = settings
@@ -42,13 +43,7 @@ export class QTableHandler {
 
     public getState(data: UpdateData): State {
         const discreteAltitude = this.calculateDiscreteFlightAltitude(data)
-        this.states['altitude']
-            ? this.states['altitude'].add(discreteAltitude)
-            : (this.states['altitude'] = new Set([discreteAltitude]))
         const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
-        this.states['verticalSpeed']
-            ? this.states['verticalSpeed'].add(discreteVerticalSpeed)
-            : (this.states['verticalSpeed'] = new Set([discreteVerticalSpeed]))
         const state: State = {
             altitude: discreteAltitude,
             verticalSpeed: discreteVerticalSpeed,
@@ -58,27 +53,30 @@ export class QTableHandler {
         return state
     }
 
-    private calculateDiscreteClosestObstacleGapPosition(data: UpdateData):
-        | {
-              x: number
-              y: number
-          }
-        | undefined {
-        const horizontalPartition =
-            gameConstants.gameDimensions.width / this.settings.gridSpatialAbstraction.horizontal.value
+    private calculateDiscreteClosestObstacleGapPosition(data: UpdateData): Geom.Point | undefined {
         const verticalPartition =
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
 
         if (data.closestObstacleGapPosition !== undefined) {
-            const x = Math.floor(data.closestObstacleGapPosition.x / horizontalPartition)
-            const y = Math.floor(data.closestObstacleGapPosition.y / verticalPartition)
-            this.states['obstacleX'] ? this.states['obstacleX'].add(x) : (this.states['obstacleX'] = new Set([x]))
-            this.states['obstacleY'] ? this.states['obstacleY'].add(y) : (this.states['obstacleY'] = new Set([y]))
+            // Calculate difference between obstacle and bird position
+            const horizontalDifference = data.closestObstacleGapPosition.x - data.position.x
 
-            return {
-                x: x,
-                y: y,
-            }
+            // Use exponential scaling for non-linear discretization
+            // This gives finer granularity when difference is closer to 0
+            const sign = Math.sign(horizontalDifference)
+            const absoluteDifference = Math.abs(horizontalDifference)
+            const maxDistance = gameConstants.gameDimensions.width
+            const normalizedValue = Math.min(absoluteDifference / maxDistance, 1) // 0 to 1
+
+            // Apply non-linear transformation (more granular near 0)
+            const scaledValue = Math.pow(normalizedValue, 0.5) // Square root for non-linear scaling
+
+            // Discretize based on settings
+            const discreteSteps = this.settings.gridSpatialAbstraction.horizontal.value
+            const x = Math.floor(scaledValue * discreteSteps) * sign
+            const y = Math.floor(data.closestObstacleGapPosition.y / verticalPartition)
+
+            return new Geom.Point(x, y)
         }
     }
 
@@ -109,6 +107,7 @@ export class QTableHandler {
                     [Actions.DO_NOT_FLAP]: 0,
                     [Actions.FLAP]: 0,
                 },
+                visits: 0,
             }
         }
         return hash
