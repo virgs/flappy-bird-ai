@@ -52,7 +52,11 @@ export class BirdActor {
             textureKey
         )
         birdSprite.setScale(scale)
-        birdSprite.setDepth(5)
+        birdSprite.setDepth(
+            Math.random() *
+                (gameConstants.birdAttributes.spriteDepth.max - gameConstants.birdAttributes.spriteDepth.min) +
+                gameConstants.birdAttributes.spriteDepth.min
+        )
         if (!scene.anims.get(textureKey)) {
             scene.anims.create({
                 key: textureKey,

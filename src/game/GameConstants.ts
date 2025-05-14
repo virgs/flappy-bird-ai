@@ -17,7 +17,7 @@ export const gameConstants = {
         frameWidth: 174, // image.width / 3,
         frameHeight: 124,
         scale: 0.45,
-        hitBoxScale: 0.85,
+        hitBoxScale: 0.75,
         animation: {
             repeat: -1,
             frameRate: 12,
@@ -99,6 +99,10 @@ export const gameConstants = {
         },
     },
     birdAttributes: {
+        spriteDepth: {
+            min: 10,
+            max: 1000,
+        },
         initialPosition: {
             x: 275,
             y: 150,
@@ -109,6 +113,7 @@ export const gameConstants = {
         flapCoolDownMs: 200,
     },
     obstacles: {
+        spriteDepth: 1000,
         scale: 4,
         verticalOffset: {
             // proportion of the screen height

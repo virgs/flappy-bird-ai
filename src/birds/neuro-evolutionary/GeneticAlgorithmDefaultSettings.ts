@@ -3,7 +3,6 @@ import { BirdTypes } from '../../settings/BirdTypes'
 import { GeneticAlgorithmSettings } from './GeneticAlgorithmSettings'
 
 export const geneticAlgorithmDefaultSettings: GeneticAlgorithmSettings = {
-    initialPositionHorizontalOffset: -25,
     label: 'Genetic Algorithm',
     cssColor: 'var(--bs-success)',
     birdType: BirdTypes.GENETIC_ALGORITHM,

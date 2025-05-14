@@ -70,7 +70,7 @@ export class ObstacleActor {
         topPipeSprite.displayOriginX = 0
         topPipeSprite.displayOriginY = 0
         topPipeSprite.setScale(scale)
-        topPipeSprite.setDepth(10)
+        topPipeSprite.setDepth(gameConstants.obstacles.spriteDepth)
         topPipeSprite.y -= scale * topPipeSprite.height
 
         const bottomPipeSprite = options.scene.add.sprite(
@@ -81,7 +81,7 @@ export class ObstacleActor {
         bottomPipeSprite.displayOriginX = 0
         bottomPipeSprite.displayOriginY = 0
         bottomPipeSprite.setScale(scale)
-        bottomPipeSprite.setDepth(10)
+        topPipeSprite.setDepth(gameConstants.obstacles.spriteDepth)
         return [topPipeSprite, bottomPipeSprite]
     }
 }

@@ -2,7 +2,6 @@ import { gameConstants } from '../../game/GameConstants'
 import { BirdTypes } from '../../settings/BirdTypes'
 
 export const humanControlledDefaultSettings = {
-    initialPositionHorizontalOffset: 0,
     totalPopulation: {
         min: 1,
         max: 1,

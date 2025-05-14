@@ -15,6 +15,7 @@
 7. <https://www.appliedaicourse.com/blog/q-learning-in-machine-learning/>
 8. <https://medium.com/@nancyjemi/level-up-understanding-q-learning-cf739867eb1d>
 9. <https://aspram.medium.com/learning-flappy-bird-agents-with-reinforcement-learning-d07f31609333>
+10. <https://www.youtube.com/watch?v=TiAXhVAZQl8&ab_channel=CodeEmporium>
 
 ## Simulated Annealing
 

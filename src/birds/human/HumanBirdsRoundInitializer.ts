@@ -7,6 +7,8 @@ import { RoundResult } from '../../game/round/RoundResult'
 import { HumanSettings } from '../../settings/BirdSettings'
 import { BirdTypes } from '../../settings/BirdTypes'
 
+const initialPositionHorizontalOffset = gameConstants.gameDimensions.width / 20
+
 export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
     private readonly birdsInitialPosition = new Geom.Point(
         gameConstants.birdAttributes.initialPosition.x,
@@ -33,7 +35,7 @@ export class HumanBirdsRoundInitializer implements RoundBirdInitializer {
 
     private createBird(): BirdProps {
         const position = new Geom.Point(
-            this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset,
+            this.birdsInitialPosition.x + initialPositionHorizontalOffset,
             this.birdsInitialPosition.y
         )
         return new HumanControlledBird({

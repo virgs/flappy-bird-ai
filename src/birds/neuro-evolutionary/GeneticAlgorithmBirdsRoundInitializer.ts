@@ -70,7 +70,7 @@ export class GeneticAlgorithmBirdsRoundInitializer implements RoundBirdInitializ
 
     private createNeuralNetworkBird(weights: number[]): BirdProps {
         const position = new Geom.Point(
-            this.birdsInitialPosition.x + this.settings.initialPositionHorizontalOffset + Math.random() * 10,
+            this.birdsInitialPosition.x,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5
         )
         const ann = this.settings.artificialNeuralNetwork

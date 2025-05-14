@@ -3,7 +3,6 @@ import { BirdTypes } from '../../settings/BirdTypes'
 import { QLearningSettings } from './QLearningSettings'
 
 export const qLearningDefaultSettings: QLearningSettings = {
-    initialPositionHorizontalOffset: -15,
     label: 'Q-Learning',
     cssColor: 'var(--bs-info)',
     birdType: BirdTypes.Q_LEARNING,
@@ -18,19 +17,19 @@ export const qLearningDefaultSettings: QLearningSettings = {
     learningRate: {
         min: 0.0,
         max: 1.0,
-        value: 0.95,
+        value: 0.9,
         step: 0.01,
     },
     discountFactor: {
         min: 0.0,
         max: 1,
-        value: 0.7,
+        value: 0.95,
         step: 0.01,
     },
     explorationRate: {
         min: 0.0,
         max: 1,
-        value: 0.01,
+        value: 0.05,
         step: 0.01,
     },
     explorationRateDecay: {
@@ -43,20 +42,20 @@ export const qLearningDefaultSettings: QLearningSettings = {
         horizontal: {
             min: 5,
             max: gameConstants.gameDimensions.width / 4,
-            value: 20, //gameConstants.physics.pixelsPerFrame / 4,
+            value: 25, //gameConstants.physics.pixelsPerFrame / 4,
             step: 1,
         },
         vertical: {
             min: 5,
             max: gameConstants.gameDimensions.height / 4,
-            value: 15, //gameConstants.obstacles.verticalOffset.total,
+            value: 20, //gameConstants.obstacles.verticalOffset.total,
             step: 1,
         },
     },
     verticalVelocityDiscretization: {
         min: 1,
         max: 10,
-        value: 5,
+        value: 3,
         step: 1,
     },
     rewards: {
@@ -75,7 +74,7 @@ export const qLearningDefaultSettings: QLearningSettings = {
         millisecondsAlive: {
             min: 0,
             max: 1,
-            value: 0.0,
+            value: 0.003,
             step: 0.001,
         },
         passedPipe: {

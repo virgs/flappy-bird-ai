@@ -3,7 +3,6 @@ import { BirdTypes } from '../../settings/BirdTypes'
 import { SimulatedAnnealingSettings } from './SimulatedAnnealingSettings'
 
 export const simulatedAnnealingDefaultSettings: SimulatedAnnealingSettings = {
-    initialPositionHorizontalOffset: -35,
     label: 'Simulated Annealing',
     cssColor: 'var(--bs-danger)',
     birdType: BirdTypes.SIMULATED_ANNEALING,

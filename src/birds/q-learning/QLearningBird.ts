@@ -1,7 +1,6 @@
 import { BirdProps, BirdPropsFixture, UpdateData } from '../../game/actors/BirdProps'
 import { QLearningRewards, QLearningSettings } from './QLearningSettings'
 import { Actions, QTableHandler, State } from './QTableHandler'
-import { Range } from '../../settings/BirdSettings'
 
 type QLearningBirdProps = BirdPropsFixture & {
     settings: QLearningSettings
@@ -19,43 +18,34 @@ export enum Rewards {
     MILLISECONDS_ALIVE = 'millisecondsAlive',
 }
 
+export type Move = {
+    state: string
+    nextState: string
+    action: Actions
+    reward: Rewards
+}
+
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
 export class QLearningBird extends BirdProps {
     private readonly _props: QLearningBirdProps
     private readonly qTableHandler: QTableHandler
-    private readonly rewardsValues: QLearningRewards
     private readonly explorationRate: number
-    // private alive: boolean = true
     private alive: boolean = true
     private reward?: Rewards
     private action: Actions = Actions.DO_NOT_FLAP
     private currentState?: State = undefined
-    // private nextState?: State = undefined
-    // private action: Actions = Actions.DO_NOT_FLAP
-    // private ellapsedTimeMs: number = 0
-    public moves: {
-        state: string
-        nextState: string
-        action: Actions
-        reward: Rewards
-    }[] = []
+    public moves: Move[] = []
 
     public constructor(options: QLearningBirdProps) {
         super()
         this._props = options
-        this.rewardsValues = options.rewards
         this.qTableHandler = options.qTableHandler
         this.explorationRate = options.settings.explorationRate.value
-        // this.explorationRate = Math.max(
-        //     0.01,
-        //     options.settings.explorationRate.value - options.settings.explorationRateDecay.value * options.episode
-        // )
-        // this.explorationRate =
-        //     options.settings.explorationRate.value *
-        //     Math.pow(options.settings.explorationRateDecay.value, options.episode)
-        // console.log(
-        //     `QLearningBird ${options.episode} exploration rate: ${this.explorationRate}, decay: ${options.settings.explorationRateDecay.value}`
-        // )
+        this.reward = Rewards.MILLISECONDS_ALIVE
+        this.action = Actions.DO_NOT_FLAP
+        this.explorationRate =
+            options.settings.explorationRate.value *
+            Math.pow(options.settings.explorationRateDecay.value, options.episode)
     }
 
     public override getFixture(): QLearningBirdProps {
@@ -81,16 +71,21 @@ export class QLearningBird extends BirdProps {
             ) {
                 this.alive = false
             }
+            if (!this.reward) {
+                console.log('Reward is undefined')
+            }
             // this.reward && console.log(this.reward, this.alive)
             if (stateChanged || !this.alive) {
                 this.moves.push({
                     state: this.qTableHandler.getStateHash(this.currentState),
                     action: this.action,
-                    reward: this.reward ?? Rewards.MILLISECONDS_ALIVE,
+                    reward: this.reward!,
                     // reward: this.rewardsValues.millisecondsAlive.value * this.ellapsedTimeMs,
                     nextState: this.qTableHandler.getStateHash(nextState),
                 })
+                // Reset values
                 this.reward = Rewards.MILLISECONDS_ALIVE
+                this.action = Actions.DO_NOT_FLAP
             }
             // if (this.alive) {
             // this.qTableHandler.updateQValue({

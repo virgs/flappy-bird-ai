@@ -18,8 +18,6 @@ export type BirdSettings = {
     texture: string
     // The bird type is used to determine which type of bird will be spawned in the game.
     birdType: BirdTypes
-    // The initial position of the bird is used to determine where the bird will spawn in the game.
-    initialPositionHorizontalOffset: number
     // The total population of birds is used to determine how many birds will be spawned in the game.
     totalPopulation: Range
 }

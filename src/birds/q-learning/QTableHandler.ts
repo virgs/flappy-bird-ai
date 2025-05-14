@@ -14,8 +14,8 @@ export type ActionValues = {
 
 export type State = {
     closestObstacleGapPosition?: {
-        horizontalDistanceToBird: number
-        verticalDistanceToCeiling: number
+        x: number
+        y: number
     }
     alive: boolean
     altitude: number
@@ -24,7 +24,6 @@ export type State = {
 
 export type QTuple = {
     actions: ActionValues
-    visits: number
 }
 
 export type QTable = {
@@ -34,6 +33,7 @@ export type QTable = {
 export class QTableHandler {
     private readonly settings: QLearningSettings
     public readonly table: QTable
+    public readonly states: { [propname: string]: Set<number> } = {}
 
     public constructor(settings: QLearningSettings) {
         this.settings = settings
@@ -42,21 +42,26 @@ export class QTableHandler {
 
     public getState(data: UpdateData): State {
         const discreteAltitude = this.calculateDiscreteFlightAltitude(data)
+        this.states['altitude']
+            ? this.states['altitude'].add(discreteAltitude)
+            : (this.states['altitude'] = new Set([discreteAltitude]))
         const discreteVerticalSpeed = this.calculateDiscreteVerticalSpeed(data)
+        this.states['verticalSpeed']
+            ? this.states['verticalSpeed'].add(discreteVerticalSpeed)
+            : (this.states['verticalSpeed'] = new Set([discreteVerticalSpeed]))
         const state: State = {
             altitude: discreteAltitude,
             verticalSpeed: discreteVerticalSpeed,
-            closestObstacleGapPosition: this.calculateDiscreteDistanceToClosestObstacle(data),
+            closestObstacleGapPosition: this.calculateDiscreteClosestObstacleGapPosition(data),
             alive: data.alive,
         }
-        // console.log('State:', state)
         return state
     }
 
-    private calculateDiscreteDistanceToClosestObstacle(data: UpdateData):
+    private calculateDiscreteClosestObstacleGapPosition(data: UpdateData):
         | {
-              horizontalDistanceToBird: number
-              verticalDistanceToCeiling: number
+              x: number
+              y: number
           }
         | undefined {
         const horizontalPartition =
@@ -65,18 +70,14 @@ export class QTableHandler {
             gameConstants.gameDimensions.height / this.settings.gridSpatialAbstraction.vertical.value
 
         if (data.closestObstacleGapPosition !== undefined) {
-            const discreteHorizontalDistance = Math.floor(
-                (data.closestObstacleGapPosition.x - data.position.x) / horizontalPartition
-            )
-            // Check if the bird is ahead of the obstacle
-            if (discreteHorizontalDistance >= 0) {
-                const newLocal = Math.floor(data.closestObstacleGapPosition.y / verticalPartition)
-                // console.log(newLocal, gameConstants.obstacles.verticalOffset.total)
-                // Calculate the distance to the closest obstacle
-                return {
-                    horizontalDistanceToBird: discreteHorizontalDistance,
-                    verticalDistanceToCeiling: newLocal,
-                }
+            const x = Math.floor(data.closestObstacleGapPosition.x / horizontalPartition)
+            const y = Math.floor(data.closestObstacleGapPosition.y / verticalPartition)
+            this.states['obstacleX'] ? this.states['obstacleX'].add(x) : (this.states['obstacleX'] = new Set([x]))
+            this.states['obstacleY'] ? this.states['obstacleY'].add(y) : (this.states['obstacleY'] = new Set([y]))
+
+            return {
+                x: x,
+                y: y,
             }
         }
     }
@@ -99,47 +100,25 @@ export class QTableHandler {
 
     public getStateHash(state: State) {
         const distanceToClosestObstacle =
-            `${state.closestObstacleGapPosition?.horizontalDistanceToBird ?? '-'}` +
-            `|${state.closestObstacleGapPosition?.verticalDistanceToCeiling ?? '-'}|`
+            `${state.closestObstacleGapPosition?.x ?? '-'}` + `|${state.closestObstacleGapPosition?.y ?? '-'}|`
         const distanceToCeiling = `${state.altitude}|${state.verticalSpeed}`
         const hash = distanceToClosestObstacle + distanceToCeiling + `|${state.alive}`
         if (!this.table[hash]) {
-            // this.table[index] = {
-            //     [Actions.DO_NOT_FLAP]: -0.01,
-            //     [Actions.FLAP]: -0.01,
-            // }
-            // this.table[hash] = {
-            //     actions: {
-            //         [Actions.DO_NOT_FLAP]: Math.random() * 0.01,
-            //         [Actions.FLAP]: Math.random() * 0.01,
-            //     },
-            //     visits: 1,
-            // }
             this.table[hash] = {
                 actions: {
                     [Actions.DO_NOT_FLAP]: 0,
                     [Actions.FLAP]: 0,
                 },
-                visits: 1,
             }
-            // this.table[index] = {
-            //     actions: {
-            //         [Actions.DO_NOT_FLAP]: 1,
-            //         [Actions.FLAP]: 1,
-            //     },
-            //     visits: 1,
-            // }
         }
         return hash
     }
 
     public updateQValue(data: { nextState: State; currentState: State; reward: number; action: Actions }) {
-        // console.log('Update Q value', data.reward, JSON.stringify(data.nextState))
         // https://github.com/yashkotadia/FlapPy-Bird-RL-Q-Learning-Bot
         // https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
         // Q[s,a] ←(1-α) Q[s,a] + α(r+ γmaxa' Q[s',a']).
         // https://repositorio.ufu.br/bitstream/123456789/22184/3/MetodosInteligenciaArtificial.pdf
-        //     //new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
         const futureQTuple = this.getQTuple(data.nextState)
 
         const estimateMaxQValue = Math.max(
@@ -152,8 +131,5 @@ export class QTableHandler {
             qTuple +
             this.settings.learningRate.value *
                 (data.reward + this.settings.discountFactor.value * estimateMaxQValue - qTuple)
-
-        // q_table[(state, action)] =
-        //     q_table[(state, action)] + alpha * (reward + gamma * np.max(q_table[next_state]) - q_table[(state, action)])
     }
 }

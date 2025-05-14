@@ -10,7 +10,7 @@ type QLearningComponentProps = {
     onChange: (data: QLearningSettings) => void
 }
 
-export const RangeComponent = (props: { range: Range, title: string, onChange: (value: number) => void }) => {
+export const RangeComponent = (props: { range: Range; title: string; onChange: (value: number) => void }) => {
     const clampValue = (value: number) => {
         const stepValue = Math.round((value - props.range.min) / props.range.step) * props.range.step + props.range.min
         return Math.max(props.range.min, Math.min(props.range.max, stepValue))
@@ -24,12 +24,9 @@ export const RangeComponent = (props: { range: Range, title: string, onChange: (
         <>
             <Row>
                 <Col xs className="text-start justify-content-between">
-                    <Form.Label className="fs-3 w-100">
-                        {props.title}:
-                    </Form.Label>
-
+                    <Form.Label className="fs-3 w-100">{props.title}:</Form.Label>
                 </Col>
-                <Col xs={"auto"} className="text-end">
+                <Col xs={'auto'} className="text-end">
                     <Form.Control
                         min={props.range.min}
                         max={props.range.max}
@@ -103,14 +100,15 @@ export const QLearningComponent = (props: QLearningComponentProps) => {
     return (
         <>
             <div className="fs-5 mx-2 my-3">
-                <strong>Q-Learning</strong> is a type of reinforcement learning algorithm that learns the value of
-                actions in a given state. It uses a table to store the values of actions for each state, and updates
-                these values based on the rewards received from the environment. The algorithm uses a discount factor to
-                balance the importance of immediate and future rewards. Read more about it{' '}
+                <strong>Reverse Q-Learning</strong> takes the usual Q-learning approach — wandering forward through the
+                void hoping to stumble onto a reward — and politely walks it backwards. Starting from the goal, it
+                traces the steps that could have led there, assigning credit retroactively like a boss who congratulates
+                you after accidentally seeing your results. It’s ideal when you already know how success looks but have
+                no idea how to get there. This strategy solves puzzles by learning from the end and working back. Read
+                more about it{' '}
                 <a href="https://en.wikipedia.org/wiki/Q-learning" target="_blank" rel="noreferrer">
                     here
                 </a>
-                .
             </div>
             <Row className="gx-4 justify-content-between align-items-center form-row">
                 <Col xs={12}>

@@ -4,7 +4,7 @@ import { gameConstants } from '../../game/GameConstants'
 import { RoundBirdInitializer } from '../../game/round/RoundBirdInitializer'
 import { RoundResult } from '../../game/round/RoundResult'
 import { BirdTypes } from '../../settings/BirdTypes'
-import { QLearningBird, Rewards } from './QLearningBird'
+import { Move as QLearningMove, QLearningBird, Rewards } from './QLearningBird'
 import { QLearningSettings } from './QLearningSettings'
 import { Actions, QTable, QTableHandler, State } from './QTableHandler'
 import { Range } from '../../settings/BirdSettings'
@@ -34,20 +34,33 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     public createSubsequentRoundsSettings(roundResult: RoundResult): BirdProps[] {
         this.episode++
+        let sum = 0
         const newLocal = roundResult.birdResults
             .filter(birdResult => birdResult.bird.getFixture().type === BirdTypes.Q_LEARNING)
-            .map(birdResult => birdResult.bird as QLearningBird)
+            .map(birdResult => {
+                sum += birdResult.timeAlive
+                return birdResult.bird as QLearningBird
+            })
             .map((qLearningBird, index) => {
-                if (index === 0) {
+                if (index === 0 && this.episode % 50 === 0) {
                     // @ts-expect-error
                     const table: QTable = qLearningBird.qTableHandler.table
+                    // @ts-expect-error
+                    const states: { [propname: string]: Set<number> } = qLearningBird.qTableHandler.states
                     console.log(
                         `Qtable states ${Object.keys(table).length}. Total: ${
                             this.qLearningSettings.verticalVelocityDiscretization.value *
                             this.qLearningSettings.gridSpatialAbstraction.vertical.value *
                             this.qLearningSettings.gridSpatialAbstraction.horizontal.value *
                             gameConstants.obstacles.verticalOffset.total
-                        }`
+                        }, avg ${(sum / this.qLearningSettings.totalPopulation.value).toFixed(2)}`
+                    )
+                    console.log(
+                        'States:',
+                        Object.keys(states).map(
+                            key =>
+                                `${key} (${states[key].size}): ${[...states[key]].sort((a: number, b: number) => a - b)}`
+                        )
                     )
                 }
                 this.updateQTable(qLearningBird.moves)
@@ -55,57 +68,22 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
             })
         return newLocal
     }
-    private updateQTable(moves: { state: string; action: Actions; nextState: string; reward: Rewards }[]): void {
-        // Updates Q-values considering special rewards after bird's death
-        // Penalizes actions like flapping wings before dying at the top
-
+    private updateQTable(moves: QLearningMove[]): void {
         const reversedHistory = [...moves].reverse()
-        // const lastState = reversedHistory[0].nextState
-        // let diedHigh = [this.qLearningSettings.rewards.hitCeiling, this.qLearningSettings.rewards.hitTopPipe].includes(
-        //     reversedHistory[0].reward
-        // )
 
-        let timeStep = 0
-        // let lastFlapPenalty = true
-
-        for (const { state, action, nextState, reward } of reversedHistory) {
-            timeStep++
-
-            // Increment visit counter for this state
-            // if (!this.qTableHandler.table[state]) {
-            //     this.qTableHandler.table[state] = {
-            //         actions: { [Actions.DO_NOT_FLAP]: 0, [Actions.FLAP]: 0 },
-            //         visits: 0,
-            //     }
-            // }
-            // this.qTableHandler.table[state].visits++
-
-            // // Determine reward
-            // let reward: number =
-            // if (timeStep <= 2) {
-            //     reward = this.qLearningSettings.rewards.hitBottomPipe.value
-            //     if (action === Actions.FLAP) {
-            //         lastFlapPenalty = false
-            //     }
-            // } else if ((lastFlapPenalty || diedHigh) && action === Actions.FLAP) {
-            //     reward = this.qLearningSettings.rewards.hitBottomPipe.value
-            //     lastFlapPenalty = false
-            //     diedHigh = false
-            // } else {
-            //     reward = this.qLearningSettings.rewards.millisecondsAlive.value
-            // }
-
+        for (const move of reversedHistory) {
             // Get best next Q-value
             const bestNextQ = Math.max(
-                this.qTableHandler.table[nextState].actions[Actions.FLAP],
-                this.qTableHandler.table[nextState].actions[Actions.DO_NOT_FLAP]
+                this.qTableHandler.table[move.nextState].actions[Actions.FLAP],
+                this.qTableHandler.table[move.nextState].actions[Actions.DO_NOT_FLAP]
             )
 
             // Update Q-value using Q-learning formula
-            this.qTableHandler.table[state].actions[action] =
-                (1 - this.qLearningSettings.learningRate.value) * this.qTableHandler.table[state].actions[action] +
+            this.qTableHandler.table[move.state].actions[move.action] =
+                (1 - this.qLearningSettings.learningRate.value) *
+                    this.qTableHandler.table[move.state].actions[move.action] +
                 this.qLearningSettings.learningRate.value *
-                    (this.rewardMap.get(reward)! + this.qLearningSettings.discountFactor.value * bestNextQ)
+                    (this.rewardMap.get(move.reward)! + this.qLearningSettings.discountFactor.value * bestNextQ)
         }
     }
 
@@ -121,7 +99,7 @@ export class QLearningBirdsRoundInitializer implements RoundBirdInitializer {
 
     private createQLearningBird(): BirdProps {
         const position = new Geom.Point(
-            this.birdsInitialPosition.x + this.qLearningSettings.initialPositionHorizontalOffset + Math.random() * 10,
+            this.birdsInitialPosition.x,
             this.birdsInitialPosition.y + Math.random() * gameConstants.gameDimensions.height * 0.5
         )
         return new QLearningBird({
