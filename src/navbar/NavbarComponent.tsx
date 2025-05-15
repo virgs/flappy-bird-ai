@@ -81,7 +81,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                     onPointerDown={abortGame}
                                     variant="danger"
                                     size="sm"
-                                    className="fs-4 text-tertiary">
+                                    className="fs-4 text-tertiary d-flex align-items-center">
                                     <span className="d-none d-lg-inline mx-2">Abort Game</span>
                                     <FontAwesomeIcon icon={faCancel} />
                                 </Button>
@@ -89,7 +89,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                     variant="warning"
                                     size="sm"
                                     onPointerDown={goToNextIteration}
-                                    className="fs-4 text-tertiary ms-2">
+                                    className="fs-4 text-tertiary ms-2 d-flex align-items-center">
                                     <span className="d-none d-lg-inline mx-2">Next Iteration</span>
                                     <FontAwesomeIcon icon={faForwardStep} />
                                 </Button>
@@ -117,7 +117,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         <FontAwesomeIcon
                             icon={faBoltLightning}
                             onPointerDown={() => resetTimeFactor()}
-                            className="ms-1"
+                            className="ms-2"
                         />
                     </Nav>
 
@@ -130,7 +130,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 <ToggleButton
                                     disabled={!soundButtonEnabled}
                                     variant="info"
-                                    className="fs-4 text-tertiary"
+                                    className="fs-4 text-tertiary d-flex align-items-center"
                                     id={'sound-toggle'}
                                     size="sm"
                                     checked={!soundMuted}
