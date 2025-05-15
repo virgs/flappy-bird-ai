@@ -40,11 +40,11 @@ Wanna see the chaos live or challenge the AI to a duel? [Here you go, brave soul
 
 Let’s review what worked, what sort of worked, and what will haunt me in my dreams:
 
-1. **Neuroevolutionary Approach**
-   Worked as expected. With default settings, it consistently produced birds capable of surviving hundreds of pipes — often in under 200 generations.
+1. **Neuroevolutionary**
+   Worked as expected. With default settings, it consistently produced birds capable of surviving thousands of pipes (depending only on your patience level) — often in under 50 generations.
 
 2. **Simulated Annealing**
-   Slightly less efficient, but still capable. It managed to train networks that performed well in most runs, usually within 200 iterations.
+   Surprisingly efficient. Beat the Neuroevolutionary approach. It managed to train networks that performed well in every run (aka plays forever), usually within 30 iterations.
 
 3. **Reverse Q-learning**
    This one didn’t deliver. Despite many parameter tweaks, it struggled to produce a consistently successful bird. Some runs managed to survive around 50 pipes, but most failed to converge on a stable solution — even after 3,000 iterations with a population of 100. Could be improved, or maybe it's just not the best fit for this problem.

@@ -29,14 +29,12 @@ export class NeuralNetworkBird extends BirdProps {
         if (!this.lastUpdateData) {
             return false
         }
-        // When there is no obstacle, the gap position is set to a non-existent position
-        // to avoid NaN errors in the ANN
-        const nonExistentObstacleModifier = 20
+        // When there is no obstacle, the gap position is set to vertical center and far right
         const closestObstacleGapPosition = this.lastUpdateData.closestObstacleGapPosition
             ? this.lastUpdateData.closestObstacleGapPosition
             : {
-                  x: nonExistentObstacleModifier * gameConstants.gameDimensions.width,
-                  y: nonExistentObstacleModifier * gameConstants.gameDimensions.height,
+                  x: gameConstants.gameDimensions.width,
+                  y: gameConstants.gameDimensions.height / 2,
               }
         const data = this.lastUpdateData
         const output = this.ann.process([
@@ -45,6 +43,7 @@ export class NeuralNetworkBird extends BirdProps {
             (closestObstacleGapPosition.x - data.position.x) / gameConstants.gameDimensions.width,
             (closestObstacleGapPosition.y - data.position.y) / gameConstants.gameDimensions.height,
         ])
-        return output[0] > 0.5
+        const flapThreshold = 0.5
+        return output[0] > flapThreshold
     }
 }
