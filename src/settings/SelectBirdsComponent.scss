@@ -4,6 +4,21 @@
     overflow-y: auto;
     overflow-x: hidden;
 
+    .text-stroke {
+        --text-stroke-width: 2px;
+        --text-stroke-width-negative: calc(var(--text-stroke-width) * -1);
+
+        text-shadow:
+            var(--text-stroke-width-negative) var(--text-stroke-width-negative) 0 var(--bs-dark),
+            0 var(--text-stroke-width-negative) 0 var(--bs-dark),
+            var(--text-stroke-width) var(--text-stroke-width-negative) 0 var(--bs-dark),
+            var(--text-stroke-width) 0 0 var(--bs-dark),
+            var(--text-stroke-width) var(--text-stroke-width) 0 var(--bs-dark),
+            0 var(--text-stroke-width) 0 var(--bs-dark),
+            var(--text-stroke-width-negative) var(--text-stroke-width) 0 var(--bs-dark),
+            var(--text-stroke-width-negative) 0 0 var(--bs-dark);
+    }
+
     .header {
         font-size: 3rem;
         font-weight: 700;

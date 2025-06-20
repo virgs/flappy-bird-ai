@@ -109,7 +109,7 @@ export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentPr
                 </Col>
                 <Col xs={12} md={6}>
                     <Form.Label className="fs-3">
-                        Consecutive Successes to Cooldown:{' '}
+                        Straight Successes to Cooldown:{' '}
                         <strong>{settings.simulatedAnnealing.consecutiveSuccessesToCooldown.value}</strong>
                     </Form.Label>
                     <Form.Range

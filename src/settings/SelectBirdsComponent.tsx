@@ -65,6 +65,7 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         )
     }
 
+    const [showSplashScreen, setShowSplashScreen] = useState<boolean>(true)
     const [gameSettings, setGameSettings] = useState<GameSettings>(loadSettings())
 
     const accordionSructure: AccordionForm[] = [
@@ -148,8 +149,8 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
         },
     ]
 
-    return (
-        <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
+    const renderSelectPlayersComponent = () => {
+        return <>
             <p className="header text-center">
                 <FontAwesomeIcon className="mx-5 d-none d-lg-inline" icon={faTrophy} />
                 Select Competitors
@@ -218,6 +219,30 @@ export const SelectGameSettingsComponent = (props: SelectGameSettings) => {
                     </Button>
                 </Col>
             </Row>
+        </>
+    }
+
+    const renderSplashScreen = () => {
+        return (
+            <div className="splash-screen d-flex flex-column justify-content-center align-items-center h-100 w-100 px-3"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    backgroundColor: 'var(--bs-secondary)',
+                    zIndex: 9999, // Ensure it is on top of other elements
+                }}
+                onClick={() => setShowSplashScreen(false)}>
+                <h1 className="text-center text-primary text-stroke"
+                    style={{ fontSize: '5rem' }}>Flappy Bird<sub className='text-info'>ai</sub></h1>
+                <small className="text-center" style={{ fontSize: '1.5rem' }}>Tap anywhere to begin</small>
+            </div>
+        )
+    }
+
+    return (
+        <div id="select-players-component" className="d-flex h-100 w-100 flex-column align-items-between p-2">
+            {showSplashScreen ? renderSplashScreen() : renderSelectPlayersComponent()}
         </div>
     )
 }
