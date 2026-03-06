@@ -73,30 +73,30 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     return (
         <>
             <Navbar ref={navbarRef} fixed="top" className="bg-body-secondary mx-auto border-start border-end border-2">
-                <Container>
-                    {roundSettings && (
-                        <>
-                            <Nav className="me-auto">
+                <Container className="navbar-grid">
+                    <div className="d-flex align-items-center gap-2">
+                        {roundSettings && (
+                            <>
                                 <Button
                                     onPointerDown={abortGame}
                                     variant="danger"
                                     size="sm"
                                     className="fs-5 text-tertiary d-flex align-items-center">
-                                    <span className="d-none d-lg-inline me-2">Abort Game</span>
+                                    <span className="d-none d-lg-inline me-2">Abort</span>
                                     <FontAwesomeIcon icon={faCancel} />
                                 </Button>
                                 <Button
                                     variant="warning"
                                     size="sm"
                                     onPointerDown={goToNextIteration}
-                                    className="fs-5 text-tertiary ms-2 d-flex align-items-center">
-                                    <span className="d-none d-lg-inline me-2">Next Iteration</span>
+                                    className="fs-5 text-tertiary d-flex align-items-center">
+                                    <span className="d-none d-lg-inline me-2">Next</span>
                                     <FontAwesomeIcon icon={faForwardStep} />
                                 </Button>
-                            </Nav>
-                        </>
-                    )}
-                    <Nav className="mx-auto navbar-nav align-items-center">
+                            </>
+                        )}
+                    </div>
+                    <Nav id="speed-slider" className="navbar-nav align-items-center">
                         <Navbar.Text
                             className="text-tertiary fs-5 d-none d-lg-inline me-1"
                             onPointerDown={() => resetTimeFactor()}>
@@ -121,7 +121,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         />
                     </Nav>
 
-                    <Nav className="ms-auto d-flex align-items-center gap-2">
+                    <Nav className="d-flex align-items-center justify-content-end gap-2">
                         {roundSettings && (
                             <ToggleButtonGroup
                                 type="checkbox"

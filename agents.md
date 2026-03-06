@@ -171,4 +171,4 @@ Build incrementally and safely.
 
 # TODO list
 
-1. [ ] Decrease the nav bar icon sizes (set their height to .8em). Decres
+1. [x] Make the #speed-slider component always be horizontally centered in the navbar. In both modes when roundSettings is true and when it's false. Currently, it is only centered when roundSettings is true, but when it's false, it is aligned to the left.

@@ -81,4 +81,11 @@ describe('NavbarComponent', () => {
         renderNavbar()
         expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
     })
+
+    it('speed slider container has navbar-grid class for CSS-grid centering', () => {
+        renderNavbar()
+        const speedSlider = document.querySelector('#speed-slider')
+        const grid = speedSlider?.closest('.navbar-grid')
+        expect(grid).toBeInTheDocument()
+    })
 })

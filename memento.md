@@ -107,3 +107,15 @@ Build verified working after all updates.
 - Key: `ResizeObserver` must be stubbed with `vi.stubGlobal` (not in jsdom).
 - Key: React-Bootstrap `<Button href="...">` renders as `<a role="button">`, not `role="link"`.
 - Key: Must call `cleanup()` explicitly in `afterEach` when `globals` is not enabled in vitest config, or tests accumulate DOM across test cases.
+
+---
+
+## Navbar — Speed Slider Centering (2026-03-06)
+
+**Problem:** `mx-auto` on the speed slider only centers it when a left nav with `me-auto` is present. When `roundSettings` is false (no left nav), auto-margins are distributed unevenly, causing the slider to drift left.
+
+**Fix:** CSS Grid with `grid-template-columns: 1fr auto 1fr` on the Container. The left column is always rendered (empty `<div>` when no round). The center is always truly centered.
+
+**Changes:**
+- `NavbarComponent.scss` — added `.navbar-grid` class
+- `NavbarComponent.tsx` — applied `navbar-grid` to Container; replaced conditional left `<Nav>` with always-present `<div>`; removed `mx-auto` from speed slider; changed right Nav to `justify-content-end`
