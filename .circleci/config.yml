@@ -30,7 +30,10 @@ commands:
     steps:
       - run:
           name: Install pnpm
-          command: npm install -g pnpm@10.30.3
+          command: |
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"
+            npm install --global --prefix "$HOME/.local" pnpm@10.30.3
+            pnpm --version
       - restore_cache:
           keys:
             - pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
