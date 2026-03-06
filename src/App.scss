@@ -10,6 +10,7 @@ nav {
 
 .phaser-game-container canvas {
     margin: 0 !important;
+    box-shadow: 3px 3px 0 0 var(--bs-border-color);
 }
 
 .phaser-game-container {
