@@ -87,3 +87,23 @@ Build verified working after all updates.
 - `src/game/actors/BirdActor.ts` — `&&` short-circuit → `if` block
 - `src/navbar/NavbarComponent.tsx` — `&&` short-circuit → `if` block
 - `src/repository/Repository.ts` — removed empty `else {}` block
+
+---
+
+## Navbar — Coffee Button (2026-03-06)
+
+**Decision:** Added "Buy Me a Coffee" button permanently to the far-right of the navbar.
+
+**Implementation:**
+- Icon: `faMugHot` from `@fortawesome/free-solid-svg-icons`
+- Variant: `warning` (Bootstrap yellow)
+- Text "Coffee" hidden on small screens via `d-none d-lg-inline` (consistent with other buttons)
+- Grouped with the Sound toggle in a single `<Nav className="ms-auto d-flex align-items-center gap-2">` so the Coffee button is always at the far right regardless of whether the Sound toggle is shown.
+
+**Testing:**
+- Added `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom` as dev dependencies.
+- Added `setupFiles: ['@testing-library/jest-dom/vitest']` to `vitest.config.ts`.
+- Created `src/navbar/NavbarComponent.test.tsx` (5 tests).
+- Key: `ResizeObserver` must be stubbed with `vi.stubGlobal` (not in jsdom).
+- Key: React-Bootstrap `<Button href="...">` renders as `<a role="button">`, not `role="link"`.
+- Key: Must call `cleanup()` explicitly in `afterEach` when `globals` is not enabled in vitest config, or tests accumulate DOM across test cases.

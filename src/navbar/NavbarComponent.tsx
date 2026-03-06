@@ -1,4 +1,4 @@
-import { faBoltLightning, faCancel, faForwardStep, faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
+import { faBoltLightning, faCancel, faForwardStep, faMugHot, faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { JSX, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
@@ -81,16 +81,16 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                     onPointerDown={abortGame}
                                     variant="danger"
                                     size="sm"
-                                    className="fs-4 text-tertiary d-flex align-items-center">
-                                    <span className="d-none d-lg-inline mx-2">Abort Game</span>
+                                    className="fs-5 text-tertiary d-flex align-items-center">
+                                    <span className="d-none d-lg-inline me-2">Abort Game</span>
                                     <FontAwesomeIcon icon={faCancel} />
                                 </Button>
                                 <Button
                                     variant="warning"
                                     size="sm"
                                     onPointerDown={goToNextIteration}
-                                    className="fs-4 text-tertiary ms-2 d-flex align-items-center">
-                                    <span className="d-none d-lg-inline mx-2">Next Iteration</span>
+                                    className="fs-5 text-tertiary ms-2 d-flex align-items-center">
+                                    <span className="d-none d-lg-inline me-2">Next Iteration</span>
                                     <FontAwesomeIcon icon={faForwardStep} />
                                 </Button>
                             </Nav>
@@ -98,11 +98,11 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                     )}
                     <Nav className="mx-auto navbar-nav align-items-center">
                         <Navbar.Text
-                            className="text-tertiary fs-4 d-none d-lg-inline me-1"
+                            className="text-tertiary fs-5 d-none d-lg-inline me-1"
                             onPointerDown={() => resetTimeFactor()}>
                             Speed
                         </Navbar.Text>
-                        <Navbar.Text className="text-tertiary fs-4 me-1">{timeFactor.toFixed(1)}x</Navbar.Text>
+                        <Navbar.Text className="text-tertiary fs-5 me-1">{timeFactor.toFixed(1)}x</Navbar.Text>
                         <Form.Range
                             min={gameConstants.physics.timeFactor.min}
                             max={gameConstants.physics.timeFactor.max}
@@ -121,8 +121,8 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                         />
                     </Nav>
 
-                    {roundSettings && (
-                        <Nav className="">
+                    <Nav className="ms-auto d-flex align-items-center gap-2">
+                        {roundSettings && (
                             <ToggleButtonGroup
                                 type="checkbox"
                                 defaultValue={soundButtonEnabled ? [1] : []}
@@ -130,7 +130,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                 <ToggleButton
                                     disabled={!soundButtonEnabled}
                                     variant="info"
-                                    className="fs-4 text-tertiary d-flex align-items-center"
+                                    className="fs-5 text-tertiary d-flex align-items-center"
                                     id={'sound-toggle'}
                                     size="sm"
                                     checked={!soundMuted}
@@ -141,12 +141,22 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
                                         Repository.saveMute(muted)
                                         setSoundMuted(muted)
                                     }}>
-                                    <span className="d-none d-lg-inline mx-2">{soundMuted ? 'Mute' : 'Sound on'}</span>
+                                    <span className="d-none d-lg-inline me-2">{soundMuted ? 'Mute' : 'Sound on'}</span>
                                     <FontAwesomeIcon icon={soundMuted ? faVolumeMute : faVolumeUp} />
                                 </ToggleButton>
                             </ToggleButtonGroup>
-                        </Nav>
-                    )}
+                        )}
+                        <Button
+                            variant="warning"
+                            size="sm"
+                            className="fs-5 text-tertiary d-flex align-items-center"
+                            href="https://www.buymeacoffee.com/virgs"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            <span className="d-none d-lg-inline me-2">Coffee</span>
+                            <FontAwesomeIcon icon={faMugHot} />
+                        </Button>
+                    </Nav>
                 </Container>
             </Navbar>
         </>
