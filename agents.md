@@ -171,4 +171,4 @@ Build incrementally and safely.
 
 # TODO list
 
-1. [ ] For som
+1. [x] For some reason the Qbirds never learn how to play at all. Look at the implementation and find out why. Maybe the learning rate never goes down, or maybe the reward function is flawed. Or maybe it’s just a cursed algorithm that refuses to work in this context (I don't think that's the case because I've seen other people make it work).

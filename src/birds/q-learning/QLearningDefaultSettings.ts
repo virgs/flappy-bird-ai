@@ -17,7 +17,7 @@ export const qLearningDefaultSettings: QLearningSettings = {
     learningRate: {
         min: 0.0,
         max: 1.0,
-        value: 0.9,
+        value: 0.1,
         step: 0.01,
     },
     discountFactor: {
@@ -35,20 +35,20 @@ export const qLearningDefaultSettings: QLearningSettings = {
     explorationRateDecay: {
         min: 0.0,
         max: 1,
-        value: 0.005,
+        value: 0.01,
         step: 0.001,
     },
     gridSpatialAbstraction: {
         horizontal: {
             min: 5,
             max: gameConstants.gameDimensions.width / 4,
-            value: 25, //gameConstants.physics.pixelsPerFrame / 4,
+            value: 10, //gameConstants.physics.pixelsPerFrame / 4,
             step: 1,
         },
         vertical: {
             min: 5,
             max: gameConstants.gameDimensions.height / 4,
-            value: 20, //gameConstants.obstacles.verticalOffset.total,
+            value: 10, //gameConstants.obstacles.verticalOffset.total,
             step: 1,
         },
     },

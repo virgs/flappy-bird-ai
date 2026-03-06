@@ -25,24 +25,24 @@ export type Move = {
     reward: Rewards
 }
 
+const DEATH_REWARDS = [Rewards.HIT_BOTTOM_PIPE, Rewards.HIT_TOP_PIPE, Rewards.HIT_CEILING, Rewards.HIT_FLOOR]
+
 //https://levelup.gitconnected.com/introduction-to-reinforcement-learning-and-q-learning-with-flappy-bird-aa1f40614532
 export class QLearningBird extends BirdProps {
     private readonly _props: QLearningBirdProps
     private readonly qTableHandler: QTableHandler
     private readonly explorationRate: number
     private alive: boolean = true
-    private reward?: Rewards
+    private reward: Rewards = Rewards.MILLISECONDS_ALIVE
     private action: Actions = Actions.DO_NOT_FLAP
     private currentState?: State = undefined
+    private previousDecisionState?: State = undefined
     public moves: Move[] = []
 
     public constructor(options: QLearningBirdProps) {
         super()
         this._props = options
         this.qTableHandler = options.qTableHandler
-        this.explorationRate = options.settings.explorationRate.value
-        this.reward = Rewards.MILLISECONDS_ALIVE
-        this.action = Actions.DO_NOT_FLAP
         this.explorationRate = Math.max(
             0.001,
             options.settings.explorationRate.value - options.settings.explorationRateDecay.value * options.episode
@@ -55,27 +55,16 @@ export class QLearningBird extends BirdProps {
 
     public override update(data: UpdateData): void {
         const nextState = this.qTableHandler.getState(data)
-
-        if (this.currentState && this.alive) {
-            const stateChanged =
-                this.qTableHandler.getStateHash(nextState) !== this.qTableHandler.getStateHash(this.currentState)
-            if (
-                [Rewards.HIT_BOTTOM_PIPE, Rewards.HIT_TOP_PIPE, Rewards.HIT_CEILING, Rewards.HIT_FLOOR].includes(
-                    this.reward!
-                )
-            ) {
-                this.alive = false
-            }
-            if (stateChanged || !this.alive) {
+        if (this.alive && DEATH_REWARDS.includes(this.reward)) {
+            this.alive = false
+            if (this.previousDecisionState) {
                 this.moves.push({
-                    state: this.qTableHandler.getStateHash(this.currentState),
+                    state: this.qTableHandler.getStateHash(this.previousDecisionState),
                     action: this.action,
-                    reward: this.reward!,
+                    reward: this.reward,
                     nextState: this.qTableHandler.getStateHash(nextState),
                 })
-                // Reset values
                 this.reward = Rewards.MILLISECONDS_ALIVE
-                this.action = Actions.DO_NOT_FLAP
             }
         }
         this.currentState = nextState
@@ -102,6 +91,20 @@ export class QLearningBird extends BirdProps {
     }
 
     public override shouldFlap(): boolean {
+        if (!this.alive) return false
+
+        if (this.previousDecisionState && this.currentState) {
+            this.moves.push({
+                state: this.qTableHandler.getStateHash(this.previousDecisionState),
+                action: this.action,
+                reward: this.reward,
+                nextState: this.qTableHandler.getStateHash(this.currentState),
+            })
+            this.reward = Rewards.MILLISECONDS_ALIVE
+        }
+
+        this.previousDecisionState = this.currentState
+
         if (Math.random() < this.explorationRate || !this.currentState) {
             this.action = Math.random() < 0.5 ? Actions.FLAP : Actions.DO_NOT_FLAP
             return this.action === Actions.FLAP

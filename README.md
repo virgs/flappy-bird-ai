@@ -14,6 +14,7 @@ If you haven’t stumbled upon my other masochistic coding experiments yet, you�
 * [Mancala](https://github.com/virgs/mancala) — yes, that game you vaguely remember from childhood.
 * [Tetris](https://github.com/virgs/tetris) — *Please rotate piece. Please rotate pie—oh it’s dead.*
 * [Navigator's Gamble](https://github.com/virgs/navigators-gamble) — a fancy name for AI playing with uncertainty and pain.
+* [Locker hacker](https://github.com/virgs/locker-hacker) — A Bulls and Cows code-breaking game played with pattern lock paths over a grid of dots.
 
 ---
 
@@ -47,7 +48,7 @@ Let’s review what worked, what sort of worked, and what will haunt me in my dr
    Surprisingly efficient. Beat the Neuroevolutionary approach. It managed to train networks that performed well in every run (aka plays forever), usually within 30 iterations.
 
 3. **Reverse Q-learning**
-   This one didn’t deliver. Despite many parameter tweaks, it struggled to produce a consistently successful bird. Some runs managed to survive around 50 pipes, but most failed to converge on a stable solution — even after 3,000 iterations with a population of 100. Could be improved, or maybe it's just not the best fit for this problem.
+   This one didn’t deliver. Despite many parameter tweaks, it struggled to produce a consistently successful bird. Some runs managed to survive around 50 pipes, but most failed to converge on a stable solution — even after 3,000 iterations with a population of 100.
 
 ---
 

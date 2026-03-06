@@ -129,3 +129,41 @@ Build verified working after all updates.
 **Fix:** Replace `corepack enable && corepack prepare pnpm@10.30.3 --activate` with `npm install -g pnpm@10.30.3`. This bypasses corepack's signature verification entirely.
 
 **File:** `.circleci/config.yml` — `setup` command, "Install pnpm" step.
+
+---
+
+## CircleCI — pnpm Global Install Permission Error (2026-03-06)
+
+**Problem:** `npm install -g pnpm@10.30.3` fails in CircleCI with `EACCES` when trying to rename `/usr/local/lib/node_modules/pnpm`. The `circleci` user cannot modify root-owned global modules.
+
+**Fix:** Install pnpm into a user-owned prefix and persist PATH:
+- `echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"`
+- `npm install --global --prefix "$HOME/.local" pnpm@10.30.3`
+
+This avoids writes to `/usr/local` and keeps pnpm available in subsequent steps/jobs.
+
+**File:** `.circleci/config.yml` — `setup` command, "Install pnpm" step.
+
+---
+
+## Q-Learning Birds — Never Learning Bug (2026-03-06)
+
+**Root cause (final):** Per-frame recording with a 20-frame flap cooldown (`flapCoolDownMs = 200ms`, `fixedFrameIntervalInMs = 10ms`) caused a 19:1 DO_NOT_FLAP bias. `BirdActor.updateSoul()` calls `props.update()` every frame but `props.shouldFlap()` only every 20 frames. Recording moves every frame meant 19 of every 20 recorded moves had `action = DO_NOT_FLAP`, regardless of what the bird actually decided.
+
+**Fix (decision-level recording):**
+- Moves are now recorded in `shouldFlap()` (at each decision point, ~every 20 frames), not in `update()` (every frame).
+- Death moves are still recorded in `update()` using `previousDecisionState` when a death reward is detected.
+- Added `previousDecisionState?: State` field to track the state at the last decision.
+
+**Default settings updated for stable learning:**
+- `learningRate.value`: 0.9 → 0.1 (α=0.9 caused Q-values to oscillate)
+- `explorationRateDecay.value`: 0.005 → 0.01
+- `gridSpatialAbstraction.horizontal.value`: 25 → 10 (reduces state space from ~160k to ~10k)
+- `gridSpatialAbstraction.vertical.value`: 20 → 10
+
+**Files:** `src/birds/q-learning/QLearningBird.ts`, `src/birds/q-learning/QLearningDefaultSettings.ts`
+
+**Tests added (2026-03-06):**
+- `src/birds/q-learning/QLearningBird.test.ts` (14 tests)
+- `src/birds/human/HumanControlledBird.test.ts` (10 tests)
+- `src/birds/neural-network/NeuralNetworkBird.test.ts` (7 tests)
