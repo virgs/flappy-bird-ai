@@ -59,7 +59,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
             observer.observe(navbarRef.current)
         }
         return () => {
-            navbarRef.current && observer.unobserve(navbarRef.current)
+            if (navbarRef.current) { observer.unobserve(navbarRef.current) }
         }
     }, [])
 

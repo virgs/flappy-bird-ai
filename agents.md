@@ -174,4 +174,4 @@ Build incrementally and safely.
 1. [x] Make it a pnpm project
 2. [x] Update the dependencies to the latest versions
 3. [x] Add testing files (specially for the typescript files, tsx not so much)
-4. [ ] Create a circleci config file for continuous integration. Make sure it has multiple jobs: linting, testing, coverage, building, and deploying to github pages. Set up the necessary environment variables and secrets for deployment.
+4. [x] Create a circleci config file for continuous integration. Make sure it has multiple jobs: linting, testing, coverage, building, and deploying to github pages. Set up the necessary environment variables and secrets for deployment.

@@ -36,7 +36,6 @@ export class Repository {
         const saved = localStorage.getItem('isMuted')
         if (saved) {
             return JSON.parse(saved || '{}') as boolean
-        } else {
         }
         Repository.saveMute(false)
         return false

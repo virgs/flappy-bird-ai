@@ -168,7 +168,7 @@ export class BirdActor {
             EventBus.emit(GameEvents.BIRD_DIED, this.getProps())
             this.verticalSpeed = 0
             this.alive = false
-            this.birdSprite.anims && this.birdSprite.anims.pause()
+            if (this.birdSprite.anims) { this.birdSprite.anims.pause() }
             this.birdSprite.setAlpha(0.4)
         }
     }

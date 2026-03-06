@@ -1,0 +1,128 @@
+# CircleCI CI/CD pipeline for flappy-bird-ai
+#
+# Required environment variables (set in CircleCI project settings or the
+# "github-pages" context used by the deploy job):
+#   GITHUB_TOKEN  — Personal Access Token with "repo" (write) scope.
+#                   Used to push the built docs/ folder back to main so
+#                   GitHub Pages can serve the updated build.
+#
+# GitHub Pages is configured to serve from the docs/ directory on main.
+# The deploy job commits the built output and pushes with [skip ci] to
+# prevent re-triggering this pipeline.
+
+version: 2.1
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Reusable executor
+# ──────────────────────────────────────────────────────────────────────────────
+executors:
+  node:
+    docker:
+      - image: cimg/node:22.11
+    working_directory: ~/project
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Reusable commands
+# ──────────────────────────────────────────────────────────────────────────────
+commands:
+  setup:
+    description: Enable pnpm via corepack, restore cache, install deps, save cache
+    steps:
+      - run:
+          name: Enable pnpm
+          command: corepack enable && corepack prepare pnpm@10.30.3 --activate
+      - restore_cache:
+          keys:
+            - pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
+            - pnpm-v1-
+      - run:
+          name: Install dependencies
+          command: pnpm install --frozen-lockfile
+      - save_cache:
+          key: pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - ~/.local/share/pnpm/store
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Jobs
+# ──────────────────────────────────────────────────────────────────────────────
+jobs:
+  lint:
+    executor: node
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Lint
+          command: pnpm lint
+
+  test:
+    executor: node
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Run tests
+          command: pnpm test
+
+  coverage:
+    executor: node
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Run coverage
+          command: pnpm coverage
+      - store_artifacts:
+          path: coverage
+          destination: coverage-report
+
+  build:
+    executor: node
+    steps:
+      - checkout
+      - setup
+      - run:
+          name: Build
+          command: pnpm build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs
+
+  deploy:
+    executor: node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Deploy to GitHub Pages
+          command: |
+            git config user.email "ci@users.noreply.github.com"
+            git config user.name "CircleCI Deployment"
+            git add docs/
+            git diff --cached --quiet && echo "Nothing new to deploy." && exit 0
+            git commit -m "ci: deploy to GitHub Pages [skip ci]"
+            git push "https://${GITHUB_TOKEN}@github.com/virgs/flappy-bird-ai.git" HEAD:main
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Workflow
+# ──────────────────────────────────────────────────────────────────────────────
+workflows:
+  ci-cd:
+    jobs:
+      - lint
+      - test
+      - coverage
+      - build
+      - deploy:
+          requires:
+            - lint
+            - test
+            - build
+          filters:
+            branches:
+              only: main
+          context:
+            - github-pages

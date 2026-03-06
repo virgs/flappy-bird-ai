@@ -54,3 +54,36 @@ Build verified working after all updates.
 - Phaser mocked via `vi.mock('phaser')` in QTableHandler tests (Phaser requires WebGL/Canvas, not available in Node).
 - `GameConstants` mocked in tests that depend on it — it imports asset files with `?url` that are only meaningful in a browser/Vite build context.
 - jsdom 28 changed localStorage to file-backed storage; tests use `vi.stubGlobal('localStorage', ...)` with an in-memory Map implementation instead.
+
+---
+
+## CI/CD — CircleCI (2026-03-06)
+
+**Decision:** Added CircleCI pipeline with five jobs: lint → test → coverage → build → deploy.
+
+**Files created:**
+- `.circleci/config.yml` — pipeline definition
+- `eslint.config.js` — ESLint flat config (eslint 10 + typescript-eslint + react-hooks + react-refresh)
+
+**Scripts added:** `lint` (`eslint src`)
+
+**Pipeline jobs:**
+| Job | Command | Trigger |
+|---|---|---|
+| lint | `pnpm lint` | every push |
+| test | `pnpm test` | every push |
+| coverage | `pnpm coverage` | every push |
+| build | `pnpm build` | every push |
+| deploy | git push to main | main branch only, after lint+test+build pass |
+
+**Deployment strategy:** Builds output to `docs/` (existing GitHub Pages convention), commits, and pushes to `main` with `[skip ci]` to avoid triggering a loop.
+
+**Required secrets (CircleCI):**
+- Context name: `github-pages`
+- `GITHUB_TOKEN` — GitHub Personal Access Token with `repo` (write) scope. Set this in CircleCI → Organization Settings → Contexts → `github-pages`.
+
+**Code fixes made to pass lint:**
+- `src/math/array-shufller.ts` — `var` → `let`
+- `src/game/actors/BirdActor.ts` — `&&` short-circuit → `if` block
+- `src/navbar/NavbarComponent.tsx` — `&&` short-circuit → `if` block
+- `src/repository/Repository.ts` — removed empty `else {}` block

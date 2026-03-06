@@ -1,5 +1,5 @@
 export function arrayShuffler<T>(array: T[]): T[] {
-    var tmp,
+    let tmp,
         current,
         top = array.length
 

@@ -48,6 +48,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{tsx,ts,scss,css}'",
+    "lint": "eslint src",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage"
