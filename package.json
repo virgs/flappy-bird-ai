@@ -35,6 +35,10 @@
     "url": "https://github.com/virgs/flappy-bird-ai/issues"
   },
   "homepage": "https://github.com/virgs/flappy-bird-ai#readme",
+  "packageManager": "pnpm@10.30.3",
+  "pnpm": {
+    "onlyBuiltDependencies": ["@parcel/watcher", "esbuild"]
+  },
   "scripts": {
     "dev": "vite",
     "mobile-dev": "vite --host",
