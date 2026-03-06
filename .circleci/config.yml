@@ -30,7 +30,7 @@ commands:
     steps:
       - run:
           name: Enable pnpm
-          command: corepack enable && corepack prepare pnpm@10.30.3 --activate
+          command: sudo corepack enable && corepack prepare pnpm@10.30.3 --activate
       - restore_cache:
           keys:
             - pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
