@@ -14,13 +14,15 @@ interface PhaserGameComponentProps {
 
 export const PhaserGameComponent = ({ onSceneChange }: PhaserGameComponentProps): ReactNode => {
     const game = useRef<Phaser.Game | null>(null)
+    const onSceneChangeRef = useRef(onSceneChange)
+    onSceneChangeRef.current = onSceneChange
 
     useEffect(() => {
         if (game.current === null) {
             game.current = startGame('game-container')
         }
 
-        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => onSceneChange(sceneInstance))
+        EventBus.on(GameEvents.UPDATE_GAME_SCENE, (sceneInstance: Phaser.Scene) => onSceneChangeRef.current(sceneInstance))
 
         return () => {
             if (game.current) {

@@ -171,4 +171,4 @@ Build incrementally and safely.
 
 # TODO list
 
-1. [ ] 
+1. [ ] For som

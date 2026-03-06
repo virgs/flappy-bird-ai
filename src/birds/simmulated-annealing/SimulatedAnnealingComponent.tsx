@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
@@ -10,18 +10,22 @@ type SimulatedAnnealingComponentProps = {
     onChange: (data: SimulatedAnnealingSettings) => void
 }
 
-export const SimulatedAnnealingComponent = (props: SimulatedAnnealingComponentProps) => {
-    const [settings, setSettings] = useState<SimulatedAnnealingSettings>(props.value)
+export const SimulatedAnnealingComponent = ({ value, onChange }: SimulatedAnnealingComponentProps) => {
+    const [settings, setSettings] = useState<SimulatedAnnealingSettings>(value)
+    const settingsRef = useRef(settings)
+    settingsRef.current = settings
+    const onChangeRef = useRef(onChange)
+    onChangeRef.current = onChange
 
     useEffect(() => {
-        if (JSON.stringify(settings) === JSON.stringify(props.value)) {
+        if (JSON.stringify(settingsRef.current) === JSON.stringify(value)) {
             return
         }
-        setSettings(props.value)
-    }, [props.value])
+        setSettings(value)
+    }, [value])
 
     useEffect(() => {
-        props.onChange(settings)
+        onChangeRef.current(settings)
     }, [settings])
 
     return (

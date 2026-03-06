@@ -28,6 +28,9 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     const [timeFactor, setTimeFactor] = useState<number>(Repository.getTimeFactor())
     const [roundSettings, setRoundSettings] = useState<RoundSettings | undefined>()
     const navbarRef = useRef<HTMLDivElement>(null)
+    const onHeightChangeRef = useRef(props.onHeightChange)
+    onHeightChangeRef.current = props.onHeightChange
+    const initialTimeFactorRef = useRef(timeFactor)
 
     const abortGame = () => {
         setRoundSettings(undefined)
@@ -39,7 +42,7 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
     }
 
     useEffect(() => {
-        EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, timeFactor)
+        EventBus.emit(GameEvents.TIME_FACTOR_CHANGED, initialTimeFactorRef.current)
         EventBus.on(GameEvents.NEW_ROUND_STARTED, (settings: RoundSettings) => {
             setRoundSettings(settings)
             setSoundButtonEnabled(settings.birdSouls.some(bird => bird.getFixture().type === BirdTypes.HUMAN))
@@ -50,16 +53,17 @@ export const NavbarComponent = (props: NavbarComponentProps): JSX.Element => {
             }
         })
 
-        props.onHeightChange(navbarRef.current?.offsetHeight ?? initialNavbarHeight)
+        onHeightChangeRef.current(navbarRef.current?.offsetHeight ?? initialNavbarHeight)
         const observer = new ResizeObserver(() => {
-            props.onHeightChange(navbarRef.current?.offsetHeight ?? initialNavbarHeight)
+            onHeightChangeRef.current(navbarRef.current?.offsetHeight ?? initialNavbarHeight)
         })
 
-        if (navbarRef.current) {
-            observer.observe(navbarRef.current)
+        const el = navbarRef.current
+        if (el) {
+            observer.observe(el)
         }
         return () => {
-            if (navbarRef.current) { observer.unobserve(navbarRef.current) }
+            if (el) { observer.unobserve(el) }
         }
     }, [])
 

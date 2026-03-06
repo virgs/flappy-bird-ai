@@ -35,6 +35,7 @@
     "url": "https://github.com/virgs/flappy-bird-ai/issues"
   },
   "homepage": "https://github.com/virgs/flappy-bird-ai#readme",
+  "type": "module",
   "packageManager": "pnpm@10.30.3",
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -49,6 +50,7 @@
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{tsx,ts,scss,css}'",
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage"

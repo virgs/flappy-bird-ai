@@ -1,20 +1,22 @@
 import { faCopy, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
 import { NeuralNetworkSettings } from './NeuralNetworkSettings'
 
-export const ArtificialNeuralNetworkComponent = (props: {
+export const ArtificialNeuralNetworkComponent = ({ value, onChange }: {
     value: NeuralNetworkSettings
     onChange: (data: NeuralNetworkSettings) => void
 }) => {
-    const [settings, setSettings] = useState<NeuralNetworkSettings>(props.value)
+    const [settings, setSettings] = useState<NeuralNetworkSettings>(value)
+    const onChangeRef = useRef(onChange)
+    onChangeRef.current = onChange
 
     useEffect(() => {
-        props.onChange(settings)
+        onChangeRef.current(settings)
     }, [settings])
     return (
         <>

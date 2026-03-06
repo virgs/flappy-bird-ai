@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row'
@@ -83,18 +83,22 @@ export const RangeComponent = (props: { range: Range; title: string; onChange: (
     )
 }
 
-export const QLearningComponent = (props: QLearningComponentProps) => {
-    const [settings, setSettings] = useState<QLearningSettings>(props.value)
+export const QLearningComponent = ({ value, onChange }: QLearningComponentProps) => {
+    const [settings, setSettings] = useState<QLearningSettings>(value)
+    const settingsRef = useRef(settings)
+    settingsRef.current = settings
+    const onChangeRef = useRef(onChange)
+    onChangeRef.current = onChange
 
     useEffect(() => {
-        if (JSON.stringify(settings) === JSON.stringify(props.value)) {
+        if (JSON.stringify(settingsRef.current) === JSON.stringify(value)) {
             return
         }
-        setSettings(props.value)
-    }, [props.value])
+        setSettings(value)
+    }, [value])
 
     useEffect(() => {
-        props.onChange(settings)
+        onChangeRef.current(settings)
     }, [settings])
 
     return (
