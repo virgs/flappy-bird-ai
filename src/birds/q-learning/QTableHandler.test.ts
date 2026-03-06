@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 // Mock Phaser to avoid WebGL/Canvas requirements in test environment
 vi.mock('phaser', () => ({

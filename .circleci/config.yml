@@ -26,11 +26,11 @@ executors:
 # ──────────────────────────────────────────────────────────────────────────────
 commands:
   setup:
-    description: Enable pnpm via corepack, restore cache, install deps, save cache
+    description: Install pnpm, restore cache, install deps, save cache
     steps:
       - run:
-          name: Enable pnpm
-          command: corepack enable && corepack prepare pnpm@10.30.3 --activate
+          name: Install pnpm
+          command: npm install -g pnpm@10.30.3
       - restore_cache:
           keys:
             - pnpm-v1-{{ checksum "pnpm-lock.yaml" }}

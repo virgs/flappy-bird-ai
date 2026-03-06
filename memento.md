@@ -119,3 +119,13 @@ Build verified working after all updates.
 **Changes:**
 - `NavbarComponent.scss` — added `.navbar-grid` class
 - `NavbarComponent.tsx` — applied `navbar-grid` to Container; replaced conditional left `<Nav>` with always-present `<div>`; removed `mx-auto` from speed slider; changed right Nav to `justify-content-end`
+
+---
+
+## CircleCI — corepack pnpm Key Mismatch (2026-03-06)
+
+**Problem:** `corepack prepare pnpm@10.30.3 --activate` fails in `cimg/node:22.11` with "Cannot find matching keyid". The corepack bundled with that image has outdated signing keys and cannot verify the pnpm 10.30.3 package.
+
+**Fix:** Replace `corepack enable && corepack prepare pnpm@10.30.3 --activate` with `npm install -g pnpm@10.30.3`. This bypasses corepack's signature verification entirely.
+
+**File:** `.circleci/config.yml` — `setup` command, "Install pnpm" step.
